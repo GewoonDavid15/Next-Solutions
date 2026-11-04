@@ -15,12 +15,13 @@ export default async function KlantportaalPage({ searchParams }: { searchParams:
 
   if (!session) return <LoginCard error={error} oauthEnabled={isOAuthConfigured()} />;
 
-  const { projects, tickets } = getPortalData(session.id);
+  const { projects, tickets, live } = await getPortalData(session.id, { demo: session.demo });
   return (
     <Dashboard
       user={{ name: session.globalName ?? session.username, avatar: avatarUrl(session), demo: session.demo }}
       projects={projects}
       tickets={tickets}
+      live={live}
     />
   );
 }

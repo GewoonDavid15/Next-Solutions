@@ -12,7 +12,7 @@ cp .env.example .env.local   # vul je Discord gegevens in
 npm run dev                  # http://localhost:3000
 ```
 
-Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeldcijfers en het klantportaal heeft een demo-login.
+Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeldcijfers en het klantportaal toont voorbeeldprojecten.
 
 ## Pagina's
 
@@ -35,7 +35,23 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `SESSION_SECRET` | Ondertekent de sessie-cookie (verplicht in productie) |
 | `DISCORD_CONTACT_WEBHOOK_URL` | Optioneel: offerte-aanvragen worden als embed in dit kanaal gepost |
 
-De projecten en tickets in het klantportaal komen uit `lib/portal.ts` (mockdata). Koppel daar je eigen database of CRM aan, op basis van het Discord user-id.
+## Database (klantportaal)
+
+Het klantportaal gebruikt Prisma met PostgreSQL. Klanten worden herkend aan hun Discord user-id, zodat de OAuth2-login direct de juiste projecten en tickets ophaalt.
+
+```bash
+# lokale database, bijvoorbeeld via Docker
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16
+
+# zet DATABASE_URL in .env.local, daarna:
+npm run db:push                                   # schema naar de database
+SEED_DISCORD_ID=<jouw-discord-id> npm run db:seed # voorbeeldklant aanmaken
+npm run db:studio                                 # data bekijken en bewerken
+```
+
+Het schema staat in `prisma/schema.prisma` en kent drie modellen: `Customer`, `Project` en `Ticket`.
+
+Het portaal blijft werken zonder database. Is `DATABASE_URL` niet gezet, is de database onbereikbaar, of wordt de demo-login gebruikt, dan toont het portaal voorbeeldgegevens met een melding erbij. Logt iemand in wiens Discord-account nog niet aan een klant is gekoppeld, dan ziet die een lege staat in plaats van andermans gegevens.
 
 ## Structuur
 
@@ -47,6 +63,7 @@ components/
   sections/          Hero, CoreServices, PortfolioGrid, DiscordWidget, QuoteForm, ...
   portal/            LoginCard, Dashboard
   ui/                Button (cva), Card, Badge, Select (Radix), SectionHeading, ...
-lib/                 data, Discord API, sessie/OAuth helpers, formuliervalidatie
+lib/                 data, Discord API, sessie/OAuth helpers, formuliervalidatie, Prisma client
+prisma/              schema.prisma en seed.ts
 tailwind.config.ts   kleuren, fonts, glow-shadows, keyframes
 ```

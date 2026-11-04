@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Clock, FolderKanban, LifeBuoy, LogOut, Plus, Ticket } from "lucide-react";
+import { CheckCircle2, Clock, FolderKanban, Info, LifeBuoy, LogOut, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -14,6 +14,8 @@ interface DashboardProps {
   user: { name: string; avatar: string | null; demo?: boolean };
   projects: PortalProject[];
   tickets: PortalTicket[];
+  /** False when these are demo records rather than this customer's own data. */
+  live: boolean;
 }
 
 const projectStatusStyle: Record<ProjectStatus, string> = {
@@ -33,7 +35,7 @@ const priorityStyle: Record<TicketPriority, string> = {
   Hoog: "text-rose-300",
 };
 
-export function Dashboard({ user, projects, tickets }: DashboardProps) {
+export function Dashboard({ user, projects, tickets, live }: DashboardProps) {
   const [tab, setTab] = useState<"projects" | "tickets">("projects");
 
   const kpis = [
@@ -69,6 +71,26 @@ export function Dashboard({ user, projects, tickets }: DashboardProps) {
             </form>
           </div>
         </div>
+
+        {!live && (
+          <p className="mt-8 flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+            <Info className="mt-0.5 size-4 shrink-0" />
+            <span>
+              Je ziet voorbeeldgegevens. Zodra er een database is gekoppeld en je Discord-account aan een klant is
+              verbonden, verschijnen hier je eigen projecten en tickets.
+            </span>
+          </p>
+        )}
+
+        {live && projects.length === 0 && tickets.length === 0 && (
+          <p className="mt-8 flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
+            <Info className="mt-0.5 size-4 shrink-0 text-brand-400" />
+            <span>
+              Er staan nog geen projecten op je account. Heb je net een opdracht gegeven, neem dan contact op zodat we
+              je account koppelen.
+            </span>
+          </p>
+        )}
 
         {/* KPIs */}
         <Stagger className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -138,10 +160,14 @@ export function Dashboard({ user, projects, tickets }: DashboardProps) {
                         </div>
                       </Td>
                       <Td>
-                        <span className="inline-flex items-center gap-1.5 text-zinc-400">
-                          <Clock className="size-3.5" />
-                          {new Date(p.deadline).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
-                        </span>
+                        {p.deadline ? (
+                          <span className="inline-flex items-center gap-1.5 text-zinc-400">
+                            <Clock className="size-3.5" />
+                            {new Date(p.deadline).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+                          </span>
+                        ) : (
+                          <span className="text-zinc-600">—</span>
+                        )}
                       </Td>
                     </motion.tr>
                   ))}
