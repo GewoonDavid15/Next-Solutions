@@ -20,10 +20,13 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | --- | --- |
 | `/` | Hero met typewriter en zwevende parallax-elementen, live teller, kerndiensten, werkwijze, CTA |
 | `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
-| `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers) |
+| `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers), filter staat in de URL |
+| `/portfolio/[slug]` | Case per project: uitdaging, aanpak, resultaat, stack, eigen deel-afbeelding |
+| `/over-ons` | Verhaal, waarden, tijdlijn en team |
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
 | `/klantportaal` | Login met Discord OAuth2 (of demo), daarna dashboard met projecten en tickets |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
+| `/privacy`, `/voorwaarden` | Juridische pagina's (voorbeeldteksten, laten nakijken) |
 
 ## Discord integratie
 
@@ -56,6 +59,15 @@ Het portaal blijft werken zonder database. Is `DATABASE_URL` niet gezet, is de d
 ## Live zetten
 
 Zie [DEPLOY.md](./DEPLOY.md) voor het volledige stappenplan naar Vercel, inclusief de environment variables, de Discord redirect-URI en een checklist om na de deploy af te lopen.
+
+## Placeholder-inhoud
+
+Deze onderdelen zijn verzonnen en moeten vervangen worden voordat de site live gaat:
+
+- de negen projecten in `lib/data.ts`, inclusief klantnamen en resultaatcijfers;
+- de teamleden op `/over-ons` en de tijdlijn;
+- de FAQ-antwoorden op `/diensten`;
+- de privacyverklaring en de algemene voorwaarden.
 
 ## Structuur
 

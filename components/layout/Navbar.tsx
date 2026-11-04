@@ -47,7 +47,7 @@ export function Navbar() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "relative rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
+                    "relative whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-colors",
                     isActive(link.href) ? "text-white" : "text-zinc-400 hover:text-white",
                   )}
                 >

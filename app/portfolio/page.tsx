@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { CallToAction } from "@/components/sections/CallToAction";
 import { PortfolioGrid } from "@/components/sections/PortfolioGrid";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -18,7 +19,9 @@ export default function PortfolioPage() {
       />
       <section className="pb-12">
         <div className="container">
-          <PortfolioGrid />
+          <Suspense fallback={<div className="h-96" />}>
+            <PortfolioGrid />
+          </Suspense>
         </div>
       </section>
       <CallToAction />

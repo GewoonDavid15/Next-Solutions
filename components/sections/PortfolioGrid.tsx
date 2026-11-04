@@ -3,7 +3,8 @@
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 import { projectFilters, projects, type ProjectCategory } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { ProjectMockup } from "./ProjectMockup";
@@ -11,7 +12,23 @@ import { ProjectMockup } from "./ProjectMockup";
 type Filter = "all" | ProjectCategory;
 
 export function PortfolioGrid() {
-  const [filter, setFilter] = useState<Filter>("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // The active filter lives in the URL, so a filtered view can be shared and
+  // survives the back button.
+  const requested = searchParams.get("filter");
+  const filter: Filter = projectFilters.some((f) => f.id === requested) ? (requested as Filter) : "all";
+
+  const setFilter = useCallback(
+    (next: Filter) => {
+      const query = next === "all" ? "" : `?filter=${next}`;
+      router.replace(`${pathname}${query}`, { scroll: false });
+    },
+    [router, pathname],
+  );
+
   const visible = projects.filter((p) => filter === "all" || p.category === filter);
 
   return (

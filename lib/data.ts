@@ -432,3 +432,36 @@ export const faq = [
       "Zeker. Alles is modulair. Wil je alleen een logo, alleen een bot of alleen de hosting, dan regelen we dat. Combineer je meerdere diensten, dan stemmen we het ontwerp op elkaar af.",
   },
 ];
+
+export const values = [
+  {
+    title: "Eerlijk over wat kan",
+    text: "Liever een scherpe planning die klopt dan een mooie belofte die we niet halen. Kan iets niet binnen je budget, dan zeggen we dat meteen.",
+  },
+  {
+    title: "Code die blijft staan",
+    text: "We bouwen alsof iemand anders het morgen moet onderhouden. Leesbaar, getest en gedocumenteerd, ook als het sneller kan.",
+  },
+  {
+    title: "Korte lijnen",
+    text: "Geen ticketsysteem waar je in verdwijnt. Je praat rechtstreeks met de mensen die aan je project werken, via je eigen kanaal in onze Discord.",
+  },
+  {
+    title: "Gebouwd voor communities",
+    text: "We komen zelf uit de wereld van Discord servers en game communities. We weten wat spelers verwachten en waar ze op afhaken.",
+  },
+];
+
+export const timeline = [
+  { year: "2021", title: "Begonnen als hobby", text: "Twee vrienden bouwen Discord bots voor hun eigen server. De eerste vragen van buitenaf komen binnen." },
+  { year: "2023", title: "Eerste betaalde opdrachten", text: "Een vaste stroom klanten uit de FiveM- en Minecraft-wereld. Het team groeit naar vier mensen." },
+  { year: "2025", title: "Next Solutions", text: "De drie afdelingen worden opgezet: Software, Game Development en Media, met een eigen klantportaal." },
+  { year: "2026", title: "Waar we nu staan", text: "Een community van duizenden leden en honderden opgeleverde projecten." },
+];
+
+export const team = [
+  { name: "Davey", role: "Founder & Lead Developer", focus: "Software", initial: "D", gradient: "from-violet-500 to-indigo-600" },
+  { name: "Sem", role: "Game Developer", focus: "Game", initial: "S", gradient: "from-fuchsia-500 to-purple-600" },
+  { name: "Noor", role: "Designer", focus: "Media", initial: "N", gradient: "from-purple-500 to-pink-500" },
+  { name: "Tim", role: "Backend Developer", focus: "Software", initial: "T", gradient: "from-indigo-500 to-violet-600" },
+];
