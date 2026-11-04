@@ -41,7 +41,7 @@ export function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <Logo />
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-1 xl:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
@@ -71,7 +71,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="xl:hidden"
               aria-label={open ? "Menu sluiten" : "Menu openen"}
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
@@ -88,7 +88,7 @@ export function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden lg:hidden"
+              className="overflow-hidden xl:hidden"
             >
               <div className="flex flex-col gap-1 pb-2 pt-4">
                 {navLinks.map((link, i) => (

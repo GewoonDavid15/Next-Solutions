@@ -4,6 +4,7 @@ import { FadeUp } from "@/components/motion/FadeUp";
 import { QuoteForm } from "@/components/sections/QuoteForm";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { departmentForPackage } from "@/lib/pricing";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -17,7 +18,11 @@ const channels = [
   { icon: Clock, title: "Reactietijd", text: "Gemiddeld binnen 24 uur", href: undefined },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string }> }) {
+  // Arriving from a package on /prijzen preselects the matching department.
+  const { pakket } = await searchParams;
+  const initialDepartment = departmentForPackage(pakket);
+
   return (
     <>
       <PageHeader
@@ -28,7 +33,7 @@ export default function ContactPage() {
       <section className="pb-12">
         <div className="container grid gap-8 lg:grid-cols-3">
           <FadeUp className="lg:col-span-2">
-            <QuoteForm />
+            <QuoteForm initialDepartment={initialDepartment} />
           </FadeUp>
           <FadeUp delay={0.15} className="space-y-4">
             {channels.map(({ icon: Icon, title, text, href }) => {
