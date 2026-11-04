@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { Prisma, TicketPriority } from "@prisma/client";
 import { hasDatabase, prisma } from "@/lib/db";
+import { notifyNewTicket } from "@/lib/notify";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
 import { getSession } from "@/lib/session";
 
@@ -72,7 +73,7 @@ export async function createTicket(_prev: TicketFormState, formData: FormData): 
   try {
     const customer = await prisma.customer.findUnique({
       where: { discordId: session.id },
-      select: { id: true, projects: { select: { id: true, reference: true } } },
+      select: { id: true, name: true, projects: { select: { id: true, reference: true } } },
     });
     if (!customer) {
       return { status: "error", message: "Je Discord-account is nog niet aan een klant gekoppeld. Neem contact met ons op." };
@@ -92,7 +93,9 @@ export async function createTicket(_prev: TicketFormState, formData: FormData): 
             projectId: project?.id ?? null,
           },
         });
+        await notifyNewTicket(created, customer.name, project?.reference);
         revalidatePath("/klantportaal");
+        revalidatePath("/beheer");
         return {
           status: "success",
           reference: created.reference,

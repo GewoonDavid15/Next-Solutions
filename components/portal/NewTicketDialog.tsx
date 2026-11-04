@@ -78,11 +78,11 @@ export function NewTicketDialog({ projects, disabled }: { projects: PortalProjec
 
             <DialogPrimitive.Content asChild>
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 16 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97, y: 8 }}
+                initial={{ opacity: 0, scale: 0.95, x: "-50%", y: "-46%" }}
+                animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+                exit={{ opacity: 0, scale: 0.97, x: "-50%", y: "-48%" }}
                 transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="fixed left-1/2 top-1/2 z-[85] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-ink-800/95 p-6 shadow-glow-lg backdrop-blur-xl sm:p-8"
+                className="fixed left-1/2 top-1/2 max-h-[90svh] overflow-y-auto z-[85] w-[calc(100%-2rem)] max-w-lg rounded-3xl border border-white/10 bg-ink-800/95 p-6 shadow-glow-lg backdrop-blur-xl sm:p-8"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
