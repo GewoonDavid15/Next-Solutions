@@ -53,6 +53,10 @@ Het schema staat in `prisma/schema.prisma` en kent drie modellen: `Customer`, `P
 
 Het portaal blijft werken zonder database. Is `DATABASE_URL` niet gezet, is de database onbereikbaar, of wordt de demo-login gebruikt, dan toont het portaal voorbeeldgegevens met een melding erbij. Logt iemand in wiens Discord-account nog niet aan een klant is gekoppeld, dan ziet die een lege staat in plaats van andermans gegevens.
 
+## Live zetten
+
+Zie [DEPLOY.md](./DEPLOY.md) voor het volledige stappenplan naar Vercel, inclusief de environment variables, de Discord redirect-URI en een checklist om na de deploy af te lopen.
+
 ## Structuur
 
 ```
@@ -64,6 +68,7 @@ components/
   portal/            LoginCard, Dashboard
   ui/                Button (cva), Card, Badge, Select (Radix), SectionHeading, ...
 lib/                 data, Discord API, sessie/OAuth helpers, formuliervalidatie, Prisma client
-prisma/              schema.prisma en seed.ts
+prisma/              schema.prisma, migraties en seed.ts
+scripts/             prebuild.mjs (draait migraties voor de build)
 tailwind.config.ts   kleuren, fonts, glow-shadows, keyframes
 ```
