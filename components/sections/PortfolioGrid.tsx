@@ -1,0 +1,78 @@
+"use client";
+
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { useState } from "react";
+import { projectFilters, projects, type ProjectCategory } from "@/lib/data";
+import { cn } from "@/lib/utils";
+import { ProjectMockup } from "./ProjectMockup";
+
+type Filter = "all" | ProjectCategory;
+
+export function PortfolioGrid() {
+  const [filter, setFilter] = useState<Filter>("all");
+  const visible = projects.filter((p) => filter === "all" || p.category === filter);
+
+  return (
+    <LayoutGroup>
+      <div role="tablist" aria-label="Filter projecten" className="mx-auto mb-12 flex w-fit flex-wrap justify-center gap-1 rounded-2xl glass p-1.5">
+        {projectFilters.map((f) => {
+          const active = filter === f.id;
+          return (
+            <button
+              key={f.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setFilter(f.id)}
+              className={cn(
+                "relative rounded-xl px-5 py-2.5 font-display text-sm font-medium transition-colors",
+                active ? "text-white" : "text-zinc-400 hover:text-white",
+              )}
+            >
+              {active && (
+                <motion.span
+                  layoutId="filter-pill"
+                  className="absolute inset-0 -z-10 rounded-xl bg-brand-gradient shadow-glow"
+                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                />
+              )}
+              {f.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Masonry: CSS columns keep varying heights tightly packed. */}
+      <motion.div layout className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+        <AnimatePresence mode="popLayout">
+          {visible.map((project) => (
+            <motion.article
+              key={project.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+              className="group mb-6 break-inside-avoid overflow-hidden rounded-3xl glass transition-shadow duration-300 hover:border-brand-500/40 hover:shadow-glow-lg"
+            >
+              <ProjectMockup project={project} />
+              <div className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold">{project.title}</h3>
+                  <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs capitalize text-zinc-400">{project.category}</span>
+                </div>
+                <p className="mt-1 text-sm text-zinc-500">{project.client}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {project.tags.map((t) => (
+                    <span key={t} className="rounded-lg border border-brand-500/20 bg-brand-600/10 px-2 py-0.5 text-xs text-brand-200">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </LayoutGroup>
+  );
+}

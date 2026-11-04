@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    @apply scroll-smooth bg-ink antialiased;
+  }
+  body {
+    @apply min-h-screen bg-ink font-sans text-zinc-300 selection:bg-brand-600/40 selection:text-white;
+    background-image:
+      radial-gradient(60rem 40rem at 10% -10%, rgba(124, 58, 237, 0.12), transparent 60%),
+      radial-gradient(50rem 40rem at 110% 20%, rgba(15, 23, 42, 0.9), transparent 70%),
+      linear-gradient(180deg, #09090b 0%, #0f172a 45%, #09090b 100%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-white;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-ink;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply border border-white/10 bg-white/[0.03] shadow-glass backdrop-blur-xl;
+  }
+  .text-gradient {
+    @apply bg-gradient-to-r from-brand-400 via-brand-600 to-fuchsia-500 bg-clip-text text-transparent;
+  }
+  .section {
+    @apply py-20 sm:py-28;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
