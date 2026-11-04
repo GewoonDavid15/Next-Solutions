@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Clock, FolderKanban, Info, LifeBuoy, LogOut, Plus, Ticket } from "lucide-react";
+import { CheckCircle2, Clock, FolderKanban, Info, LogOut, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
+import { NewTicketDialog } from "@/components/portal/NewTicketDialog";
 import { Button } from "@/components/ui/Button";
 import type { PortalProject, PortalTicket, ProjectStatus, TicketPriority, TicketStatus } from "@/lib/portal";
 import { cn } from "@/lib/utils";
@@ -124,9 +125,7 @@ export function Dashboard({ user, projects, tickets, live }: DashboardProps) {
                 </button>
               ))}
             </div>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-              <LifeBuoy /> Support
-            </Button>
+            <NewTicketDialog projects={projects} disabled={!live} />
           </div>
 
           <div className="overflow-x-auto">
@@ -138,6 +137,13 @@ export function Dashboard({ user, projects, tickets, live }: DashboardProps) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
+                  {projects.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-zinc-500">
+                        Er staan nog geen projecten op je account.
+                      </td>
+                    </tr>
+                  )}
                   {projects.map((p, i) => (
                     <motion.tr key={p.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="transition-colors hover:bg-white/[0.02]">
                       <Td>
@@ -181,6 +187,13 @@ export function Dashboard({ user, projects, tickets, live }: DashboardProps) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
+                  {tickets.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-zinc-500">
+                        Je hebt nog geen tickets. Loop je ergens tegenaan? Maak er een aan.
+                      </td>
+                    </tr>
+                  )}
                   {tickets.map((t, i) => (
                     <motion.tr key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="transition-colors hover:bg-white/[0.02]">
                       <Td className="font-mono text-xs text-zinc-400">{t.id}</Td>

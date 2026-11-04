@@ -1,4 +1,6 @@
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
 import {
   budgetOptions,
   departmentOptions,
@@ -8,6 +10,10 @@ import {
   validateStep,
   type QuoteRequest,
 } from "@/lib/contact";
+
+/** Five quote requests per IP per hour: enough for a retry, not for spamming the webhook. */
+const LIMIT = 5;
+const WINDOW_MS = 60 * 60 * 1000;
 
 export async function POST(request: Request) {
   let body: Partial<QuoteRequest>;
@@ -30,6 +36,15 @@ export async function POST(request: Request) {
 
   const errors = { ...validateStep(0, data), ...validateStep(1, data), ...validateStep(2, data) };
   if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
+
+  // Counted only once the form is valid, so a typo does not cost an attempt.
+  const limit = rateLimit(clientKey(await headers(), "contact"), LIMIT, WINDOW_MS);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "Je hebt net al een aanvraag verstuurd. Probeer het over een uur opnieuw, of neem contact op via Discord." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } },
+    );
+  }
 
   const webhook = process.env.DISCORD_CONTACT_WEBHOOK_URL;
   if (webhook) {
