@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
+import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
+import { FaqSchema } from "@/components/StructuredData";
 import { CallToAction } from "@/components/sections/CallToAction";
 import { Card } from "@/components/ui/Card";
+import { FaqAccordion } from "@/components/ui/Accordion";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { departments, services } from "@/lib/data";
+import { departments, faq, services } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -16,6 +19,7 @@ export const metadata: Metadata = {
 export default function DienstenPage() {
   return (
     <>
+      <FaqSchema />
       <PageHeader
         eyebrow="Onze diensten"
         title={<>Alles wat je nodig hebt om te <span className="text-gradient">groeien</span></>}
@@ -71,6 +75,19 @@ export default function DienstenPage() {
           </section>
         );
       })}
+
+      <section className="section">
+        <div className="container max-w-3xl">
+          <SectionHeading
+            eyebrow="Veelgestelde vragen"
+            title="Goed om te weten"
+            description="Staat je vraag er niet tussen? Stel hem gerust in onze Discord."
+          />
+          <FadeUp>
+            <FaqAccordion items={faq} />
+          </FadeUp>
+        </div>
+      </section>
 
       <CallToAction title={<>Niet gevonden wat je zoekt?</>} description="We bouwen ook volledig maatwerk. Vertel ons wat je in gedachten hebt." />
     </>

@@ -183,3 +183,36 @@ export const process = [
   { step: "03", title: "Bouwen", text: "We bouwen in sprints. Via het klantportaal volg je elke stap live mee." },
   { step: "04", title: "Lancering", text: "Oplevering, deployment en nazorg. We blijven bereikbaar voor support." },
 ];
+
+export const faq = [
+  {
+    question: "Hoe lang duurt een gemiddeld project?",
+    answer:
+      "Een Discord bot of FiveM script staat er meestal binnen één tot twee weken. Een complete website rekenen we op drie tot zes weken, afhankelijk van de omvang en hoe snel we content en feedback ontvangen. Bij de offerte krijg je altijd een concrete planning.",
+  },
+  {
+    question: "Wat kost het precies?",
+    answer:
+      "Op de dienstenpagina staan richtprijzen per dienst. Na een korte kennismaking krijg je een vaste prijs, zodat je nooit voor verrassingen komt te staan. Grotere projecten splitsen we op in fases met een eigen deelbedrag.",
+  },
+  {
+    question: "Blijf ik eigenaar van de code?",
+    answer:
+      "Ja. Na de laatste betaling is alle code en het ontwerp van jou, inclusief de repository. Bij FiveM scripts kun je kiezen voor escrow-beveiliging als je het werk zelf gaat doorverkopen.",
+  },
+  {
+    question: "Bieden jullie ook onderhoud aan na de oplevering?",
+    answer:
+      "Dat kan. Je krijgt standaard dertig dagen nazorg op bugs. Daarna kun je een onderhoudsabonnement afnemen voor updates, monitoring, backups en support via onze Discord.",
+  },
+  {
+    question: "Hoe verloopt de communicatie tijdens het project?",
+    answer:
+      "Het grootste deel loopt via een eigen kanaal in onze Discord, zodat je ons direct kunt bereiken. In het klantportaal zie je daarnaast de status van je project en je openstaande tickets.",
+  },
+  {
+    question: "Kan ik ook losse onderdelen afnemen?",
+    answer:
+      "Zeker. Alles is modulair. Wil je alleen een logo, alleen een bot of alleen de hosting, dan regelen we dat. Combineer je meerdere diensten, dan stemmen we het ontwerp op elkaar af.",
+  },
+];

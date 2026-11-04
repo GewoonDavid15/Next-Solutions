@@ -57,6 +57,14 @@ const config: Config = {
           "100%": { transform: "scale(1.6)", opacity: "0" },
         },
         blink: { "0%, 100%": { opacity: "1" }, "50%": { opacity: "0" } },
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
       },
       animation: {
         "gradient-x": "gradient-x 8s ease infinite",
@@ -65,6 +73,8 @@ const config: Config = {
         "pulse-glow": "pulse-glow 2.4s ease-in-out infinite",
         "ping-slow": "ping-slow 2s cubic-bezier(0,0,0.2,1) infinite",
         blink: "blink 1s step-end infinite",
+        "accordion-down": "accordion-down 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+        "accordion-up": "accordion-up 0.25s cubic-bezier(0.22, 1, 0.36, 1)",
       },
     },
   },
