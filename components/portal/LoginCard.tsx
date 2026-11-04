@@ -26,7 +26,7 @@ export function LoginCard({ error, oauthEnabled }: { error?: string; oauthEnable
           </div>
           <h1 className="mt-6 text-center text-3xl font-semibold">Klantportaal</h1>
           <p className="mt-2 text-center text-sm text-zinc-400">
-            Log in met je Discord account om je projecten, facturen en tickets te bekijken.
+            Log in met je Discord account om je projecten, tickets en bugmeldingen te bekijken.
           </p>
 
           {error && errors[error] && (
