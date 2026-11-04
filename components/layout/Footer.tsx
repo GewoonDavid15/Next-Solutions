@@ -68,8 +68,8 @@ export function Footer() {
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 text-xs text-zinc-500 sm:flex-row">
           <p>© {new Date().getFullYear()} {site.name}. Alle rechten voorbehouden.</p>
           <div className="flex gap-6">
-            <Link href="/contact" className="hover:text-zinc-300">Privacy</Link>
-            <Link href="/contact" className="hover:text-zinc-300">Voorwaarden</Link>
+            <Link href="/privacy" className="hover:text-zinc-300">Privacy</Link>
+            <Link href="/voorwaarden" className="hover:text-zinc-300">Voorwaarden</Link>
           </div>
         </div>
 

@@ -143,6 +143,7 @@ export type ProjectCategory = "bots" | "websites" | "servers";
 
 export interface Project {
   id: number;
+  slug: string;
   title: string;
   client: string;
   category: ProjectCategory;
@@ -150,6 +151,14 @@ export interface Project {
   /** Relative height for the masonry mockup */
   size: "sm" | "md" | "lg";
   accent: string;
+  /** Case study content for /portfolio/[slug] */
+  year: number;
+  duration: string;
+  summary: string;
+  challenge: string;
+  solution: string;
+  results: { label: string; value: string }[];
+  stack: string[];
 }
 
 export const projectFilters: { id: "all" | ProjectCategory; label: string }[] = [
@@ -160,15 +169,222 @@ export const projectFilters: { id: "all" | ProjectCategory; label: string }[] = 
 ];
 
 export const projects: Project[] = [
-  { id: 1, title: "Aurora Ticket Bot", client: "Aurora RP", category: "bots", tags: ["Discord.js", "Postgres"], size: "md", accent: "from-violet-600 to-indigo-600" },
-  { id: 2, title: "Pixel Studio", client: "Pixel Media", category: "websites", tags: ["Next.js", "Framer"], size: "lg", accent: "from-fuchsia-600 to-purple-700" },
-  { id: 3, title: "Skyline Network", client: "Skyline MC", category: "servers", tags: ["Velocity", "Paper"], size: "sm", accent: "from-emerald-500 to-teal-600" },
-  { id: 4, title: "Nova Economy", client: "Nova Community", category: "bots", tags: ["Python", "Redis"], size: "sm", accent: "from-purple-600 to-pink-600" },
-  { id: 5, title: "Velocity Garage", client: "City Life RP", category: "servers", tags: ["FiveM", "QBCore"], size: "lg", accent: "from-orange-500 to-rose-600" },
-  { id: 6, title: "Lumen Dashboard", client: "Lumen SaaS", category: "websites", tags: ["React", "tRPC"], size: "md", accent: "from-sky-500 to-indigo-600" },
-  { id: 7, title: "Guardian Mod", client: "Esports NL", category: "bots", tags: ["TypeScript", "AI"], size: "lg", accent: "from-violet-500 to-fuchsia-600" },
-  { id: 8, title: "Craftopia Survival", client: "Craftopia", category: "servers", tags: ["Spigot", "Custom"], size: "md", accent: "from-lime-500 to-emerald-600" },
-  { id: 9, title: "Orbit Landing", client: "Orbit Labs", category: "websites", tags: ["Next.js", "Tailwind"], size: "sm", accent: "from-indigo-500 to-violet-700" },
+  {
+    id: 1,
+    slug: "aurora-ticket-bot",
+    title: "Aurora Ticket Bot",
+    client: "Aurora RP",
+    category: "bots",
+    tags: ["Discord.js", "Postgres"],
+    size: "md",
+    accent: "from-violet-600 to-indigo-600",
+    year: 2026,
+    duration: "3 weken",
+    summary:
+      "Een ticketsysteem waarmee een roleplay-community van duizenden leden support afhandelt zonder het overzicht te verliezen.",
+    challenge:
+      "Supportvragen kwamen binnen via DM's en losse kanalen. Niets was terug te vinden, meerdere staffleden werkten langs elkaar heen en er was geen zicht op hoe lang iemand op antwoord wachtte.",
+    solution:
+      "Een bot die per vraag een eigen kanaal opent met de juiste rollen, categorieën en een transcript bij sluiting. Staff ziet in een dashboard de wachttijden, en terugkerende vragen worden afgevangen met knoppen in plaats van tekst.",
+    results: [
+      { label: "Gemiddelde reactietijd", value: "15 min" },
+      { label: "Tickets per maand", value: "900+" },
+      { label: "Handmatig werk", value: "-60%" },
+    ],
+    stack: ["Discord.js", "TypeScript", "PostgreSQL", "Docker"],
+  },
+  {
+    id: 2,
+    slug: "pixel-studio",
+    title: "Pixel Studio",
+    client: "Pixel Media",
+    category: "websites",
+    tags: ["Next.js", "Framer"],
+    size: "lg",
+    accent: "from-fuchsia-600 to-purple-700",
+    year: 2026,
+    duration: "5 weken",
+    summary:
+      "Portfoliosite voor een mediastudio, waarin het werk zelf de hoofdrol speelt in plaats van de tekst eromheen.",
+    challenge:
+      "De oude site was een trage pagina-bouwer vol plugins. Laden duurde seconden, beheer was omslachtig en op mobiel viel de opmaak uit elkaar.",
+    solution:
+      "Een nieuwe site in Next.js met een headless CMS, zodat de studio zelf cases toevoegt. Beelden worden automatisch geoptimaliseerd en animaties zijn bewust licht gehouden, zodat het werk opvalt en niet de effecten.",
+    results: [
+      { label: "Lighthouse performance", value: "98" },
+      { label: "Laadtijd", value: "0,8 s" },
+      { label: "Aanvragen", value: "+40%" },
+    ],
+    stack: ["Next.js", "Tailwind CSS", "Framer Motion", "Sanity"],
+  },
+  {
+    id: 3,
+    slug: "skyline-network",
+    title: "Skyline Network",
+    client: "Skyline MC",
+    category: "servers",
+    tags: ["Velocity", "Paper"],
+    size: "sm",
+    accent: "from-emerald-500 to-teal-600",
+    year: 2025,
+    duration: "4 weken",
+    summary:
+      "Een Minecraft-netwerk waarin spelers tussen gamemodes springen zonder ooit een verbinding te verliezen.",
+    challenge:
+      "Losse servers betekenden losse werelden: spelers moesten opnieuw inloggen, ranks en balansen liepen uiteen en bij meer dan honderd spelers liep de tickrate onderuit.",
+    solution:
+      "Een Velocity-proxy voor de hele vloot, met gedeelde data in een centrale database en een eigen plugin die ranks en economie synchroniseert. Daarnaast tuning van de Paper-configuratie en een anti-cheat die op elke backend meeluistert.",
+    results: [
+      { label: "Tickrate bij piek", value: "20 TPS" },
+      { label: "Gelijktijdige spelers", value: "450" },
+      { label: "Uptime", value: "99,9%" },
+    ],
+    stack: ["Velocity", "Paper", "Java", "Redis", "MariaDB"],
+  },
+  {
+    id: 4,
+    slug: "nova-economy",
+    title: "Nova Economy",
+    client: "Nova Community",
+    category: "bots",
+    tags: ["Python", "Redis"],
+    size: "sm",
+    accent: "from-purple-600 to-pink-600",
+    year: 2025,
+    duration: "2 weken",
+    summary:
+      "Een economiebot die een community actief houdt met dagelijkse beloningen, een winkel en een ranglijst.",
+    challenge:
+      "De server was stil buiten events om. Er was geen reden om dagelijks terug te komen en geen manier om actieve leden te belonen.",
+    solution:
+      "Een bot met valuta, dagelijkse streaks, een winkel voor rollen en kleuren, en seizoensgebonden ranglijsten. Alle saldi draaien via Redis, zodat ook tijdens drukke events niets vastloopt.",
+    results: [
+      { label: "Dagelijks actieve leden", value: "+35%" },
+      { label: "Berichten per dag", value: "+1.200" },
+      { label: "Commands per dag", value: "4.000" },
+    ],
+    stack: ["Python", "discord.py", "Redis", "PostgreSQL"],
+  },
+  {
+    id: 5,
+    slug: "velocity-garage",
+    title: "Velocity Garage",
+    client: "City Life RP",
+    category: "servers",
+    tags: ["FiveM", "QBCore"],
+    size: "lg",
+    accent: "from-orange-500 to-rose-600",
+    year: 2026,
+    duration: "3 weken",
+    summary:
+      "Een garagesysteem voor FiveM waarin spelers hun voertuigen beheren, opslaan en upgraden via een eigen interface.",
+    challenge:
+      "Het bestaande garagescript kostte bij elke spawn merkbaar prestatie en liet voertuigen soms verdwijnen. De interface was bovendien niet te rijmen met de huisstijl van de server.",
+    solution:
+      "Een herschreven resource op QBCore met een eigen NUI, waarin voertuigen per garage worden getoond met staat, schade en opslagkosten. Queries draaien asynchroon en de resource komt in rust niet boven 0.00ms uit.",
+    results: [
+      { label: "Resmon in rust", value: "0.00 ms" },
+      { label: "Verloren voertuigen", value: "0" },
+      { label: "Laadtijd garage", value: "<200 ms" },
+    ],
+    stack: ["Lua", "QBCore", "MySQL", "React (NUI)"],
+  },
+  {
+    id: 6,
+    slug: "lumen-dashboard",
+    title: "Lumen Dashboard",
+    client: "Lumen SaaS",
+    category: "websites",
+    tags: ["React", "tRPC"],
+    size: "md",
+    accent: "from-sky-500 to-indigo-600",
+    year: 2026,
+    duration: "7 weken",
+    summary:
+      "Een analytics-dashboard waarin klanten hun verbruik, facturen en teamleden op één plek beheren.",
+    challenge:
+      "Klantgegevens stonden verspreid over een adminpaneel, losse exports en e-mail. Elke vraag over verbruik kwam bij support terecht.",
+    solution:
+      "Een self-service dashboard met grafieken per periode, facturen om te downloaden en rollenbeheer per team. Type-veilig van database tot interface via tRPC, zodat een wijziging in het datamodel meteen zichtbaar is in de code.",
+    results: [
+      { label: "Supportvragen", value: "-45%" },
+      { label: "Tijd tot inzicht", value: "2 klikken" },
+      { label: "Teams in gebruik", value: "120" },
+    ],
+    stack: ["React", "tRPC", "Prisma", "PostgreSQL"],
+  },
+  {
+    id: 7,
+    slug: "guardian-mod",
+    title: "Guardian Mod",
+    client: "Esports NL",
+    category: "bots",
+    tags: ["TypeScript", "AI"],
+    size: "lg",
+    accent: "from-violet-500 to-fuchsia-600",
+    year: 2026,
+    duration: "4 weken",
+    summary:
+      "Een moderatiebot die spam en scamlinks tegenhoudt voordat een menselijke moderator ze ziet.",
+    challenge:
+      "Tijdens toernooien groeide de server sneller dan het moderatieteam aankon. Scamlinks en spamgolven bleven minutenlang staan, precies wanneer het druk was.",
+    solution:
+      "Een bot die berichten beoordeelt op inhoud, linkreputatie en het gedrag van het account. Twijfelgevallen gaan naar een wachtrij voor moderators in plaats van direct verwijderd te worden, met een logboek waarin elke beslissing terug te zien is.",
+    results: [
+      { label: "Scamlinks tegengehouden", value: "99,2%" },
+      { label: "Reactietijd", value: "<1 s" },
+      { label: "Onterechte acties", value: "0,3%" },
+    ],
+    stack: ["TypeScript", "Discord.js", "Cloudflare Workers"],
+  },
+  {
+    id: 8,
+    slug: "craftopia-survival",
+    title: "Craftopia Survival",
+    client: "Craftopia",
+    category: "servers",
+    tags: ["Spigot", "Custom"],
+    size: "md",
+    accent: "from-lime-500 to-emerald-600",
+    year: 2025,
+    duration: "6 weken",
+    summary:
+      "Een survivalserver met eigen mechanics: skills, quests en een spelersmarkt die de economie in balans houdt.",
+    challenge:
+      "Standaard survival was na een week uitgespeeld. Spelers haakten af zodra ze alles hadden, en de economie liep leeg door onbeperkte verkoop aan de server.",
+    solution:
+      "Een eigen plugin met skills die je traint door te spelen, quests die meegroeien met je voortgang, en een markt waarop spelers onderling handelen in plaats van met een bodemloze shop.",
+    results: [
+      { label: "Spelers na 30 dagen", value: "+70%" },
+      { label: "Gemiddelde sessie", value: "85 min" },
+      { label: "Quests voltooid", value: "25.000" },
+    ],
+    stack: ["Java", "Spigot", "MySQL"],
+  },
+  {
+    id: 9,
+    slug: "orbit-landing",
+    title: "Orbit Landing",
+    client: "Orbit Labs",
+    category: "websites",
+    tags: ["Next.js", "Tailwind"],
+    size: "sm",
+    accent: "from-indigo-500 to-violet-700",
+    year: 2026,
+    duration: "2 weken",
+    summary:
+      "Een landingspagina voor een productlancering, gebouwd om bezoekers om te zetten in aanmeldingen.",
+    challenge:
+      "De lancering stond over twee weken gepland en er was nog geen pagina. Het verhaal moest in één scroll duidelijk zijn, ook voor wie het product nog nooit had gezien.",
+    solution:
+      "Eén pagina met een heldere opbouw: wat het is, voor wie, en wat het kost. Het aanmeldformulier staat bovenaan en keert onderaan terug, met A/B-tests op de kop en de knoptekst.",
+    results: [
+      { label: "Conversie", value: "8,4%" },
+      { label: "Aanmeldingen week 1", value: "2.100" },
+      { label: "Opgeleverd in", value: "11 dagen" },
+    ],
+    stack: ["Next.js", "Tailwind CSS", "Vercel Analytics"],
+  },
 ];
 
 export const stats = [

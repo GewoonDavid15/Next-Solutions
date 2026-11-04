@@ -1,6 +1,8 @@
 "use client";
 
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { projectFilters, projects, type ProjectCategory } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -54,21 +56,27 @@ export function PortfolioGrid() {
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               className="group mb-6 break-inside-avoid overflow-hidden rounded-3xl glass transition-shadow duration-300 hover:border-brand-500/40 hover:shadow-glow-lg"
             >
-              <ProjectMockup project={project} />
-              <div className="p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-lg font-semibold">{project.title}</h3>
-                  <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs capitalize text-zinc-400">{project.category}</span>
+              <Link href={`/portfolio/${project.slug}`} className="block">
+                <ProjectMockup project={project} />
+                <div className="p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-lg font-semibold">{project.title}</h3>
+                    <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs capitalize text-zinc-400">{project.category}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-zinc-500">{project.client}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {project.tags.map((t) => (
+                      <span key={t} className="rounded-lg border border-brand-500/20 bg-brand-600/10 px-2 py-0.5 text-xs text-brand-200">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300">
+                    Bekijk case
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                  </span>
                 </div>
-                <p className="mt-1 text-sm text-zinc-500">{project.client}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {project.tags.map((t) => (
-                    <span key={t} className="rounded-lg border border-brand-500/20 bg-brand-600/10 px-2 py-0.5 text-xs text-brand-200">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              </Link>
             </motion.article>
           ))}
         </AnimatePresence>
