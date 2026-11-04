@@ -19,10 +19,12 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | Route | Inhoud |
 | --- | --- |
 | `/` | Hero met typewriter en zwevende parallax-elementen, live teller, kerndiensten, werkwijze, CTA |
-| `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
+| `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover, FAQ |
+| `/prijzen` | Negen pakketten met richtprijzen, levertijden en een FAQ over btw en aanbetalingen |
 | `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers), filter staat in de URL |
 | `/portfolio/[slug]` | Case per project: uitdaging, aanpak, resultaat, stack, eigen deel-afbeelding |
 | `/over-ons` | Verhaal, waarden, tijdlijn en team |
+| `/nieuws` | Artikelen uit `content/blog/*.md`, met overzicht en artikelpagina's |
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
 | `/klantportaal` | Login met Discord OAuth2 (of demo), daarna dashboard met projecten en tickets |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
@@ -37,6 +39,36 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` | OAuth2 app. Redirect URI: `<SITE_URL>/api/auth/discord/callback` |
 | `SESSION_SECRET` | Ondertekent de sessie-cookie (verplicht in productie) |
 | `DISCORD_CONTACT_WEBHOOK_URL` | Optioneel: offerte-aanvragen worden als embed in dit kanaal gepost |
+| `DISCORD_NOTIFY_WEBHOOK_URL` | Optioneel: apart kanaal voor nieuwe tickets en statuswijzigingen |
+| `ADMIN_DISCORD_IDS` | Discord user-ids met toegang tot `/beheer`, komma-gescheiden |
+
+## Beheerpaneel
+
+`/beheer` is het beheergedeelte. Zet je Discord user-id in `ADMIN_DISCORD_IDS` (komma-gescheiden voor meerdere beheerders) en log in met Discord. Je kunt er klanten koppelen, projecten aanmaken, status, voortgang en deadlines bijwerken, en tickets afhandelen.
+
+Wie geen beheerder is, belandt gewoon op het klantportaal. Elke bewerking controleert de rechten opnieuw aan de serverkant, dus de paginabeveiliging staat niet op zichzelf.
+
+## Notificaties
+
+Bij een nieuw ticket en bij statuswijzigingen gaat er een bericht naar je Discord via `DISCORD_NOTIFY_WEBHOOK_URL` (of `DISCORD_CONTACT_WEBHOOK_URL` als die niet is ingevuld). Dit gaat naar je eigen kanaal, niet naar de klant: klanten rechtstreeks een bericht sturen zou een Discord-bot met eigen rechten vragen.
+
+## Nieuws schrijven
+
+Artikelen zijn Markdown-bestanden in `content/blog/`. De bestandsnaam wordt de URL. Bovenaan staat frontmatter:
+
+```markdown
+---
+title: "Titel van het artikel"
+description: "Een zin die in het overzicht en in Google verschijnt."
+date: "2026-10-28"
+author: "Next Solutions"
+category: "Software"
+---
+
+De tekst van je artikel in Markdown.
+```
+
+De leestijd wordt automatisch berekend. Een nieuw bestand verschijnt na de volgende build vanzelf in het overzicht, in de sitemap en met eigen structured data.
 
 ## Database (klantportaal)
 
@@ -79,7 +111,9 @@ components/
   sections/          Hero, CoreServices, PortfolioGrid, DiscordWidget, QuoteForm, ...
   portal/            LoginCard, Dashboard
   ui/                Button (cva), Card, Badge, Select (Radix), SectionHeading, ...
-lib/                 data, Discord API, sessie/OAuth helpers, formuliervalidatie, Prisma client
+  admin/             AdminDashboard, dialogen voor nieuwe klanten en projecten
+lib/                 data, prijzen, blog, Discord API, sessie/OAuth, rate limiting, notificaties
+content/blog/        artikelen als Markdown
 prisma/              schema.prisma, migraties en seed.ts
 scripts/             prebuild.mjs (draait migraties voor de build)
 tailwind.config.ts   kleuren, fonts, glow-shadows, keyframes

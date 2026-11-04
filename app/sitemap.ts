@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { getPosts } from "@/lib/blog";
 import { projects } from "@/lib/data";
 import { navLinks, site } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const pages: MetadataRoute.Sitemap = navLinks
     .filter((l) => l.href !== "/klantportaal")
@@ -27,5 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.3,
   }));
 
-  return [...pages, ...cases, ...legal];
+  const posts: MetadataRoute.Sitemap = (await getPosts()).map((post) => ({
+    url: `${site.url}/nieuws/${post.slug}`,
+    lastModified: post.date ? new Date(post.date) : now,
+    changeFrequency: "yearly",
+    priority: 0.5,
+  }));
+
+  return [...pages, ...cases, ...legal, ...posts];
 }

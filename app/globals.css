@@ -35,6 +35,59 @@
   .section {
     @apply py-20 sm:py-28;
   }
+
+  /* Styling for article HTML produced from Markdown. */
+  .prose-ns {
+    @apply text-base leading-relaxed text-zinc-300;
+  }
+  .prose-ns > * + * {
+    @apply mt-5;
+  }
+  .prose-ns h2 {
+    @apply mt-12 text-2xl font-semibold sm:text-3xl;
+  }
+  .prose-ns h3 {
+    @apply mt-8 text-xl font-semibold;
+  }
+  .prose-ns p {
+    @apply text-zinc-300;
+  }
+  .prose-ns strong {
+    @apply font-semibold text-white;
+  }
+  .prose-ns a {
+    @apply text-brand-300 underline underline-offset-4 transition-colors hover:text-brand-200;
+  }
+  .prose-ns ul {
+    @apply space-y-2.5 pl-1;
+  }
+  .prose-ns li {
+    @apply relative pl-6 text-zinc-300;
+  }
+  .prose-ns ul > li::before {
+    @apply absolute left-0 top-[0.6em] size-1.5 rounded-full bg-brand-500 content-[''];
+  }
+  .prose-ns ol {
+    @apply list-decimal space-y-2.5 pl-6 marker:text-brand-400;
+  }
+  .prose-ns ol > li {
+    @apply pl-1;
+  }
+  .prose-ns code {
+    @apply rounded-md border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[0.9em] text-brand-200;
+  }
+  .prose-ns pre {
+    @apply overflow-x-auto rounded-2xl border border-white/10 bg-ink-900/80 p-4 text-sm;
+  }
+  .prose-ns pre code {
+    @apply border-0 bg-transparent p-0 text-zinc-200;
+  }
+  .prose-ns blockquote {
+    @apply border-l-2 border-brand-500/60 pl-5 italic text-zinc-400;
+  }
+  .prose-ns hr {
+    @apply my-10 border-white/10;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
