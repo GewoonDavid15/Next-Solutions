@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Clock, Mail, MessageCircle } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
+import { CrowdCard } from "@/components/live/CrowdCard";
 import { QuoteForm } from "@/components/sections/QuoteForm";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { getPublicData } from "@/lib/bot-api";
+import { formatMinutes } from "@/lib/live";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -11,13 +14,20 @@ export const metadata: Metadata = {
   description: "Vraag in drie stappen een vrijblijvende offerte aan voor Media, Software of Game Development.",
 };
 
-const channels = [
-  { icon: DiscordIcon, title: "Discord", text: "Open een ticket in onze server", href: site.discordInvite },
-  { icon: Mail, title: "E-mail", text: site.email, href: `mailto:${site.email}` },
-  { icon: Clock, title: "Reactietijd", text: "Gemiddeld binnen 24 uur", href: undefined },
-];
+export const dynamic = "force-dynamic";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  // Live crowd level and response time from the Discord bot (falls back to the static text)
+  const live = await getPublicData();
+  const tickets = live?.tickets ?? null;
+  const responseText = tickets?.reactietijdMs != null ? `Recent ± ${formatMinutes(tickets.reactietijdMs)}` : "Gemiddeld binnen 24 uur";
+
+  const channels = [
+    { icon: DiscordIcon, title: "Discord", text: "Open een ticket in onze server", href: site.discordInvite },
+    { icon: Mail, title: "E-mail", text: site.email, href: `mailto:${site.email}` },
+    { icon: Clock, title: "Reactietijd", text: responseText, href: undefined },
+  ];
+
   return (
     <>
       <PageHeader
@@ -31,6 +41,7 @@ export default function ContactPage() {
             <QuoteForm />
           </FadeUp>
           <FadeUp delay={0.15} className="space-y-4">
+            {tickets && <CrowdCard tickets={tickets} />}
             {channels.map(({ icon: Icon, title, text, href }) => {
               const content = (
                 <>

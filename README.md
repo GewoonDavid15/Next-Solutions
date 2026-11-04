@@ -22,7 +22,9 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
 | `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers) |
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
-| `/klantportaal` | Login met Discord OAuth2 (of demo), daarna dashboard met projecten en tickets |
+| `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets en bugmeldingen uit de bot; de demo toont voorbeelddata |
+| `/status` | Openbare statuspagina: uptime per dienst (24 uur), drukte van support, openingstijden en recente storingen, live uit de bot |
+| `/team` | Teamleden met de staff-rollen uit de bot, met functie, afdelingen en skills |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
 | `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht, instellingen van alle bot-systemen, botstatus, scripts en live console |
 
@@ -39,6 +41,8 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 De projecten en tickets in het klantportaal komen uit `lib/portal.ts` (mockdata). Koppel daar je eigen database of CRM aan, op basis van het Discord user-id.
 
 ## Bot-dashboard
+
+De contactpagina toont de live drukte en reactietijd van support. Zonder gekoppelde bot vallen alle live onderdelen terug op vaste teksten.
 
 `/dashboard` beheert de Discord bot via een kleine API in de bot zelf (`Systeem/dashboard-api.js`). De website stuurt verzoeken door via `app/api/bot/[...pad]` en ondertekent elk verzoek met een HMAC, zodat de sleutel nooit over het netwerk gaat.
 

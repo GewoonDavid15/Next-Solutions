@@ -4,7 +4,7 @@ import { getSession } from "@/lib/session";
 
 /** Endpoints of the bot that the dashboard may reach, per HTTP method. */
 const ALLOWED: Record<string, string[]> = {
-  GET: ["overzicht", "logs", "server", "instellingen", "modules", "modules/code"],
+  GET: ["overzicht", "logs", "server", "instellingen", "modules", "modules/code", "geschiedenis"],
   PUT: ["instellingen", "modules/code"],
   POST: ["instellingen/reset", "modules/status", "acties/herstart"],
   DELETE: ["modules/code"],

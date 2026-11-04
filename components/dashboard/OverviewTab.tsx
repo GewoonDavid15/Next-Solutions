@@ -3,6 +3,7 @@
 import { Bot, Bug, Clock, Cpu, FolderKanban, Gauge, RefreshCw, Server, Ticket, Users } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { Charts } from "@/components/dashboard/Charts";
 import { Loading, Notice, Panel, RestartButton } from "@/components/dashboard/ui";
 import { botApi, formatDuration, type Overview } from "@/lib/dashboard";
 import { cn } from "@/lib/utils";
@@ -135,6 +136,8 @@ export function OverviewTab() {
           </div>
         </Panel>
       </div>
+
+      <Charts />
     </div>
   );
 }

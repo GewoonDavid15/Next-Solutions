@@ -20,6 +20,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  const live: MetadataRoute.Sitemap = ["/team", "/status"].map((href) => ({
+    url: `${site.url}${href}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: 0.5,
+  }));
+
   const legal: MetadataRoute.Sitemap = ["/privacy", "/voorwaarden"].map((href) => ({
     url: `${site.url}${href}`,
     lastModified: now,
@@ -27,5 +34,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.3,
   }));
 
-  return [...pages, ...cases, ...legal];
+  return [...pages, ...live, ...cases, ...legal];
 }
