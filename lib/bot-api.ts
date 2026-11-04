@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash, createHmac } from "crypto";
-import type { ClientData, PublicData } from "@/lib/live";
+import type { ClientData, PublicData, TicketDepartment, Vacancy } from "@/lib/live";
 import type { SessionUser } from "@/lib/session";
 
 /**
@@ -75,4 +75,41 @@ export async function getClientData(userId: string): Promise<ClientData | null> 
   } catch {
     return null;
   }
+}
+
+/** HTML transcript of a closed ticket, only when `userId` owns it. */
+export async function getTranscript(id: string, userId: string): Promise<string | null> {
+  if (!isBotApiConfigured() || !/^\d{17,20}$/.test(id) || !/^\d{17,20}$/.test(userId)) return null;
+  try {
+    const { status, data } = await botRequest("GET", `/transcript?id=${id}&gebruiker=${userId}`);
+    return status === 200 ? ((data as { html?: string }).html ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Ticket departments, so the website form always matches the bot. */
+export async function getTicketDepartments(): Promise<TicketDepartment[]> {
+  if (!isBotApiConfigured()) return [];
+  try {
+    const { status, data } = await botRequest("GET", "/ticket-afdelingen");
+    return status === 200 ? ((data as { afdelingen: TicketDepartment[] }).afdelingen ?? []) : [];
+  } catch {
+    return [];
+  }
+}
+
+let vacancyCache: { t: number; data: Vacancy[] | null } = { t: 0, data: null };
+
+/** Open vacancies from the bot (cached for a minute). null when the bot cannot be reached. */
+export async function getVacancies(): Promise<Vacancy[] | null> {
+  if (!isBotApiConfigured()) return null;
+  if (Date.now() - vacancyCache.t < 60_000) return vacancyCache.data;
+  try {
+    const { status, data } = await botRequest("GET", "/vacatures");
+    vacancyCache = { t: Date.now(), data: status === 200 ? (data as { vacatures: Vacancy[] }).vacatures : null };
+  } catch {
+    vacancyCache = { t: Date.now() - 50_000, data: null };
+  }
+  return vacancyCache.data;
 }

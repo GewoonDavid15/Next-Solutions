@@ -22,11 +22,13 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
 | `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers) |
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
-| `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets en bugmeldingen uit de bot; de demo toont voorbeelddata |
+| `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets, transcripts van gesloten tickets, bugmeldingen en sollicitaties, en kunnen een ticket openen; de demo toont voorbeelddata |
 | `/status` | Openbare statuspagina: uptime per dienst (24 uur), drukte van support, openingstijden en recente storingen, live uit de bot |
 | `/team` | Teamleden met de staff-rollen uit de bot, met functie, afdelingen en skills |
+| `/reviews` | Reviews van klanten (gevraagd door de bot na elk ticket en project), met gemiddelde en verdeling. De nieuwste staan ook op de homepage |
+| `/vacatures` | Open vacatures uit de bot. Solliciteren gaat met Discord-login; het team beoordeelt in Discord |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
-| `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht, instellingen van alle bot-systemen, botstatus, scripts en live console |
+| `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht met grafieken, instellingen van alle bot-systemen, botstatus, scripts, live console en een wijzigingslog met terugdraaien |
 
 ## Discord integratie
 

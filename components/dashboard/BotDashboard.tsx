@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, Bot, FileCode2, LayoutDashboard, Radio, Settings, Terminal } from "lucide-react";
+import { ArrowLeft, Bot, FileCode2, History, LayoutDashboard, Radio, Settings, Terminal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ChangesTab } from "@/components/dashboard/ChangesTab";
 import { ConsoleTab } from "@/components/dashboard/ConsoleTab";
 import { OverviewTab } from "@/components/dashboard/OverviewTab";
 import { PresenceTab } from "@/components/dashboard/PresenceTab";
@@ -18,6 +19,7 @@ const tabs = [
   { id: "status", label: "Botstatus", icon: Radio },
   { id: "scripts", label: "Scripts", icon: FileCode2 },
   { id: "console", label: "Console", icon: Terminal },
+  { id: "wijzigingen", label: "Wijzigingen", icon: History },
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
@@ -82,6 +84,7 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {tab === "status" && <PresenceTab />}
               {tab === "scripts" && <ScriptsTab />}
               {tab === "console" && <ConsoleTab />}
+              {tab === "wijzigingen" && <ChangesTab />}
             </div>
           </>
         )}

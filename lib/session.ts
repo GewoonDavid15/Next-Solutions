@@ -4,6 +4,12 @@ import { cookies } from "next/headers";
 
 export const SESSION_COOKIE = "ns_session";
 export const STATE_COOKIE = "ns_oauth_state";
+export const RETURN_COOKIE = "ns_return";
+
+/** Only simple internal paths are allowed as return address after login (no open redirects). */
+export function safeReturnPath(value: string | null | undefined) {
+  return value && /^\/[a-z0-9/-]{0,80}$/i.test(value) && !value.startsWith("//") ? value : "/klantportaal";
+}
 const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 export interface SessionUser {

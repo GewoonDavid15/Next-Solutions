@@ -37,12 +37,32 @@ export interface TeamMember {
   afdelingen: string[];
 }
 
+export interface Review {
+  id: number;
+  naam: string;
+  avatar: string | null;
+  sterren: number;
+  tekst: string;
+  context: string;
+  bron: "ticket" | "project";
+  t: number;
+}
+
+export interface ReviewSummary {
+  aantal: number;
+  gemiddelde: number | null;
+  /** Number of reviews with 1..5 stars */
+  verdeling: number[];
+  recent: Review[];
+}
+
 export interface PublicData {
   bot: { online: boolean; ping: number | null };
   server: { naam: string; icoon: string | null; leden: number } | null;
   tickets: LiveTickets | null;
   diensten: LiveService[];
   incidenten: { dienst: string; start: number; eind: number | null }[];
+  reviews: ReviewSummary | null;
   team: TeamMember[];
 }
 
@@ -81,9 +101,22 @@ export interface ClientBug {
   reactie: string | null;
 }
 
+export interface ClientTranscript {
+  id: string;
+  naam: string;
+  afdeling: string;
+  emoji: string;
+  geopend: number;
+  gesloten: number;
+  berichten: number;
+}
+
 export interface ClientData {
   projecten: ClientProject[];
   tickets: ClientTicket[];
+  /** Closed tickets of this client (missing when the bot runs an older version) */
+  transcripts?: ClientTranscript[];
+  sollicitaties?: ClientApplication[];
   bugs: ClientBug[];
 }
 
@@ -109,4 +142,33 @@ export function formatDate(ms: number, withTime = false) {
     month: "long",
     ...(withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
   });
+}
+
+export interface TicketDepartment {
+  id: string;
+  titel: string;
+  emoji: string;
+  kort: string;
+  onderwerpVoorbeeld: string;
+  detailsLabel: string;
+  detailsVoorbeeld: string;
+}
+
+export interface Vacancy {
+  id: string;
+  titel: string;
+  afdeling: string;
+  soort: string;
+  omschrijving: string;
+  eisen: string[];
+  vragen: string[];
+}
+
+export interface ClientApplication {
+  id: number;
+  titel: string;
+  status: string;
+  statusEmoji: string;
+  afgesloten: boolean;
+  t: number;
 }

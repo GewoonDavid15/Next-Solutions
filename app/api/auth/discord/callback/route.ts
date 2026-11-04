@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
+  RETURN_COOKIE,
   SESSION_COOKIE,
   STATE_COOKIE,
   encodeSession,
   isOAuthConfigured,
   redirectUri,
+  safeReturnPath,
   sessionCookieOptions,
 } from "@/lib/session";
 
@@ -45,8 +47,9 @@ export async function GET(request: NextRequest) {
     if (!userRes.ok) return fail("user_fetch");
     const user = (await userRes.json()) as { id: string; username: string; global_name: string | null; avatar: string | null };
 
-    const res = NextResponse.redirect(new URL("/klantportaal", origin));
+    const res = NextResponse.redirect(new URL(safeReturnPath(request.cookies.get(RETURN_COOKIE)?.value), origin));
     res.cookies.delete(STATE_COOKIE);
+    res.cookies.delete(RETURN_COOKIE);
     res.cookies.set(
       SESSION_COOKIE,
       encodeSession({ id: user.id, username: user.username, globalName: user.global_name, avatar: user.avatar }),

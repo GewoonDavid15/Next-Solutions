@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  const live: MetadataRoute.Sitemap = ["/team", "/status"].map((href) => ({
+  const live: MetadataRoute.Sitemap = ["/team", "/reviews", "/vacatures", "/status"].map((href) => ({
     url: `${site.url}${href}`,
     lastModified: now,
     changeFrequency: "daily",

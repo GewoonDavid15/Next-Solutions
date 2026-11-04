@@ -1,11 +1,12 @@
-import { AlertCircle, Bot, Bug, CalendarClock, CheckCircle2, ExternalLink, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
+import { AlertCircle, Bot, Briefcase, Bug, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
-import { formatDate, type ClientData, type ClientProject } from "@/lib/live";
+import { NewTicketForm } from "@/components/portal/NewTicketForm";
+import { formatDate, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -14,13 +15,16 @@ interface ClientPortalProps {
   /** null when the bot could not be reached */
   data: ClientData | null;
   isOwner: boolean;
+  departments: TicketDepartment[];
 }
 
 /** Client portal with live data from the Discord bot: projects (/projectstatus), tickets and bug reports. */
-export function ClientPortal({ user, data, isOwner }: ClientPortalProps) {
+export function ClientPortal({ user, data, isOwner, departments }: ClientPortalProps) {
   const projects = data?.projecten ?? [];
   const tickets = data?.tickets ?? [];
   const bugs = data?.bugs ?? [];
+  const transcripts = data?.transcripts ?? [];
+  const applications = data?.sollicitaties ?? [];
 
   const kpis = [
     { label: "Actieve projecten", value: projects.filter((p) => p.percentage < 100).length, icon: FolderKanban },
@@ -96,7 +100,10 @@ export function ClientPortal({ user, data, isOwner }: ClientPortalProps) {
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {/* Tickets */}
           <div>
-            <h2 className="flex items-center gap-2 text-xl font-semibold"><Ticket className="size-5 text-brand-300" /> Open tickets</h2>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><Ticket className="size-5 text-brand-300" /> Open tickets</h2>
+              {departments.length > 0 && <NewTicketForm departments={departments} discordInvite={site.discordInvite} />}
+            </div>
             {tickets.length === 0 ? (
               <Empty text="Je hebt geen open tickets. Vragen? Open een ticket in onze Discord." cta={{ href: site.discordInvite, label: "Naar Discord", external: true }} />
             ) : (
@@ -117,6 +124,48 @@ export function ClientPortal({ user, data, isOwner }: ClientPortalProps) {
               </ul>
             )}
           </div>
+
+          {/* Applications */}
+          {applications.length > 0 && (
+            <div className="lg:col-span-2 lg:order-last">
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><Briefcase className="size-5 text-brand-300" /> Mijn sollicitaties</h2>
+              <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                {applications.map((a) => (
+                  <li key={a.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-white">{a.titel}</p>
+                      <p className="mt-0.5 text-sm text-zinc-400">Verstuurd op {formatDate(a.t)}</p>
+                    </div>
+                    <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs", a.afgesloten ? "border-white/10 bg-white/5 text-zinc-300" : "border-brand-500/30 bg-brand-600/10 text-brand-200")}>
+                      {a.statusEmoji} {a.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Closed tickets with transcript */}
+          {transcripts.length > 0 && (
+            <div className="lg:col-span-2 lg:order-last">
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><FileText className="size-5 text-brand-300" /> Afgesloten tickets</h2>
+              <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                {transcripts.map((t) => (
+                  <li key={t.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-white">{t.emoji} {t.afdeling}</p>
+                      <p className="mt-0.5 text-sm text-zinc-400">
+                        Gesloten op {formatDate(t.gesloten, true)} • {t.berichten} berichten
+                      </p>
+                    </div>
+                    <Button asChild size="sm" variant="secondary">
+                      <a href={`/klantportaal/transcript/${t.id}`} target="_blank" rel="noopener noreferrer"><FileText /> Transcript</a>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Bug reports */}
           <div>

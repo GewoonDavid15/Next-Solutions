@@ -31,7 +31,7 @@ export function Footer() {
           </div>
 
           <FooterColumn title="Sitelinks" className="lg:col-span-2">
-            {[...navLinks, { href: "/team", label: "Team" }, { href: "/status", label: "Status" }].map((l) => (
+            {[...navLinks, { href: "/team", label: "Team" }, { href: "/reviews", label: "Reviews" }, { href: "/vacatures", label: "Vacatures" }, { href: "/status", label: "Status" }].map((l) => (
               <FooterLink key={l.href} href={l.href}>
                 {l.label}
               </FooterLink>
