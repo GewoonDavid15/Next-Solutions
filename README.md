@@ -24,6 +24,7 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
 | `/klantportaal` | Login met Discord OAuth2 (of demo), daarna dashboard met projecten en tickets |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
+| `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht, instellingen van alle bot-systemen, botstatus, scripts en live console |
 
 ## Discord integratie
 
@@ -36,6 +37,16 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `DISCORD_CONTACT_WEBHOOK_URL` | Optioneel: offerte-aanvragen worden als embed in dit kanaal gepost |
 
 De projecten en tickets in het klantportaal komen uit `lib/portal.ts` (mockdata). Koppel daar je eigen database of CRM aan, op basis van het Discord user-id.
+
+## Bot-dashboard
+
+`/dashboard` beheert de Discord bot via een kleine API in de bot zelf (`Systeem/dashboard-api.js`). De website stuurt verzoeken door via `app/api/bot/[...pad]` en ondertekent elk verzoek met een HMAC, zodat de sleutel nooit over het netwerk gaat.
+
+| Variabele | Doel |
+| --- | --- |
+| `DASHBOARD_OWNER_ID` | Jouw Discord user-ID. Alleen dit account kan `/dashboard` openen; iedereen anders krijgt een 404 |
+| `BOT_API_URL` | Adres van de bot-API, bijv. `http://123.45.67.89:25565` (IP + poort van de bot-host) |
+| `BOT_API_SECRET` | Zelfde sleutel als `DASHBOARD_SECRET` in de `.env` van de bot (min. 32 tekens) |
 
 ## Structuur
 

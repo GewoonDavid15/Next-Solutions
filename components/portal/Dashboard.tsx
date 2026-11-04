@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, Clock, FolderKanban, LifeBuoy, LogOut, Plus, Ticket } from "lucide-react";
+import { Bot, CheckCircle2, Clock, FolderKanban, LifeBuoy, LogOut, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 
 interface DashboardProps {
   user: { name: string; avatar: string | null; demo?: boolean };
+  /** Shows a link to the bot dashboard (only for the owner). */
+  isOwner?: boolean;
   projects: PortalProject[];
   tickets: PortalTicket[];
 }
@@ -33,7 +35,7 @@ const priorityStyle: Record<TicketPriority, string> = {
   Hoog: "text-rose-300",
 };
 
-export function Dashboard({ user, projects, tickets }: DashboardProps) {
+export function Dashboard({ user, projects, tickets, isOwner = false }: DashboardProps) {
   const [tab, setTab] = useState<"projects" | "tickets">("projects");
 
   const kpis = [
@@ -60,7 +62,12 @@ export function Dashboard({ user, projects, tickets }: DashboardProps) {
               <h1 className="text-3xl font-semibold">{user.name}</h1>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            {isOwner && (
+              <Button asChild size="sm" variant="secondary">
+                <Link href="/dashboard"><Bot /> Bot-dashboard</Link>
+              </Button>
+            )}
             <Button asChild size="sm">
               <Link href="/contact"><Plus /> Nieuw project</Link>
             </Button>

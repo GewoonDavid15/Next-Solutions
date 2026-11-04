@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Dashboard } from "@/components/portal/Dashboard";
 import { LoginCard } from "@/components/portal/LoginCard";
+import { isDashboardOwner } from "@/lib/bot-api";
 import { getPortalData } from "@/lib/portal";
 import { avatarUrl, getSession, isOAuthConfigured } from "@/lib/session";
 
@@ -21,6 +22,7 @@ export default async function KlantportaalPage({ searchParams }: { searchParams:
       user={{ name: session.globalName ?? session.username, avatar: avatarUrl(session), demo: session.demo }}
       projects={projects}
       tickets={tickets}
+      isOwner={isDashboardOwner(session)}
     />
   );
 }
