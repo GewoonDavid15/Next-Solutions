@@ -223,7 +223,7 @@ export function QuoteForm() {
 
               {step === 3 && (
                 <div>
-                  <h3 className="text-xl font-semibold">Klopt alles?</h3>
+                  <h2 className="text-xl font-semibold">Klopt alles?</h2>
                   <dl className="mt-5 grid gap-3 sm:grid-cols-2">
                     {[
                       ["Afdeling", labelFor(departmentOptions, data.department)],

@@ -69,19 +69,19 @@ export default function OverOnsPage() {
           <SectionHeading eyebrow="Tijdlijn" title="Hoe we hier kwamen" />
           <ol className="relative space-y-8 before:absolute before:left-[11px] before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-gradient-to-b before:from-brand-500 before:via-brand-700 before:to-transparent">
             {timeline.map((item, i) => (
-              <FadeUp key={item.year} delay={i * 0.08} className="relative pl-10">
+              <li key={item.year} className="relative pl-10">
                 <span
                   aria-hidden
                   className="absolute left-0 top-1.5 grid size-6 place-items-center rounded-full border border-brand-500/40 bg-ink"
                 >
                   <span className="size-2 rounded-full bg-brand-500 shadow-glow" />
                 </span>
-                <li>
+                <FadeUp delay={i * 0.08}>
                   <span className="font-display text-sm text-brand-400">{item.year}</span>
                   <h3 className="mt-0.5 text-xl font-semibold">{item.title}</h3>
                   <p className="mt-1 leading-relaxed text-zinc-400">{item.text}</p>
-                </li>
-              </FadeUp>
+                </FadeUp>
+              </li>
             ))}
           </ol>
         </div>

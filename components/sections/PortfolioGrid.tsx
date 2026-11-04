@@ -77,7 +77,7 @@ export function PortfolioGrid() {
                 <ProjectMockup project={project} />
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-semibold">{project.title}</h3>
+                    <h2 className="text-lg font-semibold">{project.title}</h2>
                     <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs capitalize text-zinc-400">{project.category}</span>
                   </div>
                   <p className="mt-1 text-sm text-zinc-500">{project.client}</p>
