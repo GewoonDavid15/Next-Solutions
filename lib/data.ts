@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultValuesEn, servicesEn, statsEn, valuesEn } from "@/lib/content-en";
+import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultValuesEn, servicesEn, valuesEn } from "@/lib/content-en";
 import {
   Bot,
   Brush,
@@ -389,12 +389,6 @@ export const projects: Project[] = [
   },
 ];
 
-export const stats = [
-  { label: "Community leden", value: 4280, suffix: "+" },
-  { label: "Projecten opgeleverd", value: 350, suffix: "+" },
-  { label: "Uptime", value: 99.9, suffix: "%", decimals: 1 },
-];
-
 export const process = [
   { step: "01", title: "Kennismaking", text: "We bespreken je idee, doelen en budget in onze Discord of via een call." },
   { step: "02", title: "Ontwerp & Plan", text: "Je ontvangt een helder voorstel met planning, mockups en vaste prijs." },
@@ -439,7 +433,7 @@ export const faq = [
 
 /** All content in one language. Dutch is the source; English swaps the texts and keeps icons, colours and slugs. */
 export function getContent(locale: Locale) {
-  if (locale === "nl") return { departments, services, projectFilters, projects, stats, process, faq, values, team };
+  if (locale === "nl") return { departments, services, projectFilters, projects, process, faq, values, team };
   return {
     departments: departments.map((d) => ({ ...d, ...departmentsEn[d.id] })),
     services: services.map((s, i) => ({ ...s, ...servicesEn[i] })),
@@ -456,7 +450,6 @@ export function getContent(locale: Locale) {
         results: p.results.map((r, i) => ({ label: en.results[i] ?? r.label, value: resultValuesEn[r.value] ?? r.value })),
       };
     }),
-    stats: stats.map((s, i) => ({ ...s, label: statsEn[i] ?? s.label })),
     process: process.map((p, i) => ({ ...p, ...processEn[i] })),
     faq: faqEn,
     values: values.map((v, i) => ({ ...v, ...valuesEn[i] })),

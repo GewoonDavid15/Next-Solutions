@@ -5,6 +5,7 @@ import { Hero } from "@/components/sections/Hero";
 import { LiveStats } from "@/components/sections/LiveStats";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { ReviewsSection } from "@/components/sections/ReviewsSection";
+import { getPublicData } from "@/lib/bot-api";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { Suspense } from "react";
 
@@ -19,7 +20,9 @@ export default async function HomePage() {
     <>
       <OrganizationSchema />
       <Hero />
-      <LiveStats stats={content.stats} />
+      <Suspense fallback={<LiveStats services={content.services.length} uptime={null} />}>
+        <LiveStatsWithUptime services={content.services.length} />
+      </Suspense>
       <CoreServices />
       <ProcessSection />
       {/* Live reviews from the Discord bot; streamed in so the rest of the page is not delayed */}
@@ -29,4 +32,11 @@ export default async function HomePage() {
       <CallToAction />
     </>
   );
+}
+
+/** Average 30-day uptime of the services the bot monitors, or nothing when the bot has no data yet. */
+async function LiveStatsWithUptime({ services }: { services: number }) {
+  const measured = ((await getPublicData())?.diensten ?? []).map((d) => d.uptime30d).filter((u): u is number => u !== null);
+  const uptime = measured.length ? Math.floor((measured.reduce((a, b) => a + b, 0) / measured.length) * 10) / 10 : null;
+  return <LiveStats services={services} uptime={uptime} />;
 }

@@ -176,8 +176,6 @@ export const resultValuesEn: Record<string, string> = {
   "8,4%": "8.4%",
 };
 
-export const statsEn = ["Community members", "Projects delivered", "Uptime"];
-
 export const processEn = [
   { title: "Introduction", text: "We discuss your idea, goals and budget in our Discord or on a call." },
   { title: "Design & Plan", text: "You receive a clear proposal with a schedule, mockups and a fixed price." },
