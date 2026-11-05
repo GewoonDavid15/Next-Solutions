@@ -226,10 +226,3 @@ export const valuesEn = [
   { title: "Built for communities", text: "We come from the world of Discord servers and game communities ourselves. We know what players expect and where they drop off." },
 ];
 
-/** Same order as `timeline` in lib/data.ts (about page) */
-export const timelineEn = [
-  { title: "Started as a hobby", text: "Two friends build Discord bots for their own server. The first requests from outside come in." },
-  { title: "First paid assignments", text: "A steady stream of clients from the FiveM and Minecraft world. The team grows to four people." },
-  { title: "Next Solutions", text: "The three departments are set up: Software, Game Development and Media, with its own client portal." },
-  { title: "Where we are now", text: "A community of thousands of members and hundreds of delivered projects." },
-];

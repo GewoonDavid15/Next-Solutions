@@ -18,33 +18,29 @@ export async function generateMetadata() {
 const texts = {
   nl: {
     eyebrow: "Over ons",
-    title: ["Een klein team met een ", "grote", " werkplaats"],
-    intro: "We begonnen met een bot voor onze eigen Discord. Inmiddels bouwen we software, games en merken voor communities door heel Nederland.",
-    story1: "Next Solutions ontstond uit frustratie. We zochten een partij die een fatsoenlijke Discord bot kon bouwen zonder er maanden over te doen, en vonden die niet. Dus bouwden we hem zelf.",
-    story2: "Dat principe is gebleven. We nemen werk aan waarvan we weten dat we het goed kunnen doen, en zeggen nee tegen de rest. Geen tussenlagen, geen accountmanagers: je praat met de mensen die je project bouwen.",
+    title: ["Eén maker, ", "drie", " disciplines"],
+    intro: "Next Solutions bouwt software, games en merken voor communities. Opgezet en gerund door Nexify.",
+    story1: "Next Solutions is opgezet door Nexify, met één doel: Discord bots, websites, game-scripts en designs die gewoon goed werken, zonder dat je er maanden op wacht.",
+    story2: "We nemen werk aan waarvan we weten dat we het goed kunnen doen, en zeggen nee tegen de rest. Geen tussenlagen, geen accountmanagers: je praat rechtstreeks met de maker van je project, via je eigen kanaal in onze Discord.",
     valuesEyebrow: "Waar we voor staan",
     valuesTitle: ["Vier dingen die we ", "niet", " loslaten"],
-    timelineEyebrow: "Tijdlijn",
-    timelineTitle: "Hoe we hier kwamen",
-    teamEyebrow: "Het team",
-    teamTitle: "De mensen achter je project",
-    teamIntro: "Klein genoeg om je naam te onthouden, groot genoeg om alle drie de disciplines te dekken.",
+    teamEyebrow: "Wie je spreekt",
+    teamTitle: "De maker achter je project",
+    teamIntro: "Je werkt rechtstreeks met de oprichter. Groeit het team, dan zie je dat hier en op de teampagina.",
     ctaTitle: "Benieuwd of we bij je passen?",
     ctaText: "Spring binnen in onze Discord en stel je vraag. Een gesprek kost niets.",
   },
   en: {
     eyebrow: "About us",
-    title: ["A small team with a ", "big", " workshop"],
-    intro: "We started with a bot for our own Discord. Today we build software, games and brands for communities across the Netherlands.",
-    story1: "Next Solutions was born out of frustration. We were looking for someone who could build a decent Discord bot without taking months, and couldn't find one. So we built it ourselves.",
-    story2: "That principle stayed. We take on work we know we can do well, and say no to the rest. No middlemen, no account managers: you talk to the people building your project.",
+    title: ["One maker, ", "three", " disciplines"],
+    intro: "Next Solutions builds software, games and brands for communities. Founded and run by Nexify.",
+    story1: "Next Solutions was founded by Nexify with one goal: Discord bots, websites, game scripts and designs that simply work well, without you waiting months for them.",
+    story2: "We take on work we know we can do well, and say no to the rest. No middlemen, no account managers: you talk directly to the maker of your project, through your own channel in our Discord.",
     valuesEyebrow: "What we stand for",
     valuesTitle: ["Four things we ", "never", " let go of"],
-    timelineEyebrow: "Timeline",
-    timelineTitle: "How we got here",
-    teamEyebrow: "The team",
-    teamTitle: "The people behind your project",
-    teamIntro: "Small enough to remember your name, big enough to cover all three disciplines.",
+    teamEyebrow: "Who you talk to",
+    teamTitle: "The maker behind your project",
+    teamIntro: "You work directly with the founder. As the team grows, you'll see it here and on the team page.",
     ctaTitle: "Curious whether we're a good fit?",
     ctaText: "Drop by our Discord and ask your question. A conversation costs nothing.",
   },
@@ -53,7 +49,7 @@ const texts = {
 export default async function OverOnsPage() {
   const { locale, content } = await getI18n();
   const tx = texts[locale];
-  const { values, timeline, team } = content;
+  const { values, team } = content;
   return (
     <>
       <PageHeader
@@ -68,7 +64,7 @@ export default async function OverOnsPage() {
           <FadeUp>
             <Card className="relative">
               <Quote aria-hidden className="absolute right-6 top-6 size-12 text-brand-500/20" />
-              <p className="text-lg leading-relaxed text-zinc-300">
+              <p className="pr-12 text-lg leading-relaxed text-zinc-300">
                 {tx.story1}
               </p>
               <p className="mt-4 leading-relaxed text-zinc-400">
@@ -100,29 +96,6 @@ export default async function OverOnsPage() {
         </div>
       </section>
 
-      {/* Tijdlijn */}
-      <section className="section">
-        <div className="container max-w-3xl">
-          <SectionHeading eyebrow={tx.timelineEyebrow} title={tx.timelineTitle} />
-          <ol className="relative space-y-8 before:absolute before:left-[11px] before:top-2 before:h-[calc(100%-1rem)] before:w-px before:bg-gradient-to-b before:from-brand-500 before:via-brand-700 before:to-transparent">
-            {timeline.map((item, i) => (
-              <li key={item.year} className="relative pl-10">
-                <span
-                  aria-hidden
-                  className="absolute left-0 top-1.5 grid size-6 place-items-center rounded-full border border-brand-500/40 bg-ink"
-                >
-                  <span className="size-2 rounded-full bg-brand-500 shadow-glow" />
-                </span>
-                <FadeUp delay={i * 0.08}>
-                  <span className="font-display text-sm text-brand-400">{item.year}</span>
-                  <h3 className="mt-0.5 text-xl font-semibold">{item.title}</h3>
-                  <p className="mt-1 leading-relaxed text-zinc-400">{item.text}</p>
-                </FadeUp>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
 
       {/* Team */}
       <section className="section">
@@ -132,7 +105,7 @@ export default async function OverOnsPage() {
             title={tx.teamTitle}
             description={tx.teamIntro}
           />
-          <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Stagger className={cn("grid gap-6", team.length === 1 ? "mx-auto max-w-xs" : "sm:grid-cols-2 lg:grid-cols-4")}>
             {team.map((member) => (
               <StaggerItem key={member.name}>
                 <Card interactive className="group h-full text-center">
