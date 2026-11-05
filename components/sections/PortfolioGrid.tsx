@@ -46,7 +46,7 @@ export function PortfolioGrid({ projects, filters }: { projects: Content["projec
               onClick={() => setFilter(f.id)}
               className={cn(
                 "relative rounded-xl px-5 py-2.5 font-display text-sm font-medium transition-colors",
-                active ? "text-white" : "text-zinc-400 hover:text-white",
+                active ? "text-ink" : "text-zinc-400 hover:text-white",
               )}
             >
               {active && (

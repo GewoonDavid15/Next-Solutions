@@ -22,7 +22,7 @@ export async function Footer() {
       <div className="container py-16">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <Logo href={lp("/")} />
+            <Logo href={lp("/")} byline />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-zinc-400">
               {t.footer.tagline}
             </p>
@@ -82,7 +82,7 @@ export async function Footer() {
 
         <p className="mt-10 text-center font-display text-lg text-zinc-300 sm:text-xl">
           Made by{" "}
-          <span className="inline-block animate-pulse-glow bg-gradient-to-r from-brand-400 via-brand-600 to-fuchsia-500 bg-clip-text font-bold text-transparent">
+          <span className="inline-block animate-pulse-glow bg-gradient-to-r from-brand-200 via-brand-400 to-brand-700 bg-clip-text font-bold text-transparent">
             nexify
           </span>
         </p>

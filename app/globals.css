@@ -10,15 +10,16 @@
     @apply scroll-smooth bg-ink antialiased;
   }
   body {
-    @apply min-h-screen bg-ink font-sans text-zinc-300 selection:bg-brand-600/40 selection:text-white;
+    @apply min-h-screen bg-ink font-sans text-zinc-300 selection:bg-brand-500 selection:text-ink;
     background-image:
-      radial-gradient(60rem 40rem at 10% -10%, rgba(124, 58, 237, 0.12), transparent 60%),
-      radial-gradient(50rem 40rem at 110% 20%, rgba(15, 23, 42, 0.9), transparent 70%),
-      linear-gradient(180deg, #09090b 0%, #0f172a 45%, #09090b 100%);
+      radial-gradient(60rem 40rem at 10% -10%, rgba(198, 244, 50, 0.06), transparent 60%),
+      radial-gradient(50rem 40rem at 110% 20%, rgba(17, 20, 27, 0.9), transparent 70%),
+      linear-gradient(180deg, #0A0C10 0%, #11141B 45%, #0A0C10 100%);
     background-attachment: fixed;
   }
   h1, h2, h3, h4 {
     @apply font-display text-white;
+    font-stretch: 112%;
   }
   :focus-visible {
     @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-ink;
@@ -30,7 +31,7 @@
     @apply border border-white/10 bg-white/[0.03] shadow-glass backdrop-blur-xl;
   }
   .text-gradient {
-    @apply bg-gradient-to-r from-brand-400 via-brand-600 to-fuchsia-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-200 via-brand-400 to-brand-700 bg-clip-text text-transparent;
   }
   .section {
     @apply py-20 sm:py-28;

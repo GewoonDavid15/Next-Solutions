@@ -49,7 +49,7 @@ export default async function TeamPage() {
                     {m.avatar ? (
                       <Image src={m.avatar} alt="" width={64} height={64} className="size-16 rounded-2xl border border-white/10" />
                     ) : (
-                      <span className="grid size-16 place-items-center rounded-2xl bg-brand-gradient font-display text-2xl text-white">{m.naam.charAt(0)}</span>
+                      <span className="grid size-16 place-items-center rounded-2xl bg-brand-gradient font-display text-2xl text-ink">{m.naam.charAt(0)}</span>
                     )}
                     <div className="min-w-0">
                       <p className="truncate font-display text-lg text-white">{m.naam}</p>

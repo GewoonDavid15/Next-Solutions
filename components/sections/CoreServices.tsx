@@ -31,7 +31,7 @@ export async function CoreServices() {
                     className={cn("absolute -right-16 -top-16 size-48 rounded-full bg-gradient-to-br opacity-20 blur-3xl transition-opacity duration-500 group-hover:opacity-50", gradient)}
                   />
                   <div className={cn("mb-6 grid size-14 place-items-center rounded-2xl bg-gradient-to-br shadow-glow", gradient)}>
-                    <Icon className="size-7 text-white" />
+                    <Icon className="size-7 text-ink" />
                   </div>
                   <p className="text-sm font-medium text-brand-300">{tagline}</p>
                   <h3 className="mt-1 text-2xl font-semibold">{title}</h3>

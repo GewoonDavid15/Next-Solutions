@@ -17,7 +17,7 @@ export default function OpengraphImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #09090b 0%, #0f172a 55%, #1a0b2e 100%)",
+          background: "linear-gradient(135deg, #0A0C10 0%, #11141B 60%, #0A0C10 100%)",
           position: "relative",
         }}
       >
@@ -29,8 +29,8 @@ export default function OpengraphImage() {
             width: 520,
             height: 520,
             borderRadius: "50%",
-            background: "#7C3AED",
-            opacity: 0.35,
+            background: "#C6F432",
+            opacity: 0.12,
             filter: "blur(120px)",
           }}
         />
@@ -42,8 +42,8 @@ export default function OpengraphImage() {
             width: 480,
             height: 480,
             borderRadius: "50%",
-            background: "#9333EA",
-            opacity: 0.3,
+            background: "#C6F432",
+            opacity: 0.08,
             filter: "blur(120px)",
           }}
         />
@@ -56,16 +56,15 @@ export default function OpengraphImage() {
               width: 96,
               height: 96,
               borderRadius: 28,
-              background: "linear-gradient(135deg, #7C3AED, #9333EA)",
-              color: "white",
-              fontSize: 56,
-              fontWeight: 700,
+              background: "#C6F432",
             }}
           >
-            N
+            <svg width="60" height="60" viewBox="0 0 52 52">
+              <path d="M17 15 L29 26 L17 37 M27 15 L39 26 L27 37" fill="none" stroke="#0A0C10" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
-          <div style={{ display: "flex", color: "white", fontSize: 72, fontWeight: 700 }}>
-            Next<span style={{ color: "#a78bfa" }}>Solutions</span>
+          <div style={{ display: "flex", color: "white", fontSize: 72, fontWeight: 800, letterSpacing: -1 }}>
+            NEXT SOLUTIONS
           </div>
         </div>
         <div style={{ marginTop: 32, color: "#a1a1aa", fontSize: 34, display: "flex" }}>
@@ -77,9 +76,9 @@ export default function OpengraphImage() {
             display: "flex",
             padding: "16px 36px",
             borderRadius: 24,
-            border: "1px solid rgba(167,139,250,0.4)",
-            background: "rgba(124,58,237,0.15)",
-            color: "#ddd6fe",
+            border: "1px solid rgba(198,244,50,0.35)",
+            background: "rgba(198,244,50,0.08)",
+            color: "#DAF96A",
             fontSize: 28,
           }}
         >
