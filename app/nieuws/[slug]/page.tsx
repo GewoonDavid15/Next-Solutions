@@ -45,7 +45,7 @@ export default async function ArtikelPage({ params }: Props) {
     headline: post.title,
     description: post.description,
     datePublished: post.date,
-    author: { "@type": "Organization", name: post.author },
+    author: { "@type": post.author === "Next Solutions" ? "Organization" : "Person", name: post.author },
   };
 
   return (

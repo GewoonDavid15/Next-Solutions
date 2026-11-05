@@ -1,12 +1,12 @@
 ---
 title: "Vijf oorzaken van een trage FiveM server"
-description: "Je resmon staat in het rood en spelers klagen over lag. Dit zijn de verdachten die we het vaakst tegenkomen."
-date: "2026-10-12"
-author: "Next Solutions"
+description: "Je resmon staat in het rood en spelers klagen over lag. Dit zijn vijf gebruikelijke verdachten, en hoe je ze aanpakt."
+date: "2026-11-05"
+author: "Nexify"
 category: "Game Development"
 ---
 
-Een server die bij vijftig spelers soepel loopt en bij honderd instort, heeft zelden een hardwareprobleem. In bijna alle gevallen die wij bekijken zit het in de resources.
+Een server die bij vijftig spelers soepel loopt en bij honderd instort, heeft zelden een hardwareprobleem. Meestal zit het in de resources.
 
 ## 1. Loops die altijd draaien
 
@@ -30,6 +30,8 @@ Een interface die onzichtbaar is maar nog wel rekent, kost gewoon prestatie. Zet
 
 Twee resources die allebei de kentekens bijhouden, of drie die hun eigen notificatiesysteem meebrengen. Dat zie je pas als je de hele lijst naast elkaar legt.
 
-## Hoe wij het aanpakken
+## Begin met meten
 
-We beginnen altijd met meten, niet met gokken. Met `resmon 1` en een paar uur echte spelers zie je binnen een avond welke resources het probleem zijn. Daarna pas gaan we herschrijven — meestal blijkt twintig procent van de scripts tachtig procent van de last te veroorzaken.
+Gok niet, maar meet. Met `resmon 1` en een paar uur echte spelers zie je binnen een avond welke resources het probleem zijn. Pak die eerst aan: vaak zit het grootste deel van de last in een handvol scripts.
+
+Kom je er zelf niet uit? Open een ticket in onze Discord, dan kijken we met je mee.

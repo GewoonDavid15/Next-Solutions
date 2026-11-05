@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
+import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { FaqSchema } from "@/components/StructuredData";
@@ -18,7 +19,7 @@ export async function generateMetadata() {
 }
 
 export default async function DienstenPage() {
-  const { locale, content } = await getI18n();
+  const { locale, content, lp } = await getI18n();
   const en = locale === "en";
   return (
     <>
@@ -56,7 +57,7 @@ export default async function DienstenPage() {
                 description={dept.description}
               />
               <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map(({ title, description, icon: ServiceIcon, features, from }) => (
+                {items.map(({ title, description, icon: ServiceIcon, features, department }) => (
                   <StaggerItem key={title}>
                     <Card interactive className="group flex h-full flex-col">
                       <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/70 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -72,9 +73,10 @@ export default async function DienstenPage() {
                           </li>
                         ))}
                       </ul>
-                      <div className="mt-auto flex items-baseline gap-1.5 pt-6">
-                        <span className="text-xs text-zinc-500">{en ? "from" : "vanaf"}</span>
-                        <span className="font-display text-2xl font-semibold text-white">{from}</span>
+                      <div className="mt-auto pt-6">
+                        <Link href={lp(`/contact?afdeling=${department}`)} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-300 transition-colors hover:text-white">
+                          {en ? "Price on request" : "Prijs op aanvraag"} <ArrowRight className="size-4" />
+                        </Link>
                       </div>
                     </Card>
                   </StaggerItem>

@@ -1,7 +1,8 @@
-import { AlertTriangle } from "lucide-react";
+import { Info } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { PageHeader } from "@/components/ui/PageHeader";
 import type { Locale } from "@/lib/i18n/config";
+import { cn } from "@/lib/utils";
 
 export interface LegalSection {
   heading: string;
@@ -28,15 +29,13 @@ export function LegalPage({ eyebrow, title, description, updated, sections, loca
       <section className="pb-12">
         <div className="container max-w-3xl">
           <FadeUp>
-            <p className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
-              <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-              <span>
-                {en
-                  ? "This is a translation of the Dutch text, provided for convenience. If the two differ, the Dutch version prevails. The text is a starting point and should be reviewed before the site goes live."
-                  : "Dit is een voorbeeldtekst die als startpunt dient. Laat hem controleren en aanvullen met je eigen bedrijfsgegevens voordat de site live gaat."}
-              </span>
-            </p>
-            <p className="mt-4 text-sm text-zinc-500">{en ? "Last updated" : "Laatst bijgewerkt"}: {updated}</p>
+            {en && (
+              <p className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-400">
+                <Info className="mt-0.5 size-4 shrink-0 text-brand-300" />
+                <span>This is a translation of the Dutch text, provided for convenience. If the two differ, the Dutch version prevails.</span>
+              </p>
+            )}
+            <p className={cn("text-sm text-zinc-500", en && "mt-4")}>{en ? "Last updated" : "Laatst bijgewerkt"}: {updated}</p>
           </FadeUp>
 
           <div className="mt-10 space-y-10">

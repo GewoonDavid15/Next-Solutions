@@ -23,7 +23,7 @@ na het importeren onder *Settings → Git → Production Branch*, of voeg de bra
 
 Op [discord.com/developers/applications](https://discord.com/developers/applications), bij je bot-applicatie:
 
-1. **OAuth2 → Redirects**: voeg `https://jouwdomein.nl/api/auth/discord/callback` toe. Dit moet exact
+1. **OAuth2 → Redirects**: voeg `https://nextsolutionshq.nl/api/auth/discord/callback` toe. Dit moet exact
    overeenkomen, inclusief `https` en zonder slash op het eind.
 2. **OAuth2**: kopieer de Client ID en maak een Client Secret.
 3. In je Discord-server, onder **Serverinstellingen → Widget**: zet *Serverwidget inschakelen* aan.
@@ -35,7 +35,7 @@ Zet deze in Vercel onder *Settings → Environment Variables*, voor Production �
 
 | Variabele | Waarde | Verplicht |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | `https://jouwdomein.nl` | Ja |
+| `NEXT_PUBLIC_SITE_URL` | `https://nextsolutionshq.nl` | Ja |
 | `SESSION_SECRET` | Lange willekeurige string, zie hieronder | Ja |
 | `DISCORD_CLIENT_ID` | Uit je Discord-app | Voor de login |
 | `DISCORD_CLIENT_SECRET` | Uit je Discord-app | Voor de login |

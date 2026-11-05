@@ -26,13 +26,13 @@ const perks = {
   nl: [
     { icon: Headphones, title: "Snelle support", text: "Stel je vraag in een ticket en krijg antwoord van de maker zelf." },
     { icon: Rocket, title: "Sneak peeks", text: "Zie als eerste nieuwe scripts, bots en releases." },
-    { icon: Gift, title: "Giveaways", text: "Maandelijkse giveaways van scripts, Nitro en kortingen." },
+    { icon: Gift, title: "Giveaways", text: "Af en toe giveaways van scripts, Nitro en kortingen." },
     { icon: MessageSquare, title: "Netwerk", text: "Connect met developers, designers en server-owners." },
   ],
   en: [
     { icon: Headphones, title: "Fast support", text: "Ask your question in a ticket and get an answer straight from the maker." },
     { icon: Rocket, title: "Sneak peeks", text: "Be the first to see new scripts, bots and releases." },
-    { icon: Gift, title: "Giveaways", text: "Monthly giveaways of scripts, Nitro and discounts." },
+    { icon: Gift, title: "Giveaways", text: "Every now and then giveaways of scripts, Nitro and discounts." },
     { icon: MessageSquare, title: "Network", text: "Connect with developers, designers and server owners." },
   ],
 };

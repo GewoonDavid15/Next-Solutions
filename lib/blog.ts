@@ -58,7 +58,8 @@ export async function getPosts(): Promise<PostMeta[]> {
       }),
   );
 
-  return posts.sort((a, b) => b.date.localeCompare(a.date));
+  // Newest first; articles from the same day in alphabetical order
+  return posts.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, "nl"));
 }
 
 export async function getPost(slug: string): Promise<Post | null> {

@@ -1,8 +1,8 @@
 ---
 title: "Waarom je community een huisstijl verdient"
 description: "Een logo is niet genoeg. Hoe een consistente stijl zorgt dat spelers je server onthouden."
-date: "2026-09-20"
-author: "Next Solutions"
+date: "2026-11-05"
+author: "Nexify"
 category: "Media"
 ---
 

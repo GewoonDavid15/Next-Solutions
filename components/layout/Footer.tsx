@@ -8,11 +8,11 @@ import { navLinks, site } from "@/lib/site";
 
 const socials = [
   { label: "Discord", href: site.discordInvite, icon: DiscordIcon },
-  { label: "Twitter / X", href: "https://x.com", icon: XIcon },
-  { label: "Instagram", href: "https://instagram.com", icon: InstagramIcon },
-  { label: "YouTube", href: "https://youtube.com", icon: YoutubeIcon },
-  { label: "GitHub", href: "https://github.com", icon: GithubIcon },
-];
+  { label: "Twitter / X", href: site.socials.x, icon: XIcon },
+  { label: "Instagram", href: site.socials.instagram, icon: InstagramIcon },
+  { label: "YouTube", href: site.socials.youtube, icon: YoutubeIcon },
+  { label: "GitHub", href: site.socials.github, icon: GithubIcon },
+].filter((s) => s.href);
 
 export async function Footer() {
   const { t, content, lp } = await getI18n();
