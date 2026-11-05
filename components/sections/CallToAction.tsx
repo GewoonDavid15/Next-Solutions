@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
+import { getI18n } from "@/lib/i18n/server";
 import { site } from "@/lib/site";
 
 interface CallToActionProps {
@@ -10,10 +11,10 @@ interface CallToActionProps {
   description?: string;
 }
 
-export function CallToAction({
-  title = <>Klaar om iets <span className="text-gradient">next-level</span> te bouwen?</>,
-  description = "Vertel ons over je idee. Binnen 24 uur heb je een vrijblijvend voorstel in je inbox of Discord DM.",
-}: CallToActionProps) {
+export async function CallToAction({ title, description }: CallToActionProps) {
+  const { t, lp } = await getI18n();
+  title ??= <>{t.cta.titleBefore}<span className="text-gradient">{t.cta.titleHighlight}</span>{t.cta.titleAfter}</>;
+  description ??= t.cta.description;
   return (
     <section className="section">
       <div className="container">
@@ -26,13 +27,13 @@ export function CallToAction({
               <p className="mx-auto mt-5 max-w-xl text-zinc-300">{description}</p>
               <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
                 <Button asChild size="lg">
-                  <Link href="/contact">
-                    Offerte aanvragen <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                  <Link href={lp("/contact")}>
+                    {t.cta.quote} <ArrowRight className="transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
                 <Button asChild variant="secondary" size="lg">
                   <a href={site.discordInvite} target="_blank" rel="noopener noreferrer">
-                    <DiscordIcon className="size-5" /> Praat met ons op Discord
+                    <DiscordIcon className="size-5" /> {t.cta.discord}
                   </a>
                 </Button>
               </div>

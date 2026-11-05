@@ -1,4 +1,3 @@
-import { faq } from "@/lib/data";
 import { site } from "@/lib/site";
 
 /**
@@ -25,11 +24,11 @@ export function OrganizationSchema() {
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 }
 
-export function FaqSchema() {
+export function FaqSchema({ items }: { items: { question: string; answer: string }[] }) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faq.map((f) => ({
+    mainEntity: items.map((f) => ({
       "@type": "Question",
       name: f.question,
       acceptedAnswer: { "@type": "Answer", text: f.answer },

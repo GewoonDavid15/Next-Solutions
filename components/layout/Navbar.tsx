@@ -1,17 +1,21 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Languages, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { navLinks } from "@/lib/site";
+import { localePath, stripLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const pathname = usePathname();
+  const { locale, t, lp } = useI18n();
+  const pathname = stripLocale(usePathname());
+  const other = locale === "nl" ? "en" : "nl";
   const { scrollY } = useScroll();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -24,7 +28,7 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-4">
       <motion.nav
-        aria-label="Hoofdnavigatie"
+        aria-label={t.nav.aria}
         animate={{
           maxWidth: scrolled ? 1040 : 1280,
           paddingTop: scrolled ? 8 : 14,
@@ -39,13 +43,13 @@ export function Navbar() {
         )}
       >
         <div className="flex items-center justify-between gap-4">
-          <Logo />
+          <Logo href={lp("/")} />
 
           <ul className="hidden items-center gap-1 lg:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
-                  href={link.href}
+                  href={lp(link.href)}
                   className={cn(
                     "relative rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
                     isActive(link.href) ? "text-white" : "text-zinc-400 hover:text-white",
@@ -58,21 +62,31 @@ export function Navbar() {
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
-                  {link.label}
+                  {t.nav.links[link.href] ?? link.label}
                 </Link>
               </li>
             ))}
           </ul>
 
           <div className="flex items-center gap-2">
+            {/* A plain <a> on purpose: the language lives in the root layout, so switching needs a full page load */}
+            <a
+              href={localePath(other, pathname)}
+              hrefLang={other}
+              title={t.nav.switchTo}
+              aria-label={t.nav.switchTo}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-2.5 py-1.5 text-xs font-semibold uppercase text-zinc-300 transition-colors hover:border-brand-500/40 hover:text-white"
+            >
+              <Languages className="size-3.5" /> {other}
+            </a>
             <Button asChild size="sm" className="hidden sm:inline-flex">
-              <Link href="/contact">Offerte aanvragen</Link>
+              <Link href={lp("/contact")}>{t.nav.quote}</Link>
             </Button>
             <Button
               variant="ghost"
               size="icon"
               className="lg:hidden"
-              aria-label={open ? "Menu sluiten" : "Menu openen"}
+              aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
             >
@@ -99,19 +113,19 @@ export function Navbar() {
                     transition={{ delay: 0.04 * i }}
                   >
                     <Link
-                      href={link.href}
+                      href={lp(link.href)}
                       className={cn(
                         "block rounded-xl px-4 py-3 font-display text-base",
                         isActive(link.href) ? "bg-brand-600/15 text-white" : "text-zinc-300 hover:bg-white/5",
                       )}
                     >
-                      {link.label}
+                      {t.nav.links[link.href] ?? link.label}
                     </Link>
                   </motion.li>
                 ))}
                 <li className="pt-2 sm:hidden">
                   <Button asChild className="w-full">
-                    <Link href="/contact">Offerte aanvragen</Link>
+                    <Link href={lp("/contact")}>{t.nav.quote}</Link>
                   </Button>
                 </li>
               </div>

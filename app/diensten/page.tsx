@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
@@ -8,26 +7,36 @@ import { Card } from "@/components/ui/Card";
 import { FaqAccordion } from "@/components/ui/Accordion";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { departments, faq, services } from "@/lib/data";
+import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Diensten",
-  description: "Discord bots, websites, FiveM scripts, Minecraft servers, branding en UI/UX design.",
-};
+export async function generateMetadata() {
+  const { locale } = await getI18n();
+  return locale === "en"
+    ? pageMetadata("/diensten", "Services", "Discord bots, websites, FiveM scripts, Minecraft servers, branding and UI/UX design.")
+    : pageMetadata("/diensten", "Diensten", "Discord bots, websites, FiveM scripts, Minecraft servers, branding en UI/UX design.");
+}
 
-export default function DienstenPage() {
+export default async function DienstenPage() {
+  const { locale, content } = await getI18n();
+  const en = locale === "en";
   return (
     <>
-      <FaqSchema />
+      <FaqSchema items={content.faq} />
       <PageHeader
-        eyebrow="Onze diensten"
-        title={<>Alles wat je nodig hebt om te <span className="text-gradient">groeien</span></>}
-        description="Software, Game Development en Media — modulair samen te stellen tot precies het pakket dat jouw project nodig heeft."
+        eyebrow={en ? "Our services" : "Onze diensten"}
+        title={
+          en ? <>Everything you need to <span className="text-gradient">grow</span></> : <>Alles wat je nodig hebt om te <span className="text-gradient">groeien</span></>
+        }
+        description={
+          en
+            ? "Software, Game Development and Media — combined modularly into exactly the package your project needs."
+            : "Software, Game Development en Media — modulair samen te stellen tot precies het pakket dat jouw project nodig heeft."
+        }
       />
 
-      {departments.map((dept) => {
-        const items = services.filter((s) => s.department === dept.id);
+      {content.departments.map((dept) => {
+        const items = content.services.filter((s) => s.department === dept.id);
         const Icon = dept.icon;
         return (
           <section key={dept.id} id={dept.id} className="scroll-mt-28 py-14 sm:py-20">
@@ -64,7 +73,7 @@ export default function DienstenPage() {
                         ))}
                       </ul>
                       <div className="mt-auto flex items-baseline gap-1.5 pt-6">
-                        <span className="text-xs text-zinc-500">vanaf</span>
+                        <span className="text-xs text-zinc-500">{en ? "from" : "vanaf"}</span>
                         <span className="font-display text-2xl font-semibold text-white">{from}</span>
                       </div>
                     </Card>
@@ -79,17 +88,20 @@ export default function DienstenPage() {
       <section className="section">
         <div className="container max-w-3xl">
           <SectionHeading
-            eyebrow="Veelgestelde vragen"
-            title="Goed om te weten"
-            description="Staat je vraag er niet tussen? Stel hem gerust in onze Discord."
+            eyebrow={en ? "Frequently asked questions" : "Veelgestelde vragen"}
+            title={en ? "Good to know" : "Goed om te weten"}
+            description={en ? "Is your question not listed? Feel free to ask it in our Discord." : "Staat je vraag er niet tussen? Stel hem gerust in onze Discord."}
           />
           <FadeUp>
-            <FaqAccordion items={faq} />
+            <FaqAccordion items={content.faq} />
           </FadeUp>
         </div>
       </section>
 
-      <CallToAction title={<>Niet gevonden wat je zoekt?</>} description="We bouwen ook volledig maatwerk. Vertel ons wat je in gedachten hebt." />
+      <CallToAction
+        title={en ? "Didn't find what you're looking for?" : "Niet gevonden wat je zoekt?"}
+        description={en ? "We also build fully custom work. Tell us what you have in mind." : "We bouwen ook volledig maatwerk. Vertel ons wat je in gedachten hebt."}
+      />
     </>
   );
 }

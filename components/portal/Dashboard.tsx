@@ -5,6 +5,7 @@ import { Bot, CheckCircle2, Clock, FolderKanban, LifeBuoy, LogOut, Plus, Ticket 
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Button } from "@/components/ui/Button";
 import type { PortalProject, PortalTicket, ProjectStatus, TicketPriority, TicketStatus } from "@/lib/portal";
@@ -35,12 +36,27 @@ const priorityStyle: Record<TicketPriority, string> = {
   Hoog: "text-rose-300",
 };
 
+/** English labels for the demo statuses (the values themselves stay Dutch). */
+const labelsEn: Record<string, string> = {
+  "In ontwikkeling": "In development",
+  Opgeleverd: "Delivered",
+  Gepland: "Planned",
+  "In behandeling": "In progress",
+  Gesloten: "Closed",
+  Laag: "Low",
+  Normaal: "Normal",
+  Hoog: "High",
+};
+
 export function Dashboard({ user, projects, tickets, isOwner = false }: DashboardProps) {
+  const { locale, lp } = useI18n();
+  const en = locale === "en";
+  const label = (v: string) => (en ? (labelsEn[v] ?? v) : v);
   const [tab, setTab] = useState<"projects" | "tickets">("projects");
 
   const kpis = [
-    { label: "Actieve projecten", value: projects.filter((p) => p.status !== "Opgeleverd").length, icon: FolderKanban },
-    { label: "Opgeleverd", value: projects.filter((p) => p.status === "Opgeleverd").length, icon: CheckCircle2 },
+    { label: en ? "Active projects" : "Actieve projecten", value: projects.filter((p) => p.status !== "Opgeleverd").length, icon: FolderKanban },
+    { label: en ? "Delivered" : "Opgeleverd", value: projects.filter((p) => p.status === "Opgeleverd").length, icon: CheckCircle2 },
     { label: "Open tickets", value: tickets.filter((t) => t.status !== "Gesloten").length, icon: Ticket },
   ];
 
@@ -58,7 +74,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
               </span>
             )}
             <div>
-              <p className="text-sm text-zinc-400">Welkom terug{user.demo && " (demo)"}</p>
+              <p className="text-sm text-zinc-400">{en ? "Welcome back" : "Welkom terug"}{user.demo && " (demo)"}</p>
               <h1 className="text-3xl font-semibold">{user.name}</h1>
             </div>
           </div>
@@ -69,10 +85,10 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
               </Button>
             )}
             <Button asChild size="sm">
-              <Link href="/contact"><Plus /> Nieuw project</Link>
+              <Link href={lp("/contact")}><Plus /> {en ? "New project" : "Nieuw project"}</Link>
             </Button>
-            <form action="/api/auth/logout" method="post">
-              <Button type="submit" variant="secondary" size="sm"><LogOut /> Uitloggen</Button>
+            <form action={en ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">
+              <Button type="submit" variant="secondary" size="sm"><LogOut /> {en ? "Log out" : "Uitloggen"}</Button>
             </form>
           </div>
         </div>
@@ -105,7 +121,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
                   className={cn("relative rounded-xl px-4 py-2 font-display text-sm", tab === t ? "text-white" : "text-zinc-400 hover:text-white")}
                 >
                   {tab === t && <motion.span layoutId="portal-tab" className="absolute inset-0 -z-10 rounded-xl bg-brand-gradient shadow-glow" />}
-                  {t === "projects" ? "Projecten" : "Tickets"}
+                  {t === "projects" ? (en ? "Projects" : "Projecten") : "Tickets"}
                 </button>
               ))}
             </div>
@@ -119,7 +135,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="text-xs uppercase tracking-wider text-zinc-500">
                   <tr>
-                    <Th>Project</Th><Th>Afdeling</Th><Th>Status</Th><Th>Voortgang</Th><Th>Deadline</Th>
+                    <Th>Project</Th><Th>{en ? "Department" : "Afdeling"}</Th><Th>Status</Th><Th>{en ? "Progress" : "Voortgang"}</Th><Th>Deadline</Th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -130,7 +146,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
                         <p className="text-xs text-zinc-500">{p.id}</p>
                       </Td>
                       <Td>{p.department}</Td>
-                      <Td><Pill className={projectStatusStyle[p.status]}>{p.status}</Pill></Td>
+                      <Td><Pill className={projectStatusStyle[p.status]}>{label(p.status)}</Pill></Td>
                       <Td>
                         <div className="flex items-center gap-3">
                           <div className="h-2 w-32 overflow-hidden rounded-full bg-white/5">
@@ -147,7 +163,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
                       <Td>
                         <span className="inline-flex items-center gap-1.5 text-zinc-400">
                           <Clock className="size-3.5" />
-                          {new Date(p.deadline).toLocaleDateString("nl-NL", { day: "numeric", month: "short" })}
+                          {new Date(p.deadline).toLocaleDateString(en ? "en-GB" : "nl-NL", { day: "numeric", month: "short" })}
                         </span>
                       </Td>
                     </motion.tr>
@@ -158,7 +174,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="text-xs uppercase tracking-wider text-zinc-500">
                   <tr>
-                    <Th>Ticket</Th><Th>Onderwerp</Th><Th>Prioriteit</Th><Th>Status</Th><Th>Laatste update</Th>
+                    <Th>Ticket</Th><Th>{en ? "Subject" : "Onderwerp"}</Th><Th>{en ? "Priority" : "Prioriteit"}</Th><Th>Status</Th><Th>{en ? "Last update" : "Laatste update"}</Th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -166,8 +182,8 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
                     <motion.tr key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} className="transition-colors hover:bg-white/[0.02]">
                       <Td className="font-mono text-xs text-zinc-400">{t.id}</Td>
                       <Td className="font-medium text-white">{t.subject}</Td>
-                      <Td className={priorityStyle[t.priority]}>{t.priority}</Td>
-                      <Td><Pill className={ticketStatusStyle[t.status]}>{t.status}</Pill></Td>
+                      <Td className={priorityStyle[t.priority]}>{label(t.priority)}</Td>
+                      <Td><Pill className={ticketStatusStyle[t.status]}>{label(t.status)}</Pill></Td>
                       <Td className="text-zinc-400">{t.updated}</Td>
                     </motion.tr>
                   ))}

@@ -8,10 +8,49 @@ import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
 import { formatDate, formatSize, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
+import { fmt, localePath, type Locale } from "@/lib/i18n/config";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+const texts = {
+  nl: {
+    active: "Actieve projecten", delivered: "Opgeleverd", openTickets: "Open tickets", openBugs: "Open bugmeldingen",
+    welcome: "Welkom terug", newProject: "Nieuw project", logout: "Uitloggen",
+    unavailable: "Je live gegevens zijn tijdelijk niet beschikbaar. Probeer het over een paar minuten opnieuw.",
+    projects: "Projecten",
+    noProjects: "Je hebt nog geen projecten bij ons. Zodra we aan de slag gaan, volg je de voortgang hier live.",
+    requestProject: "Project aanvragen",
+    files: "Bestanden", download: "{name} downloaden",
+    noTickets: "Je hebt geen open tickets. Vragen? Open een ticket in onze Discord.", toDiscord: "Naar Discord",
+    openedOn: "Geopend op {date}", helping: "{name} helpt je", waiting: "wacht op een medewerker", open: "Openen",
+    applications: "Mijn sollicitaties", sentOn: "Verstuurd op {date}",
+    closedTickets: "Afgesloten tickets", closedOn: "Gesloten op {date}", messages: "{n} berichten",
+    bugs: "Bugmeldingen", noBugs: "Je hebt nog geen bugs gemeld. Iets gevonden? Meld het via het bugkanaal in onze Discord.",
+    reportedOn: "Gemeld op {date}",
+    phases: "Projectfases", lastUpdate: "Laatste update", earlier: "Eerdere updates",
+  },
+  en: {
+    active: "Active projects", delivered: "Delivered", openTickets: "Open tickets", openBugs: "Open bug reports",
+    welcome: "Welcome back", newProject: "New project", logout: "Log out",
+    unavailable: "Your live data is temporarily unavailable. Please try again in a few minutes.",
+    projects: "Projects",
+    noProjects: "You don't have any projects with us yet. As soon as we get started, you can follow the progress here live.",
+    requestProject: "Request a project",
+    files: "Files", download: "Download {name}",
+    noTickets: "You have no open tickets. Questions? Open a ticket in our Discord.", toDiscord: "Go to Discord",
+    openedOn: "Opened on {date}", helping: "{name} is helping you", waiting: "waiting for a team member", open: "Open",
+    applications: "My applications", sentOn: "Sent on {date}",
+    closedTickets: "Closed tickets", closedOn: "Closed on {date}", messages: "{n} messages",
+    bugs: "Bug reports", noBugs: "You haven't reported any bugs yet. Found something? Report it in the bug channel in our Discord.",
+    reportedOn: "Reported on {date}",
+    phases: "Project phases", lastUpdate: "Last update", earlier: "Earlier updates",
+  },
+};
+
+type Texts = (typeof texts)["nl"];
+
 interface ClientPortalProps {
+  locale?: Locale;
   user: { name: string; avatar: string | null };
   /** null when the bot could not be reached */
   data: ClientData | null;
@@ -20,7 +59,10 @@ interface ClientPortalProps {
 }
 
 /** Client portal with live data from the Discord bot: projects (/projectstatus), tickets and bug reports. */
-export function ClientPortal({ user, data, isOwner, departments }: ClientPortalProps) {
+export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }: ClientPortalProps) {
+  const tx = texts[locale];
+  const lp = (href: string) => localePath(locale, href);
+  const date = (ms: number, withTime = false) => formatDate(ms, withTime, locale);
   const projects = data?.projecten ?? [];
   const tickets = data?.tickets ?? [];
   const bugs = data?.bugs ?? [];
@@ -29,10 +71,10 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
   const files = data?.bestanden ?? [];
 
   const kpis = [
-    { label: "Actieve projecten", value: projects.filter((p) => p.percentage < 100).length, icon: FolderKanban },
-    { label: "Opgeleverd", value: projects.filter((p) => p.percentage >= 100).length, icon: CheckCircle2 },
-    { label: "Open tickets", value: tickets.length, icon: Ticket },
-    { label: "Open bugmeldingen", value: bugs.filter((b) => !b.afgesloten).length, icon: Bug },
+    { label: tx.active, value: projects.filter((p) => p.percentage < 100).length, icon: FolderKanban },
+    { label: tx.delivered, value: projects.filter((p) => p.percentage >= 100).length, icon: CheckCircle2 },
+    { label: tx.openTickets, value: tickets.length, icon: Ticket },
+    { label: tx.openBugs, value: bugs.filter((b) => !b.afgesloten).length, icon: Bug },
   ];
 
   return (
@@ -46,7 +88,7 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
               <span className="grid size-14 place-items-center rounded-2xl bg-brand-gradient font-display text-xl font-semibold text-white">{user.name.charAt(0).toUpperCase()}</span>
             )}
             <div>
-              <p className="text-sm text-zinc-400">Welkom terug</p>
+              <p className="text-sm text-zinc-400">{tx.welcome}</p>
               <h1 className="text-3xl font-semibold">{user.name}</h1>
             </div>
           </div>
@@ -57,17 +99,17 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
               </Button>
             )}
             <Button asChild size="sm">
-              <Link href="/contact"><Plus /> Nieuw project</Link>
+              <Link href={lp("/contact")}><Plus /> {tx.newProject}</Link>
             </Button>
-            <form action="/api/auth/logout" method="post">
-              <Button type="submit" variant="secondary" size="sm"><LogOut /> Uitloggen</Button>
+            <form action={locale === "en" ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">
+              <Button type="submit" variant="secondary" size="sm"><LogOut /> {tx.logout}</Button>
             </form>
           </div>
         </div>
 
         {!data && (
           <p role="status" className="mt-8 flex items-start gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
-            <AlertCircle className="mt-0.5 size-4 shrink-0" /> Je live gegevens zijn tijdelijk niet beschikbaar. Probeer het over een paar minuten opnieuw.
+            <AlertCircle className="mt-0.5 size-4 shrink-0" /> {tx.unavailable}
           </p>
         )}
 
@@ -86,14 +128,14 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
         </Stagger>
 
         {/* Projects */}
-        <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderKanban className="size-5 text-brand-300" /> Projecten</h2>
+        <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderKanban className="size-5 text-brand-300" /> {tx.projects}</h2>
         {projects.length === 0 ? (
-          <Empty text="Je hebt nog geen projecten bij ons. Zodra we aan de slag gaan, volg je de voortgang hier live." cta={{ href: "/contact", label: "Project aanvragen" }} />
+          <Empty text={tx.noProjects} cta={{ href: lp("/contact"), label: tx.requestProject }} />
         ) : (
           <div className="mt-4 grid gap-6 lg:grid-cols-2">
             {projects.map((p, i) => (
               <FadeUp key={p.id} delay={i * 0.05}>
-                <ProjectCard project={p} />
+                <ProjectCard project={p} tx={tx} date={date} />
               </FadeUp>
             ))}
           </div>
@@ -102,19 +144,19 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
         {/* Files */}
         {files.length > 0 && (
           <>
-            <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderOpen className="size-5 text-brand-300" /> Bestanden</h2>
+            <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderOpen className="size-5 text-brand-300" /> {tx.files}</h2>
             <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
               {files.map((f) => (
                 <li key={f.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
                   <div className="min-w-0">
                     <p className="truncate font-medium text-white" title={f.naam}>{f.naam}</p>
                     <p className="mt-0.5 truncate text-sm text-zinc-400">
-                      {formatSize(f.grootte)} • {formatDate(f.t)}{f.project ? ` • ${f.project}` : ""}
+                      {formatSize(f.grootte, locale)} • {date(f.t)}{f.project ? ` • ${f.project}` : ""}
                     </p>
                     {f.beschrijving && <p className="mt-1 truncate text-xs text-zinc-500">{f.beschrijving}</p>}
                   </div>
                   <Button asChild size="sm" variant="secondary">
-                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={`${f.naam} downloaden`}><Download /></a>
+                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={fmt(tx.download, { name: f.naam })}><Download /></a>
                   </Button>
                 </li>
               ))}
@@ -126,11 +168,11 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
           {/* Tickets */}
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="flex items-center gap-2 text-xl font-semibold"><Ticket className="size-5 text-brand-300" /> Open tickets</h2>
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><Ticket className="size-5 text-brand-300" /> {tx.openTickets}</h2>
               {departments.length > 0 && <NewTicketForm departments={departments} discordInvite={site.discordInvite} />}
             </div>
             {tickets.length === 0 ? (
-              <Empty text="Je hebt geen open tickets. Vragen? Open een ticket in onze Discord." cta={{ href: site.discordInvite, label: "Naar Discord", external: true }} />
+              <Empty text={tx.noTickets} cta={{ href: site.discordInvite, label: tx.toDiscord, external: true }} />
             ) : (
               <ul className="mt-4 space-y-3">
                 {tickets.map((t) => (
@@ -138,11 +180,11 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
                     <div className="min-w-0">
                       <p className="truncate font-medium text-white">{t.emoji} {t.afdeling}</p>
                       <p className="mt-0.5 text-sm text-zinc-400">
-                        Geopend op {formatDate(t.geopend, true)} • {t.geclaimdDoor ? <span className="text-emerald-300">{t.geclaimdDoor} helpt je</span> : <span className="text-amber-300">wacht op een medewerker</span>}
+                        {fmt(tx.openedOn, { date: date(t.geopend, true) })} • {t.geclaimdDoor ? <span className="text-emerald-300">{fmt(tx.helping, { name: t.geclaimdDoor })}</span> : <span className="text-amber-300">{tx.waiting}</span>}
                       </p>
                     </div>
                     <Button asChild size="sm" variant="discord">
-                      <a href={t.link} target="_blank" rel="noopener noreferrer"><DiscordIcon className="size-4" /> Openen</a>
+                      <a href={t.link} target="_blank" rel="noopener noreferrer"><DiscordIcon className="size-4" /> {tx.open}</a>
                     </Button>
                   </li>
                 ))}
@@ -153,13 +195,13 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
           {/* Applications */}
           {applications.length > 0 && (
             <div className="lg:col-span-2 lg:order-last">
-              <h2 className="flex items-center gap-2 text-xl font-semibold"><Briefcase className="size-5 text-brand-300" /> Mijn sollicitaties</h2>
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><Briefcase className="size-5 text-brand-300" /> {tx.applications}</h2>
               <ul className="mt-4 grid gap-3 md:grid-cols-2">
                 {applications.map((a) => (
                   <li key={a.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-white">{a.titel}</p>
-                      <p className="mt-0.5 text-sm text-zinc-400">Verstuurd op {formatDate(a.t)}</p>
+                      <p className="mt-0.5 text-sm text-zinc-400">{fmt(tx.sentOn, { date: date(a.t) })}</p>
                     </div>
                     <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs", a.afgesloten ? "border-white/10 bg-white/5 text-zinc-300" : "border-brand-500/30 bg-brand-600/10 text-brand-200")}>
                       {a.statusEmoji} {a.status}
@@ -173,14 +215,14 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
           {/* Closed tickets with transcript */}
           {transcripts.length > 0 && (
             <div className="lg:col-span-2 lg:order-last">
-              <h2 className="flex items-center gap-2 text-xl font-semibold"><FileText className="size-5 text-brand-300" /> Afgesloten tickets</h2>
+              <h2 className="flex items-center gap-2 text-xl font-semibold"><FileText className="size-5 text-brand-300" /> {tx.closedTickets}</h2>
               <ul className="mt-4 grid gap-3 md:grid-cols-2">
                 {transcripts.map((t) => (
                   <li key={t.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
                     <div className="min-w-0">
                       <p className="truncate font-medium text-white">{t.emoji} {t.afdeling}</p>
                       <p className="mt-0.5 text-sm text-zinc-400">
-                        Gesloten op {formatDate(t.gesloten, true)} • {t.berichten} berichten
+                        {fmt(tx.closedOn, { date: date(t.gesloten, true) })} • {fmt(tx.messages, { n: t.berichten })}
                       </p>
                     </div>
                     <Button asChild size="sm" variant="secondary">
@@ -194,9 +236,9 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
 
           {/* Bug reports */}
           <div>
-            <h2 className="flex items-center gap-2 text-xl font-semibold"><Bug className="size-5 text-brand-300" /> Bugmeldingen</h2>
+            <h2 className="flex items-center gap-2 text-xl font-semibold"><Bug className="size-5 text-brand-300" /> {tx.bugs}</h2>
             {bugs.length === 0 ? (
-              <Empty text="Je hebt nog geen bugs gemeld. Iets gevonden? Meld het via het bugkanaal in onze Discord." />
+              <Empty text={tx.noBugs} />
             ) : (
               <ul className="mt-4 space-y-3">
                 {bugs.map((b) => (
@@ -209,7 +251,7 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
                         {b.statusEmoji} {b.status}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">Gemeld op {formatDate(b.aangemaakt)}</p>
+                    <p className="mt-1 text-xs text-zinc-500">{fmt(tx.reportedOn, { date: date(b.aangemaakt) })}</p>
                     {b.reactie && (
                       <p className="mt-3 flex items-start gap-2 rounded-2xl bg-white/[0.03] p-3 text-sm text-zinc-300">
                         <MessageSquare className="mt-0.5 size-4 shrink-0 text-brand-300" /> {b.reactie}
@@ -232,7 +274,7 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
   );
 }
 
-function ProjectCard({ project: p }: { project: ClientProject }) {
+function ProjectCard({ project: p, tx, date }: { project: ClientProject; tx: Texts; date: (ms: number, withTime?: boolean) => string }) {
   const overdue = p.deadline !== null && p.percentage < 100 && p.deadline < Date.now();
   return (
     <div className="glass h-full rounded-3xl p-6">
@@ -243,7 +285,7 @@ function ProjectCard({ project: p }: { project: ClientProject }) {
         </div>
         {p.deadline !== null && (
           <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs", overdue ? "border-rose-500/30 bg-rose-500/10 text-rose-200" : "border-white/10 text-zinc-300")}>
-            <CalendarClock className="size-3.5" /> {formatDate(p.deadline)}
+            <CalendarClock className="size-3.5" /> {date(p.deadline)}
           </span>
         )}
       </div>
@@ -255,7 +297,7 @@ function ProjectCard({ project: p }: { project: ClientProject }) {
         <span className="font-display tabular-nums text-white">{p.percentage}%</span>
       </div>
 
-      <ol className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Projectfases">
+      <ol className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label={tx.phases}>
         {p.fases.map((f) => (
           <li
             key={f.nr}
@@ -274,17 +316,17 @@ function ProjectCard({ project: p }: { project: ClientProject }) {
       </ol>
 
       <div className="mt-5 rounded-2xl bg-white/[0.03] p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Laatste update{p.bijgewerkt ? ` • ${formatDate(p.bijgewerkt, true)}` : ""}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">{tx.lastUpdate}{p.bijgewerkt ? ` • ${date(p.bijgewerkt, true)}` : ""}</p>
         <p className="mt-1.5 whitespace-pre-line text-sm text-zinc-300">{p.notitie}</p>
       </div>
 
       {p.geschiedenis.length > 1 && (
         <details className="mt-4 text-sm">
-          <summary className="cursor-pointer text-zinc-400 hover:text-white">Eerdere updates</summary>
+          <summary className="cursor-pointer text-zinc-400 hover:text-white">{tx.earlier}</summary>
           <ul className="mt-2 space-y-1.5 border-l border-white/10 pl-4">
             {p.geschiedenis.slice(1).map((g) => (
               <li key={g.t} className="text-zinc-400">
-                <span className="text-zinc-500">{formatDate(g.t)} • {g.percentage}%</span> — {g.notitie}
+                <span className="text-zinc-500">{date(g.t)} • {g.percentage}%</span> — {g.notitie}
               </li>
             ))}
           </ul>

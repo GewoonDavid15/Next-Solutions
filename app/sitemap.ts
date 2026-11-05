@@ -1,38 +1,28 @@
 import type { MetadataRoute } from "next";
 import { projects } from "@/lib/data";
+import { localePath } from "@/lib/i18n/config";
 import { navLinks, site } from "@/lib/site";
 
+type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number };
+
+/** Every page exists in Dutch (plain URL) and English (/en/...); both are listed with hreflang alternates. */
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-  const pages: MetadataRoute.Sitemap = navLinks
-    .filter((l) => l.href !== "/klantportaal")
-    .map((l) => ({
-      url: `${site.url}${l.href === "/" ? "" : l.href}`,
-      lastModified: now,
-      changeFrequency: l.href === "/" ? "weekly" : "monthly",
-      priority: l.href === "/" ? 1 : 0.8,
-    }));
+  const entries: Entry[] = [
+    ...navLinks
+      .filter((l) => l.href !== "/klantportaal")
+      .map((l) => ({ path: l.href, changeFrequency: l.href === "/" ? ("weekly" as const) : ("monthly" as const), priority: l.href === "/" ? 1 : 0.8 })),
+    ...["/team", "/reviews", "/vacatures", "/status"].map((path) => ({ path, changeFrequency: "daily" as const, priority: 0.5 })),
+    ...projects.map((p) => ({ path: `/portfolio/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.6 })),
+    ...["/privacy", "/voorwaarden"].map((path) => ({ path, changeFrequency: "yearly" as const, priority: 0.3 })),
+  ];
 
-  const cases: MetadataRoute.Sitemap = projects.map((p) => ({
-    url: `${site.url}/portfolio/${p.slug}`,
-    lastModified: now,
-    changeFrequency: "yearly",
-    priority: 0.6,
-  }));
-
-  const live: MetadataRoute.Sitemap = ["/team", "/reviews", "/vacatures", "/status"].map((href) => ({
-    url: `${site.url}${href}`,
-    lastModified: now,
-    changeFrequency: "daily",
-    priority: 0.5,
-  }));
-
-  const legal: MetadataRoute.Sitemap = ["/privacy", "/voorwaarden"].map((href) => ({
-    url: `${site.url}${href}`,
-    lastModified: now,
-    changeFrequency: "yearly",
-    priority: 0.3,
-  }));
-
-  return [...pages, ...live, ...cases, ...legal];
+  const url = (path: string) => `${site.url}${path === "/" ? "" : path}`;
+  return entries.flatMap(({ path, changeFrequency, priority }) => {
+    const languages = { "nl-NL": url(path), en: url(localePath("en", path)) };
+    return [
+      { url: languages["nl-NL"], lastModified: now, changeFrequency, priority, alternates: { languages } },
+      { url: languages.en, lastModified: now, changeFrequency, priority: Math.max(0.1, priority - 0.1), alternates: { languages } },
+    ];
+  });
 }

@@ -6,6 +6,7 @@ import {
   encodeSession,
   isOAuthConfigured,
   redirectUri,
+  portalPath,
   safeReturnPath,
   sessionCookieOptions,
 } from "@/lib/session";
@@ -14,7 +15,7 @@ import {
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const fail = (reason: string) => {
-    const res = NextResponse.redirect(new URL(`/klantportaal?error=${reason}`, origin));
+    const res = NextResponse.redirect(new URL(`${portalPath(request, request.cookies.get(RETURN_COOKIE)?.value)}?error=${reason}`, origin));
     res.cookies.delete(STATE_COOKIE);
     return res;
   };

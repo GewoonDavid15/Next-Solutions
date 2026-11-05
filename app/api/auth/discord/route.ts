@@ -1,12 +1,12 @@
 import { randomBytes } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { RETURN_COOKIE, STATE_COOKIE, isOAuthConfigured, redirectUri, safeReturnPath } from "@/lib/session";
+import { RETURN_COOKIE, STATE_COOKIE, isOAuthConfigured, portalPath, redirectUri, safeReturnPath } from "@/lib/session";
 
 /** Step 1 of Discord OAuth2: redirect the user to Discord's consent screen. */
 export function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
   if (!isOAuthConfigured()) {
-    return NextResponse.redirect(new URL("/klantportaal?error=not_configured", origin));
+    return NextResponse.redirect(new URL(`${portalPath(request, request.nextUrl.searchParams.get("terug"))}?error=not_configured`, origin));
   }
 
   const state = randomBytes(16).toString("hex");

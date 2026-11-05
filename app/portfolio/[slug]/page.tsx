@@ -8,43 +8,40 @@ import { CallToAction } from "@/components/sections/CallToAction";
 import { ProjectMockup } from "@/components/sections/ProjectMockup";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { projects } from "@/lib/data";
+import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-/** The project list is static, so any other slug is a genuine 404. */
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
-}
+// Rendered per request (not prerendered), so /en/portfolio/... gets the English text. Unknown slugs give a 404 below.
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const { content } = await getI18n();
+  const project = content.projects.find((p) => p.slug === slug);
   if (!project) return {};
-  return {
-    title: `${project.title} — ${project.client}`,
-    description: project.summary,
+  return pageMetadata(`/portfolio/${slug}`, `${project.title} — ${project.client}`, project.summary, {
     openGraph: { title: project.title, description: project.summary, type: "article" },
-  };
+  });
 }
 
 export default async function ProjectPage({ params }: Props) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const { locale, content, lp } = await getI18n();
+  const en = locale === "en";
+  const list = content.projects;
+  const project = list.find((p) => p.slug === slug);
   if (!project) notFound();
 
-  const index = projects.findIndex((p) => p.slug === slug);
-  const next = projects[(index + 1) % projects.length];
+  const index = list.findIndex((p) => p.slug === slug);
+  const next = list[(index + 1) % list.length];
 
   const meta = [
-    { icon: Tag, label: "Categorie", value: project.category, capitalize: true },
-    { icon: Calendar, label: "Jaar", value: String(project.year), capitalize: false },
-    { icon: Clock, label: "Doorlooptijd", value: project.duration, capitalize: false },
+    { icon: Tag, label: en ? "Category" : "Categorie", value: project.category, capitalize: true },
+    { icon: Calendar, label: en ? "Year" : "Jaar", value: String(project.year), capitalize: false },
+    { icon: Clock, label: en ? "Duration" : "Doorlooptijd", value: project.duration, capitalize: false },
   ];
 
   return (
@@ -57,10 +54,10 @@ export default async function ProjectPage({ params }: Props) {
         <div className="container relative">
           <FadeUp>
             <Link
-              href="/portfolio"
+              href={lp("/portfolio")}
               className="inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
             >
-              <ArrowLeft className="size-4" /> Terug naar portfolio
+              <ArrowLeft className="size-4" /> {en ? "Back to portfolio" : "Terug naar portfolio"}
             </Link>
 
             <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -95,11 +92,11 @@ export default async function ProjectPage({ params }: Props) {
           <FadeUp className="lg:col-span-2">
             <div className="space-y-8">
               <Card>
-                <h2 className="text-2xl font-semibold">De uitdaging</h2>
+                <h2 className="text-2xl font-semibold">{en ? "The challenge" : "De uitdaging"}</h2>
                 <p className="mt-3 leading-relaxed text-zinc-400">{project.challenge}</p>
               </Card>
               <Card>
-                <h2 className="text-2xl font-semibold">Onze aanpak</h2>
+                <h2 className="text-2xl font-semibold">{en ? "Our approach" : "Onze aanpak"}</h2>
                 <p className="mt-3 leading-relaxed text-zinc-400">{project.solution}</p>
               </Card>
             </div>
@@ -107,7 +104,7 @@ export default async function ProjectPage({ params }: Props) {
 
           <FadeUp delay={0.1} className="space-y-6">
             <Card>
-              <h2 className="text-lg font-semibold">Resultaat</h2>
+              <h2 className="text-lg font-semibold">{en ? "Results" : "Resultaat"}</h2>
               <dl className="mt-4 space-y-4">
                 {project.results.map((r) => (
                   <div key={r.label}>
@@ -137,10 +134,10 @@ export default async function ProjectPage({ params }: Props) {
       <section className="pb-4">
         <div className="container">
           <FadeUp>
-            <Link href={`/portfolio/${next.slug}`} className="group block">
+            <Link href={lp(`/portfolio/${next.slug}`)} className="group block">
               <Card interactive className="flex items-center justify-between gap-6">
                 <div>
-                  <p className="text-sm text-zinc-500">Volgend project</p>
+                  <p className="text-sm text-zinc-500">{en ? "Next project" : "Volgend project"}</p>
                   <p className="mt-1 font-display text-2xl font-semibold text-white">{next.title}</p>
                   <p className="text-sm text-zinc-400">{next.client}</p>
                 </div>
@@ -152,8 +149,8 @@ export default async function ProjectPage({ params }: Props) {
       </section>
 
       <CallToAction
-        title={<>Zoiets voor jouw project?</>}
-        description="Vertel ons waar je tegenaan loopt. We denken vrijblijvend met je mee."
+        title={en ? "Something like this for your project?" : "Zoiets voor jouw project?"}
+        description={en ? "Tell us what you're up against. We'll think along with you, no strings attached." : "Vertel ons waar je tegenaan loopt. We denken vrijblijvend met je mee."}
       />
     </>
   );

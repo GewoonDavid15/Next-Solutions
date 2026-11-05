@@ -123,22 +123,37 @@ export interface ClientData {
 }
 
 export const DAYS = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];
+export const DAYS_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export function formatUptime(pct: number | null) {
+type Lang = "nl" | "en";
+
+/** Decimal comma in Dutch, decimal point in English. */
+export const decimal = (n: number, digits: number, locale: Lang = "nl") => (locale === "en" ? n.toFixed(digits) : n.toFixed(digits).replace(".", ","));
+
+export function formatUptime(pct: number | null, locale: Lang = "nl") {
   if (pct === null) return "—";
-  return pct >= 99.995 ? "100%" : `${pct.toFixed(2).replace(".", ",")}%`;
+  return pct >= 99.995 ? "100%" : `${decimal(pct, 2, locale)}%`;
 }
 
-export function formatMinutes(ms: number) {
+export function formatMinutes(ms: number, locale: Lang = "nl") {
   const min = Math.max(1, Math.round(ms / 60000));
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60);
   const m = min % 60;
+  if (locale === "en") return m ? `${h} h ${m} min` : `${h} ${h === 1 ? "hour" : "hours"}`;
   return m ? `${h} u ${m} min` : `${h} uur`;
 }
 
-export function formatDate(ms: number, withTime = false) {
-  return new Date(ms).toLocaleString("nl-NL", {
+/** English versions of the bot's crowd levels (lib/ticket.js DRUKTE). Unknown levels keep the bot's Dutch text. */
+export const CROWD_EN: Record<string, { naam: string; tekst: string; verwacht: string }> = {
+  Rustig: { naam: "Quiet", tekst: "It's quiet. You'll be helped quickly!", verwacht: "within 30 minutes" },
+  Normaal: { naam: "Normal", tekst: "Normal activity. We'll help you as soon as possible.", verwacht: "within 1 to 2 hours" },
+  Druk: { naam: "Busy", tekst: "It's busy. Response times may be a little longer.", verwacht: "within 2 to 4 hours" },
+  "Zeer druk": { naam: "Very busy", tekst: "It's very busy. Thank you for your patience!", verwacht: "within 24 hours" },
+};
+
+export function formatDate(ms: number, withTime = false, locale: Lang = "nl") {
+  return new Date(ms).toLocaleString(locale === "en" ? "en-GB" : "nl-NL", {
     timeZone: "Europe/Amsterdam",
     day: "numeric",
     month: "long",
@@ -185,8 +200,8 @@ export interface ClientFile {
   t: number;
 }
 
-export function formatSize(bytes: number) {
-  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+export function formatSize(bytes: number, locale: Lang = "nl") {
+  return bytes >= 1024 * 1024 ? `${decimal(bytes / 1024 / 1024, 1, locale)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
 export interface ClientEmailStatus {

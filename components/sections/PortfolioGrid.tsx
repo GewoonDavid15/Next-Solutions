@@ -4,20 +4,22 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { projectFilters, projects, type ProjectCategory } from "@/lib/data";
+import { useI18n } from "@/components/i18n/I18nProvider";
+import type { Content, ProjectCategory } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { ProjectMockup } from "./ProjectMockup";
 
 type Filter = "all" | ProjectCategory;
 
-export function PortfolioGrid() {
+export function PortfolioGrid({ projects, filters }: { projects: Content["projects"]; filters: Content["projectFilters"] }) {
+  const { locale, lp } = useI18n();
   const [filter, setFilter] = useState<Filter>("all");
   const visible = projects.filter((p) => filter === "all" || p.category === filter);
 
   return (
     <LayoutGroup>
-      <div role="tablist" aria-label="Filter projecten" className="mx-auto mb-12 flex w-fit flex-wrap justify-center gap-1 rounded-2xl glass p-1.5">
-        {projectFilters.map((f) => {
+      <div role="tablist" aria-label={locale === "en" ? "Filter projects" : "Filter projecten"} className="mx-auto mb-12 flex w-fit flex-wrap justify-center gap-1 rounded-2xl glass p-1.5">
+        {filters.map((f) => {
           const active = filter === f.id;
           return (
             <button
@@ -56,7 +58,7 @@ export function PortfolioGrid() {
               transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
               className="group mb-6 break-inside-avoid overflow-hidden rounded-3xl glass transition-shadow duration-300 hover:border-brand-500/40 hover:shadow-glow-lg"
             >
-              <Link href={`/portfolio/${project.slug}`} className="block">
+              <Link href={lp(`/portfolio/${project.slug}`)} className="block">
                 <ProjectMockup project={project} />
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-3">
@@ -72,7 +74,7 @@ export function PortfolioGrid() {
                     ))}
                   </div>
                   <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-300">
-                    Bekijk case
+                    {locale === "en" ? "View case" : "Bekijk case"}
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>

@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/config";
+import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultValuesEn, servicesEn, statsEn } from "@/lib/content-en";
 import {
   Bot,
   Brush,
@@ -432,3 +434,32 @@ export const faq = [
       "Zeker. Alles is modulair. Wil je alleen een logo, alleen een bot of alleen de hosting, dan regelen we dat. Combineer je meerdere diensten, dan stemmen we het ontwerp op elkaar af.",
   },
 ];
+
+// ── Translations ─────────────────────────────────────────────────────────────
+
+/** All content in one language. Dutch is the source; English swaps the texts and keeps icons, colours and slugs. */
+export function getContent(locale: Locale) {
+  if (locale === "nl") return { departments, services, projectFilters, projects, stats, process, faq };
+  return {
+    departments: departments.map((d) => ({ ...d, ...departmentsEn[d.id] })),
+    services: services.map((s, i) => ({ ...s, ...servicesEn[i] })),
+    projectFilters: projectFilters.map((f) => ({ ...f, label: projectFiltersEn[f.id] ?? f.label })),
+    projects: projects.map((p) => {
+      const en = projectsEn[p.slug];
+      if (!en) return p;
+      return {
+        ...p,
+        duration: en.duration,
+        summary: en.summary,
+        challenge: en.challenge,
+        solution: en.solution,
+        results: p.results.map((r, i) => ({ label: en.results[i] ?? r.label, value: resultValuesEn[r.value] ?? r.value })),
+      };
+    }),
+    stats: stats.map((s, i) => ({ ...s, label: statsEn[i] ?? s.label })),
+    process: process.map((p, i) => ({ ...p, ...processEn[i] })),
+    faq: faqEn,
+  };
+}
+
+export type Content = ReturnType<typeof getContent>;

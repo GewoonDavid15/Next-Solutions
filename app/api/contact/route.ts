@@ -10,7 +10,7 @@ import {
 } from "@/lib/contact";
 
 export async function POST(request: Request) {
-  let body: Partial<QuoteRequest>;
+  let body: Partial<QuoteRequest> & { locale?: string };
   try {
     body = await request.json();
   } catch {
@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     discord: String(body.discord ?? ""),
   };
 
-  const errors = { ...validateStep(0, data), ...validateStep(1, data), ...validateStep(2, data) };
+  const locale = body.locale === "en" ? "en" : "nl";
+  const errors = { ...validateStep(0, data, locale), ...validateStep(1, data, locale), ...validateStep(2, data, locale) };
   if (Object.keys(errors).length) return NextResponse.json({ ok: false, errors }, { status: 422 });
 
   const webhook = process.env.DISCORD_CONTACT_WEBHOOK_URL;
@@ -52,13 +53,14 @@ export async function POST(request: Request) {
               { name: "E-mail", value: clip(data.email, 100), inline: true },
               { name: "Discord", value: clip(data.discord || "—", 40), inline: true },
               { name: "Omschrijving", value: clip(data.description) },
+              { name: "Taal", value: locale === "en" ? "🇬🇧 Engels" : "🇳🇱 Nederlands", inline: true },
             ],
             timestamp: new Date().toISOString(),
           },
         ],
       }),
     }).catch(() => null);
-    if (!res?.ok) return NextResponse.json({ ok: false, error: "Versturen mislukt, probeer het later opnieuw" }, { status: 502 });
+    if (!res?.ok) return NextResponse.json({ ok: false, error: locale === "en" ? "Sending failed, please try again later" : "Versturen mislukt, probeer het later opnieuw" }, { status: 502 });
   }
 
   return NextResponse.json({ ok: true });

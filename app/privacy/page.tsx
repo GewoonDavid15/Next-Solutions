@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
 import { LegalPage, type LegalSection } from "@/components/ui/LegalPage";
+import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Privacyverklaring",
-  description: "Welke gegevens Next Solutions verwerkt, waarom, en welke rechten je daarbij hebt.",
-};
+export async function generateMetadata() {
+  const { locale } = await getI18n();
+  return locale === "en"
+    ? pageMetadata("/privacy", "Privacy policy", "What data Next Solutions processes, why, and what rights you have.")
+    : pageMetadata("/privacy", "Privacyverklaring", "Welke gegevens Next Solutions verwerkt, waarom, en welke rechten je daarbij hebt.");
+}
 
 const sections: LegalSection[] = [
   {
@@ -74,7 +76,86 @@ const sections: LegalSection[] = [
   },
 ];
 
-export default function PrivacyPage() {
+
+const sectionsEn: LegalSection[] = [
+  {
+    heading: "What data we process",
+    paragraphs: ["We only process data that you give us yourself or that is needed to make the website work."],
+    list: [
+      "Quote form: your name, email address, optionally your Discord username, and the description of your project.",
+      "Client portal: your Discord username, user ID and profile picture, retrieved through Discord OAuth2 with the scope 'identify'.",
+      "Project data: the status of your ongoing assignments and tickets, for as long as you are a client.",
+      "Tickets in our Discord: the messages and attachments in your ticket. When it closes we keep a transcript that you and our team can read back.",
+      "Files: files we prepare for you in the client portal, such as designs or scripts.",
+      "Reviews: your stars, your comment and your Discord name. Reviews with four or five stars may appear on our website.",
+      "Applications: your Discord username and your answers to the questions for the vacancy.",
+      "Email notifications: only if you turn them on and confirm them yourself, your email address and which notifications you want to receive.",
+    ],
+  },
+  {
+    heading: "What we use it for",
+    list: [
+      "Drawing up and sending a quote in response to your request.",
+      "Carrying out the assignment and communicating about its progress.",
+      "Showing your projects, tickets, transcripts, files and applications in the client portal after you log in.",
+      "Sending notifications through Discord, and by email if you chose that.",
+      "Assessing applications and improving our service based on reviews.",
+      "Meeting our administrative and tax obligations.",
+    ],
+  },
+  {
+    heading: "What we don't do",
+    paragraphs: [
+      "We don't sell your data and don't rent it out to third parties. We don't use tracking cookies or advertising networks. The website only sets a functional cookie when you log in to the client portal; it keeps your session and disappears when you log out or after seven days. Choosing a language does not set a cookie: the language is part of the address (/en).",
+    ],
+  },
+  {
+    heading: "Discord",
+    paragraphs: [
+      "If you log in with Discord, we only receive your public profile. We get no access to your private messages, your Discord email address or the servers you are a member of. Our bot does read the messages in your ticket, so that we can make a transcript. Discord's own privacy policy applies to your use of Discord itself.",
+    ],
+  },
+  {
+    heading: "Email",
+    paragraphs: [
+      "Email notifications are off by default. If you turn them on in the client portal, we first send a confirmation email; only after that do you receive notifications. Every email contains an unsubscribe link. Unsubscribing also removes your email address. We use Resend as a processor for sending; they only process your email address to deliver the email.",
+    ],
+  },
+  {
+    heading: "How long we keep it",
+    paragraphs: [
+      "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for up to seven years after the last invoice, because the Dutch Tax Administration requires this of us. Your client portal session expires automatically after seven days.",
+      "We keep the last thousand ticket transcripts; older ones are deleted automatically. We delete your email address as soon as you unsubscribe. Files, reviews and applications are deleted at your request.",
+    ],
+  },
+  {
+    heading: "Your rights",
+    paragraphs: [
+      `You can always ask which data we hold about you, and have it corrected or deleted. Send a message to ${site.email} and we will reply within thirty days. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).`,
+    ],
+  },
+  {
+    heading: "Security",
+    paragraphs: [
+      "Traffic to this website runs over an encrypted connection. Session cookies are signed and cannot be read by scripts in your browser. Access to client data is limited to the team members working on it.",
+    ],
+  },
+];
+
+export default async function PrivacyPage() {
+  const { locale } = await getI18n();
+  if (locale === "en") {
+    return (
+      <LegalPage
+        locale="en"
+        eyebrow="Privacy"
+        title={<>Privacy <span className="text-gradient">policy</span></>}
+        description="What we do with your data, in plain language."
+        updated="5 November 2026"
+        sections={sectionsEn}
+      />
+    );
+  }
   return (
     <LegalPage
       eyebrow="Privacy"

@@ -5,6 +5,7 @@ import { Hash, RefreshCw, Users, Wifi } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import type { CommunityStats } from "@/lib/discord";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,8 @@ import { cn } from "@/lib/utils";
 const statusColor = { online: "bg-emerald-400", idle: "bg-amber-400", dnd: "bg-rose-500" } as const;
 
 export function DiscordWidget({ initial }: { initial: CommunityStats }) {
+  const { locale } = useI18n();
+  const en = locale === "en";
   const [data, setData] = useState(initial);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -46,13 +49,13 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
               <h2 className="text-2xl font-semibold">{data.name}</h2>
               <p className="flex items-center gap-2 text-sm text-white/80">
                 <span className={cn("size-2 rounded-full", operational ? "bg-emerald-300" : "bg-amber-300")} />
-                {operational ? "Alle systemen operationeel" : "Live data tijdelijk niet beschikbaar"}
+                {operational ? (en ? "All systems operational" : "Alle systemen operationeel") : en ? "Live data temporarily unavailable" : "Live data tijdelijk niet beschikbaar"}
               </p>
             </div>
           </div>
           <button
             onClick={refresh}
-            aria-label="Vernieuwen"
+            aria-label={en ? "Refresh" : "Vernieuwen"}
             className="grid size-10 place-items-center rounded-xl bg-white/10 text-white transition hover:bg-white/20"
           >
             <RefreshCw className={cn("size-4", refreshing && "animate-spin")} />
@@ -68,7 +71,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2.5 rounded-full bg-emerald-400" />
             </span>
-            Nu online
+            {en ? "Online now" : "Nu online"}
           </p>
           <p className="mt-2 font-display text-4xl font-semibold text-white">
             <AnimatedCounter value={data.online} duration={1.2} />
@@ -76,7 +79,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
         </div>
         <div className="p-6 text-center">
           <p className="flex items-center justify-center gap-2 text-sm text-zinc-400">
-            <Users className="size-4" /> Leden
+            <Users className="size-4" /> {en ? "Members" : "Leden"}
           </p>
           <p className="mt-2 font-display text-4xl font-semibold text-white">
             {data.memberCount ? <AnimatedCounter value={data.memberCount} duration={1.2} /> : "—"}
@@ -86,7 +89,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
 
       <div className="grid gap-6 p-6 sm:p-8 md:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">Kanalen</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">{en ? "Channels" : "Kanalen"}</h3>
           <ul className="space-y-1">
             {data.channels.map((c) => (
               <li key={c.id} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/5">
@@ -96,7 +99,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
           </ul>
         </div>
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">Online leden</h3>
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">{en ? "Online members" : "Online leden"}</h3>
           {data.members.length > 0 ? (
             <ul className="flex flex-wrap gap-2">
               {data.members.map((m, i) => (
@@ -116,7 +119,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
           ) : (
             <p className="flex items-center gap-2 rounded-xl border border-dashed border-white/10 p-4 text-sm text-zinc-500">
               <Wifi className="size-4" />
-              {data.live ? "Niemand zichtbaar in de widget." : "Stel DISCORD_GUILD_ID in voor live leden."}
+              {data.live ? (en ? "Nobody visible in the widget." : "Niemand zichtbaar in de widget.") : en ? "Set DISCORD_GUILD_ID for live members." : "Stel DISCORD_GUILD_ID in voor live leden."}
             </p>
           )}
         </div>
@@ -125,8 +128,8 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
       <div className="flex flex-col items-center gap-3 border-t border-white/5 p-6 sm:p-8">
         <JoinButton href={data.invite} />
         <p className="text-xs text-zinc-500">
-          {data.live ? "Live via Discord API" : "Demo data"} · bijgewerkt{" "}
-          {new Date(data.updatedAt).toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" })}
+          {data.live ? "Live via Discord API" : "Demo data"} · {en ? "updated" : "bijgewerkt"}{" "}
+          {new Date(data.updatedAt).toLocaleTimeString(en ? "en-GB" : "nl-NL", { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>
     </div>
@@ -135,6 +138,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
 
 /** Animated, pulsing "Join de Server" button. */
 export function JoinButton({ href }: { href: string }) {
+  const { locale } = useI18n();
   return (
     <motion.a
       href={href}
@@ -147,7 +151,7 @@ export function JoinButton({ href }: { href: string }) {
       <span aria-hidden className="absolute inset-0 animate-ping-slow rounded-2xl bg-[#5865F2]" />
       <span aria-hidden className="absolute inset-0 animate-ping-slow rounded-2xl bg-brand-600 [animation-delay:1s]" />
       <span className="relative flex items-center gap-3">
-        <DiscordIcon className="size-6" /> Join de Server
+        <DiscordIcon className="size-6" /> {locale === "en" ? "Join the Server" : "Join de Server"}
       </span>
     </motion.a>
   );

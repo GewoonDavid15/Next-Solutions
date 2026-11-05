@@ -6,6 +6,12 @@ export const SESSION_COOKIE = "ns_session";
 export const STATE_COOKIE = "ns_oauth_state";
 export const RETURN_COOKIE = "ns_return";
 
+/** The client portal in the visitor's language (?taal=en, or a return path under /en). */
+export function portalPath(request: { nextUrl: URL }, returnPath?: string | null) {
+  const en = request.nextUrl.searchParams.get("taal") === "en" || returnPath?.startsWith("/en/") || returnPath === "/en";
+  return en ? "/en/klantportaal" : "/klantportaal";
+}
+
 /** Only simple internal paths are allowed as return address after login (no open redirects). */
 export function safeReturnPath(value: string | null | undefined) {
   return value && /^\/[a-z0-9/-]{0,80}$/i.test(value) && !value.startsWith("//") ? value : "/klantportaal";

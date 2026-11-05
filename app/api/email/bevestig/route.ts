@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   const form = await request.formData().catch(() => null);
   const token = String(form?.get("token") ?? "");
   const back = (result: string, message = "") =>
-    NextResponse.redirect(new URL(`/klantportaal/email?resultaat=${result}${message ? `&melding=${encodeURIComponent(message)}` : ""}`, request.nextUrl.origin), 303);
+    NextResponse.redirect(new URL(`${request.nextUrl.searchParams.get("taal") === "en" ? "/en" : ""}/klantportaal/email?resultaat=${result}${message ? `&melding=${encodeURIComponent(message)}` : ""}`, request.nextUrl.origin), 303);
 
   if (!/^[a-f0-9]{48}$/.test(token)) return back("fout", "Deze link is ongeldig.");
   if (!isBotApiConfigured()) return back("fout", "E-mailmeldingen zijn nog niet beschikbaar.");

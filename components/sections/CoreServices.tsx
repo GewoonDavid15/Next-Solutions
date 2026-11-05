@@ -3,22 +3,28 @@ import Link from "next/link";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Card } from "@/components/ui/Card";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { departments } from "@/lib/data";
+import { getI18n } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
-export function CoreServices() {
+export async function CoreServices() {
+  const { locale, content, lp } = await getI18n();
+  const en = locale === "en";
   return (
     <section id="diensten" className="section scroll-mt-20">
       <div className="container">
         <SectionHeading
-          eyebrow="Kerndiensten"
-          title={<>Drie disciplines, <span className="text-gradient">één team</span></>}
-          description="Alles onder één dak. Onze specialisten werken samen zodat jouw project klopt — van code tot pixel."
+          eyebrow={en ? "Core services" : "Kerndiensten"}
+          title={en ? <>Three disciplines, <span className="text-gradient">one team</span></> : <>Drie disciplines, <span className="text-gradient">één team</span></>}
+          description={
+            en
+              ? "Everything under one roof. Our specialists work together so your project is right — from code to pixel."
+              : "Alles onder één dak. Onze specialisten werken samen zodat jouw project klopt — van code tot pixel."
+          }
         />
         <Stagger className="grid gap-6 md:grid-cols-3">
-          {departments.map(({ id, title, tagline, description, icon: Icon, gradient }) => (
+          {content.departments.map(({ id, title, tagline, description, icon: Icon, gradient }) => (
             <StaggerItem key={id}>
-              <Link href="/diensten" className="block h-full rounded-3xl">
+              <Link href={lp("/diensten")} className="block h-full rounded-3xl">
                 <Card interactive className="group h-full">
                   <div
                     aria-hidden
@@ -31,7 +37,7 @@ export function CoreServices() {
                   <h3 className="mt-1 text-2xl font-semibold">{title}</h3>
                   <p className="mt-3 leading-relaxed text-zinc-400">{description}</p>
                   <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-white">
-                    Meer info
+                    {en ? "Learn more" : "Meer info"}
                     <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </span>
                 </Card>

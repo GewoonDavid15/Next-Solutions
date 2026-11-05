@@ -30,6 +30,20 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
 | `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht met grafieken, instellingen van alle bot-systemen, botstatus, scripts, live console en een wijzigingslog met terugdraaien |
 
+## Talen (NL / EN)
+
+De site is tweetalig. Nederlands staat op de gewone adressen, Engels onder `/en` (bijv. `/en/diensten`).
+`middleware.ts` herschrijft `/en/...` naar dezelfde pagina en geeft de taal door; er zijn dus geen dubbele pagina's.
+
+- Gedeelde teksten (navigatie, footer, CTA): `lib/i18n/messages/nl.ts` en `en.ts`
+- Teksten van één component staan in dat component als `{ nl, en }`
+- Inhoud (diensten, cases, FAQ, statistieken): Nederlands in `lib/data.ts`, Engels in `lib/content-en.ts`
+- Server components: `await getI18n()` → `{ locale, t, content, lp }`; client components: `useI18n()`
+- Links binnen de site altijd via `lp("/pad")`, zodat Engelse bezoekers in het Engels blijven
+
+Niet vertaald: het bot-dashboard (`/dashboard`) en alles wat de bot zelf aanlevert (reviews, vacatures, team-bio's,
+projectnotities, e-mails en Discord-berichten).
+
 ## Discord integratie
 
 | Variabele | Doel |

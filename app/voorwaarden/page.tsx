@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
 import { LegalPage, type LegalSection } from "@/components/ui/LegalPage";
+import { getI18n, pageMetadata } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Algemene voorwaarden",
-  description: "De voorwaarden waaronder Next Solutions opdrachten aanneemt en uitvoert.",
-};
+export async function generateMetadata() {
+  const { locale } = await getI18n();
+  return locale === "en"
+    ? pageMetadata("/voorwaarden", "Terms and conditions", "The terms under which Next Solutions accepts and carries out assignments.")
+    : pageMetadata("/voorwaarden", "Algemene voorwaarden", "De voorwaarden waaronder Next Solutions opdrachten aanneemt en uitvoert.");
+}
 
 const sections: LegalSection[] = [
   {
@@ -75,7 +77,35 @@ const sections: LegalSection[] = [
   },
 ];
 
-export default function VoorwaardenPage() {
+
+const sectionsEn: LegalSection[] = [
+  { heading: "1. Applicability", paragraphs: ["These terms apply to every quote and every assignment of Next Solutions, unless we have agreed otherwise in writing. If your purchasing terms differ from these, they only apply if we have explicitly accepted them."] },
+  { heading: "2. Quotes and agreement", paragraphs: ["Quotes are valid for thirty days and are without obligation. An assignment is agreed as soon as you confirm the quote in writing or through Discord. Prices exclude VAT, unless stated otherwise."] },
+  { heading: "3. Execution", paragraphs: ["We carry out the assignment to the best of our knowledge and ability. Delivery dates are an estimate and not a strict deadline, unless we have explicitly recorded it as such. If things run late because we are waiting for content, feedback or access from your side, the schedule moves along with it."] },
+  { heading: "4. Additional work", paragraphs: ["If during the project you ask for functionality that was not in the quote, we first discuss what it costs and what it delivers. We only start on additional work after you have agreed to it."] },
+  { heading: "5. Payment", paragraphs: ["For projects of one thousand euros or more we ask for a fifty per cent deposit up front; the rest follows on delivery. Invoices have a payment term of fourteen days. Subscriptions, such as hosting and maintenance, are invoiced monthly in advance."] },
+  { heading: "6. Delivery and aftercare", paragraphs: ["After delivery you have fourteen days to check the work. Within thirty days of delivery we fix defects in the delivered work free of charge. Changes in your wishes, extensions and problems caused by changes made by third parties are not included."] },
+  { heading: "7. Intellectual property", paragraphs: ["Once you have paid in full, the rights to the code and designs made for you transfer to you. Parts from our own library and third-party software remain the property of their maker; you receive a licence to use them. We may show the work in our portfolio, unless we agree otherwise in writing."] },
+  { heading: "8. Hosting and availability", paragraphs: ["With a hosting subscription we aim for an availability of 99.9 per cent per month, measured outside announced maintenance. We are not liable for outages at suppliers, DDoS attacks or downtime of third-party platforms, such as Discord."] },
+  { heading: "9. Liability", paragraphs: ["Our liability is limited to the amount invoiced for the assignment concerned. We are not liable for consequential damage, lost profit or loss of data. This limitation does not apply in the case of intent or deliberate recklessness on our part."] },
+  { heading: "10. Termination", paragraphs: ["Subscriptions can be cancelled monthly with a notice period of one month. If you end an ongoing assignment early, we invoice the work done up to that moment."] },
+  { heading: "11. Applicable law", paragraphs: ["Dutch law applies to our agreements. If we cannot resolve a dispute together, we submit it to the competent court in the district where Next Solutions is established."] },
+];
+
+export default async function VoorwaardenPage() {
+  const { locale } = await getI18n();
+  if (locale === "en") {
+    return (
+      <LegalPage
+        locale="en"
+        eyebrow="Terms"
+        title={<>Terms and <span className="text-gradient">conditions</span></>}
+        description="The agreements we work under, without unnecessary legal jargon."
+        updated="4 November 2026"
+        sections={sectionsEn}
+      />
+    );
+  }
   return (
     <LegalPage
       eyebrow="Voorwaarden"

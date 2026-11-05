@@ -1,6 +1,7 @@
 import { AlertTriangle } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { PageHeader } from "@/components/ui/PageHeader";
+import type { Locale } from "@/lib/i18n/config";
 
 export interface LegalSection {
   heading: string;
@@ -14,10 +15,12 @@ interface LegalPageProps {
   description: string;
   updated: string;
   sections: LegalSection[];
+  locale?: Locale;
 }
 
 /** Shared layout for the privacy policy and terms pages. */
-export function LegalPage({ eyebrow, title, description, updated, sections }: LegalPageProps) {
+export function LegalPage({ eyebrow, title, description, updated, sections, locale = "nl" }: LegalPageProps) {
+  const en = locale === "en";
   return (
     <>
       <PageHeader eyebrow={eyebrow} title={title} description={description} />
@@ -28,11 +31,12 @@ export function LegalPage({ eyebrow, title, description, updated, sections }: Le
             <p className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
               <AlertTriangle className="mt-0.5 size-4 shrink-0" />
               <span>
-                Dit is een voorbeeldtekst die als startpunt dient. Laat hem controleren en aanvullen met je eigen
-                bedrijfsgegevens voordat de site live gaat.
+                {en
+                  ? "This is a translation of the Dutch text, provided for convenience. If the two differ, the Dutch version prevails. The text is a starting point and should be reviewed before the site goes live."
+                  : "Dit is een voorbeeldtekst die als startpunt dient. Laat hem controleren en aanvullen met je eigen bedrijfsgegevens voordat de site live gaat."}
               </span>
             </p>
-            <p className="mt-4 text-sm text-zinc-500">Laatst bijgewerkt: {updated}</p>
+            <p className="mt-4 text-sm text-zinc-500">{en ? "Last updated" : "Laatst bijgewerkt"}: {updated}</p>
           </FadeUp>
 
           <div className="mt-10 space-y-10">

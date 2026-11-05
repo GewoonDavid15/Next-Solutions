@@ -3,26 +3,92 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, Gamepad2, Loader2, PartyPopper, Send, Sparkles, Code2 } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
-import {
-  budgetOptions,
-  departmentOptions,
-  emptyQuote,
-  labelFor,
-  serviceOptions,
-  timelineOptions,
-  validateStep,
-  type QuoteRequest,
-} from "@/lib/contact";
+import { emptyQuote, getQuoteOptions, labelFor, validateStep, type QuoteRequest } from "@/lib/contact";
+import { fmt } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
-const steps = ["Afdeling", "Project", "Gegevens", "Overzicht"];
+const texts = {
+  nl: {
+    steps: ["Afdeling", "Project", "Gegevens", "Overzicht"],
+    checkData: "Controleer je gegevens en probeer opnieuw.",
+    failed: "Er ging iets mis.",
+    sentTitle: "Aanvraag verstuurd!",
+    sentText: "Bedankt {name}. We nemen binnen 24 uur contact op via {via}e-mail.",
+    sentVia: "Discord of ",
+    again: "Nieuwe aanvraag",
+    department: "Voor welke afdeling is je aanvraag?",
+    chooseDepartment: "Kies een afdeling",
+    service: "Welke dienst?",
+    chooseService: "Kies een dienst",
+    departmentFirst: "Kies eerst een afdeling",
+    budget: "Budget",
+    chooseBudget: "Kies een budget",
+    timeline: "Planning",
+    when: "Wanneer?",
+    about: "Vertel ons over je project",
+    aboutPlaceholder: "Wat wil je bouwen, voor wie, en welke features zijn belangrijk?",
+    name: "Naam",
+    namePlaceholder: "Jouw naam",
+    email: "E-mail",
+    emailPlaceholder: "jij@voorbeeld.nl",
+    discord: "Discord gebruikersnaam (optioneel)",
+    discordPlaceholder: "bijv. nexify",
+    review: "Klopt alles?",
+    serviceShort: "Dienst",
+    departmentShort: "Afdeling",
+    description: "Omschrijving",
+    back: "Terug",
+    next: "Volgende",
+    sending: "Versturen…",
+    send: "Verstuur aanvraag",
+  },
+  en: {
+    steps: ["Department", "Project", "Details", "Summary"],
+    checkData: "Check your details and try again.",
+    failed: "Something went wrong.",
+    sentTitle: "Request sent!",
+    sentText: "Thanks {name}. We'll get in touch within 24 hours via {via}email.",
+    sentVia: "Discord or ",
+    again: "New request",
+    department: "Which department is your request for?",
+    chooseDepartment: "Choose a department",
+    service: "Which service?",
+    chooseService: "Choose a service",
+    departmentFirst: "Choose a department first",
+    budget: "Budget",
+    chooseBudget: "Choose a budget",
+    timeline: "Timeline",
+    when: "When?",
+    about: "Tell us about your project",
+    aboutPlaceholder: "What do you want to build, for whom, and which features matter?",
+    name: "Name",
+    namePlaceholder: "Your name",
+    email: "Email",
+    emailPlaceholder: "you@example.com",
+    discord: "Discord username (optional)",
+    discordPlaceholder: "e.g. nexify",
+    review: "Is everything correct?",
+    serviceShort: "Service",
+    departmentShort: "Department",
+    description: "Description",
+    back: "Back",
+    next: "Next",
+    sending: "Sending…",
+    send: "Send request",
+  },
+};
 const deptIcons = { software: Code2, game: Gamepad2, media: Sparkles } as const;
 
 type Errors = Partial<Record<keyof QuoteRequest, string>>;
 
 export function QuoteForm() {
+  const { locale } = useI18n();
+  const tx = texts[locale];
+  const steps = tx.steps;
+  const { departmentOptions, serviceOptions, budgetOptions, timelineOptions } = getQuoteOptions(locale);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [data, setData] = useState<QuoteRequest>(emptyQuote);
@@ -37,7 +103,7 @@ export function QuoteForm() {
 
   const go = (to: number) => {
     if (to > step) {
-      const e = validateStep(step, data);
+      const e = validateStep(step, data, locale);
       if (Object.keys(e).length) return setErrors(e);
     }
     setDirection(to > step ? 1 : -1);
@@ -51,13 +117,13 @@ export function QuoteForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, locale }),
       });
       const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error ?? "Controleer je gegevens en probeer opnieuw.");
+      if (!res.ok || !json.ok) throw new Error(json.error ?? tx.checkData);
       setStatus("sent");
     } catch (err) {
-      setServerError(err instanceof Error ? err.message : "Er ging iets mis.");
+      setServerError(err instanceof Error ? err.message : tx.failed);
       setStatus("error");
     }
   };
@@ -73,12 +139,12 @@ export function QuoteForm() {
         >
           <PartyPopper className="size-9 text-white" />
         </motion.div>
-        <h2 className="mt-6 text-3xl font-semibold">Aanvraag verstuurd!</h2>
+        <h2 className="mt-6 text-3xl font-semibold">{tx.sentTitle}</h2>
         <p className="mx-auto mt-3 max-w-md text-zinc-400">
-          Bedankt {data.name.split(" ")[0]}. We nemen binnen 24 uur contact op via {data.discord ? "Discord of " : ""}e-mail.
+          {fmt(tx.sentText, { name: data.name.split(" ")[0], via: data.discord ? tx.sentVia : "" })}
         </p>
         <Button className="mt-8" variant="secondary" onClick={() => { setData(emptyQuote); setStep(0); setStatus("idle"); }}>
-          Nieuwe aanvraag
+          {tx.again}
         </Button>
       </motion.div>
     );
@@ -144,7 +210,7 @@ export function QuoteForm() {
             >
               {step === 0 && (
                 <>
-                  <Field label="Voor welke afdeling is je aanvraag?" error={errors.department} htmlFor="department">
+                  <Field label={tx.department} error={errors.department} htmlFor="department">
                     <div className="grid gap-3 sm:grid-cols-3">
                       {departmentOptions.map((o) => {
                         const Icon = deptIcons[o.value as keyof typeof deptIcons];
@@ -167,15 +233,15 @@ export function QuoteForm() {
                       })}
                     </div>
                     <div className="mt-3 sm:hidden">
-                      <Select id="department" value={data.department} onValueChange={(v) => set("department", v)} placeholder="Kies een afdeling" options={departmentOptions} />
+                      <Select id="department" value={data.department} onValueChange={(v) => set("department", v)} placeholder={tx.chooseDepartment} options={departmentOptions} />
                     </div>
                   </Field>
-                  <Field label="Welke dienst?" error={errors.service} htmlFor="service">
+                  <Field label={tx.service} error={errors.service} htmlFor="service">
                     <Select
                       id="service"
                       value={data.service}
                       onValueChange={(v) => set("service", v)}
-                      placeholder={data.department ? "Kies een dienst" : "Kies eerst een afdeling"}
+                      placeholder={data.department ? tx.chooseService : tx.departmentFirst}
                       options={serviceOptions[data.department] ?? []}
                       invalid={!!errors.service}
                     />
@@ -186,20 +252,20 @@ export function QuoteForm() {
               {step === 1 && (
                 <>
                   <div className="grid gap-6 sm:grid-cols-2">
-                    <Field label="Budget" error={errors.budget} htmlFor="budget">
-                      <Select id="budget" value={data.budget} onValueChange={(v) => set("budget", v)} placeholder="Kies een budget" options={budgetOptions} invalid={!!errors.budget} />
+                    <Field label={tx.budget} error={errors.budget} htmlFor="budget">
+                      <Select id="budget" value={data.budget} onValueChange={(v) => set("budget", v)} placeholder={tx.chooseBudget} options={budgetOptions} invalid={!!errors.budget} />
                     </Field>
-                    <Field label="Planning" error={errors.timeline} htmlFor="timeline">
-                      <Select id="timeline" value={data.timeline} onValueChange={(v) => set("timeline", v)} placeholder="Wanneer?" options={timelineOptions} invalid={!!errors.timeline} />
+                    <Field label={tx.timeline} error={errors.timeline} htmlFor="timeline">
+                      <Select id="timeline" value={data.timeline} onValueChange={(v) => set("timeline", v)} placeholder={tx.when} options={timelineOptions} invalid={!!errors.timeline} />
                     </Field>
                   </div>
-                  <Field label="Vertel ons over je project" error={errors.description} htmlFor="description">
+                  <Field label={tx.about} error={errors.description} htmlFor="description">
                     <textarea
                       id="description"
                       rows={6}
                       value={data.description}
                       onChange={(e) => set("description", e.target.value)}
-                      placeholder="Wat wil je bouwen, voor wie, en welke features zijn belangrijk?"
+                      placeholder={tx.aboutPlaceholder}
                       className={inputClass(!!errors.description, "resize-none py-3")}
                     />
                     <p className="mt-1 text-right text-xs text-zinc-500">{data.description.length}/2000</p>
@@ -209,29 +275,29 @@ export function QuoteForm() {
 
               {step === 2 && (
                 <div className="grid gap-6 sm:grid-cols-2">
-                  <Field label="Naam" error={errors.name} htmlFor="name">
-                    <input id="name" autoComplete="name" value={data.name} onChange={(e) => set("name", e.target.value)} className={inputClass(!!errors.name)} placeholder="Jouw naam" />
+                  <Field label={tx.name} error={errors.name} htmlFor="name">
+                    <input id="name" autoComplete="name" value={data.name} onChange={(e) => set("name", e.target.value)} className={inputClass(!!errors.name)} placeholder={tx.namePlaceholder} />
                   </Field>
-                  <Field label="E-mail" error={errors.email} htmlFor="email">
-                    <input id="email" type="email" autoComplete="email" value={data.email} onChange={(e) => set("email", e.target.value)} className={inputClass(!!errors.email)} placeholder="jij@voorbeeld.nl" />
+                  <Field label={tx.email} error={errors.email} htmlFor="email">
+                    <input id="email" type="email" autoComplete="email" value={data.email} onChange={(e) => set("email", e.target.value)} className={inputClass(!!errors.email)} placeholder={tx.emailPlaceholder} />
                   </Field>
-                  <Field label="Discord gebruikersnaam (optioneel)" error={errors.discord} htmlFor="discord" className="sm:col-span-2">
-                    <input id="discord" value={data.discord} onChange={(e) => set("discord", e.target.value)} className={inputClass(!!errors.discord)} placeholder="bijv. nexify" />
+                  <Field label={tx.discord} error={errors.discord} htmlFor="discord" className="sm:col-span-2">
+                    <input id="discord" value={data.discord} onChange={(e) => set("discord", e.target.value)} className={inputClass(!!errors.discord)} placeholder={tx.discordPlaceholder} />
                   </Field>
                 </div>
               )}
 
               {step === 3 && (
                 <div>
-                  <h3 className="text-xl font-semibold">Klopt alles?</h3>
+                  <h3 className="text-xl font-semibold">{tx.review}</h3>
                   <dl className="mt-5 grid gap-3 sm:grid-cols-2">
                     {[
-                      ["Afdeling", labelFor(departmentOptions, data.department)],
-                      ["Dienst", labelFor(serviceOptions[data.department] ?? [], data.service)],
-                      ["Budget", labelFor(budgetOptions, data.budget)],
-                      ["Planning", labelFor(timelineOptions, data.timeline)],
-                      ["Naam", data.name],
-                      ["E-mail", data.email],
+                      [tx.departmentShort, labelFor(departmentOptions, data.department)],
+                      [tx.serviceShort, labelFor(serviceOptions[data.department] ?? [], data.service)],
+                      [tx.budget, labelFor(budgetOptions, data.budget)],
+                      [tx.timeline, labelFor(timelineOptions, data.timeline)],
+                      [tx.name, data.name],
+                      [tx.email, data.email],
                     ].map(([k, v]) => (
                       <div key={k} className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
                         <dt className="text-xs uppercase tracking-wider text-zinc-500">{k}</dt>
@@ -239,7 +305,7 @@ export function QuoteForm() {
                       </div>
                     ))}
                     <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4 sm:col-span-2">
-                      <dt className="text-xs uppercase tracking-wider text-zinc-500">Omschrijving</dt>
+                      <dt className="text-xs uppercase tracking-wider text-zinc-500">{tx.description}</dt>
                       <dd className="mt-1 whitespace-pre-wrap break-words text-sm text-zinc-300">{data.description}</dd>
                     </div>
                   </dl>
@@ -252,15 +318,15 @@ export function QuoteForm() {
 
         <div className="mt-8 flex items-center justify-between gap-3 border-t border-white/5 pt-6">
           <Button type="button" variant="ghost" onClick={() => go(step - 1)} className={cn(step === 0 && "invisible")}>
-            <ArrowLeft /> Terug
+            <ArrowLeft /> {tx.back}
           </Button>
           <Button type="submit" disabled={status === "sending"}>
             {step < 3 ? (
-              <>Volgende <ArrowRight className="transition-transform group-hover:translate-x-1" /></>
+              <>{tx.next} <ArrowRight className="transition-transform group-hover:translate-x-1" /></>
             ) : status === "sending" ? (
-              <><Loader2 className="animate-spin" /> Versturen…</>
+              <><Loader2 className="animate-spin" /> {tx.sending}</>
             ) : (
-              <><Send /> Verstuur aanvraag</>
+              <><Send /> {tx.send}</>
             )}
           </Button>
         </div>

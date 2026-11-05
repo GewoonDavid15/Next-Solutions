@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Users } from "lucide-react";
 import Image from "next/image";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
@@ -6,25 +5,32 @@ import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getPublicData } from "@/lib/bot-api";
+import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Team",
-  description: "Maak kennis met de developers en designers van Next Solutions.",
-};
+export async function generateMetadata() {
+  const { locale } = await getI18n();
+  return pageMetadata("/team", "Team", locale === "en" ? "Meet the developers and designers of Next Solutions." : "Maak kennis met de developers en designers van Next Solutions.");
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function TeamPage() {
   const data = await getPublicData();
   const team = data?.team ?? [];
+  const { locale } = await getI18n();
+  const en = locale === "en";
 
   return (
     <>
       <PageHeader
         eyebrow="Team"
-        title={<>De mensen achter <span className="text-gradient">Next Solutions</span></>}
-        description="Developers, designers en game developers die jouw project waarmaken. Je vindt ons allemaal in onze Discord."
+        title={en ? <>The people behind <span className="text-gradient">Next Solutions</span></> : <>De mensen achter <span className="text-gradient">Next Solutions</span></>}
+        description={
+          en
+            ? "Developers, designers and game developers who make your project happen. You'll find all of us in our Discord."
+            : "Developers, designers en game developers die jouw project waarmaken. Je vindt ons allemaal in onze Discord."
+        }
       />
 
       <section className="pb-16">
@@ -32,8 +38,8 @@ export default async function TeamPage() {
           {team.length === 0 ? (
             <div className="glass mx-auto max-w-xl rounded-3xl p-8 text-center">
               <Users className="mx-auto size-8 text-brand-300" />
-              <p className="mt-3 font-display text-xl text-white">Het team wordt geladen</p>
-              <p className="mt-2 text-sm text-zinc-400">We kunnen het team op dit moment niet ophalen. Kom gerust kennismaken in onze Discord.</p>
+              <p className="mt-3 font-display text-xl text-white">{en ? "The team is loading" : "Het team wordt geladen"}</p>
+              <p className="mt-2 text-sm text-zinc-400">{en ? "We can't load the team right now. Feel free to come and say hi in our Discord." : "We kunnen het team op dit moment niet ophalen. Kom gerust kennismaken in onze Discord."}</p>
             </div>
           ) : (
             <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -77,7 +83,7 @@ export default async function TeamPage() {
           <div className="mt-12 text-center">
             <Button asChild variant="discord" size="lg">
               <a href={site.discordInvite} target="_blank" rel="noopener noreferrer">
-                <DiscordIcon className="size-5" /> Kom kennismaken in Discord
+                <DiscordIcon className="size-5" /> {en ? "Meet us on Discord" : "Kom kennismaken in Discord"}
               </a>
             </Button>
           </div>

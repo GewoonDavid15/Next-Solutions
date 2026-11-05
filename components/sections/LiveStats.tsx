@@ -4,12 +4,12 @@ import { Activity, FolderKanban, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
-import { stats } from "@/lib/data";
+import type { Content } from "@/lib/data";
 
 const icons = [Users, FolderKanban, Activity];
 
 /** Live counter. Member count is replaced with the real Discord count when the widget API is configured. */
-export function LiveStats() {
+export function LiveStats({ stats }: { stats: Content["stats"] }) {
   const [members, setMembers] = useState<number | null>(null);
 
   useEffect(() => {

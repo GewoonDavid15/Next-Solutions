@@ -20,6 +20,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  if (fromForm) return NextResponse.redirect(new URL(`/afmelden?gedaan=${ok ? "1" : "0"}`, request.nextUrl.origin), 303);
+  if (fromForm) return NextResponse.redirect(new URL(`${request.nextUrl.searchParams.get("taal") === "en" ? "/en" : ""}/afmelden?gedaan=${ok ? "1" : "0"}`, request.nextUrl.origin), 303);
   return new NextResponse(ok ? "Afgemeld." : "Afmelden mislukt.", { status: ok ? 200 : 400, headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }

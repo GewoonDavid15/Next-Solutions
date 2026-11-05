@@ -20,8 +20,8 @@ export interface PortalTicket {
 }
 
 /** Mock data — replace with a database / CRM lookup keyed on the Discord user id. */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getPortalData(userId: string) {
+export function getPortalData(userId: string, locale: "nl" | "en" = "nl") {
+  const en = locale === "en";
   const projects: PortalProject[] = [
     { id: "NS-1042", name: "Ticket Bot v2", department: "Software", status: "In ontwikkeling", progress: 68, deadline: "2026-11-20" },
     { id: "NS-1038", name: "Company Website", department: "Software", status: "Review", progress: 92, deadline: "2026-11-12" },
@@ -29,9 +29,9 @@ export function getPortalData(userId: string) {
     { id: "NS-1047", name: "Brand Refresh", department: "Media", status: "Gepland", progress: 10, deadline: "2026-12-15" },
   ];
   const tickets: PortalTicket[] = [
-    { id: "T-311", subject: "Extra slash command voor rollen", priority: "Normaal", status: "In behandeling", updated: "2 uur geleden" },
-    { id: "T-308", subject: "Contactformulier mail komt niet aan", priority: "Hoog", status: "Open", updated: "5 uur geleden" },
-    { id: "T-297", subject: "Kleurwijziging garage NUI", priority: "Laag", status: "Gesloten", updated: "3 dagen geleden" },
+    { id: "T-311", subject: en ? "Extra slash command for roles" : "Extra slash command voor rollen", priority: "Normaal", status: "In behandeling", updated: en ? "2 hours ago" : "2 uur geleden" },
+    { id: "T-308", subject: en ? "Contact form email does not arrive" : "Contactformulier mail komt niet aan", priority: "Hoog", status: "Open", updated: en ? "5 hours ago" : "5 uur geleden" },
+    { id: "T-297", subject: en ? "Colour change garage NUI" : "Kleurwijziging garage NUI", priority: "Laag", status: "Gesloten", updated: en ? "3 days ago" : "3 dagen geleden" },
   ];
   return { projects, tickets };
 }
