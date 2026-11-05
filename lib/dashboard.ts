@@ -28,6 +28,17 @@ export interface Overview {
   diensten: { id: string; status: string; ms: number | null }[];
   bugs: { open: number; totaal: number };
   projecten: { actief: number; totaal: number };
+  /** Missing when the bot has no invites.js */
+  invites?: {
+    gevolgd: number;
+    vandaag: number;
+    week: number;
+    vertrokken: number;
+    nep: number;
+    perBron: Record<string, number>;
+    top: { id: string; naam: string; avatar: string | null; totaal: number; echt: number; weg: number; nep: number; bonus: number }[];
+    recent: { id: string; naam: string; door: string | null; bron: string | null; t: number; weg: number | null; nep: boolean }[];
+  } | null;
 }
 
 export interface LogLine {

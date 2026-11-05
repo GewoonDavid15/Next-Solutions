@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Bug, Clock, Cpu, FolderKanban, Gauge, RefreshCw, Server, Ticket, Users } from "lucide-react";
+import { Bot, Bug, Clock, Cpu, FolderKanban, Gauge, Globe, RefreshCw, Server, Ticket, UserPlus, Users } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Charts } from "@/components/dashboard/Charts";
@@ -48,7 +48,7 @@ export function OverviewTab() {
   }, [load]);
 
   if (!data) return error ? <Notice>{error}</Notice> : <Loading />;
-  const { bot, server, modules, tickets, diensten, bugs, projecten } = data;
+  const { bot, server, modules, tickets, diensten, bugs, projecten, invites } = data;
 
   return (
     <div className="space-y-6">
@@ -136,6 +136,60 @@ export function OverviewTab() {
           </div>
         </Panel>
       </div>
+
+      {invites && (
+        <Panel title="Invites" icon={UserPlus}>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <Stat label="Joins vandaag" value={invites.vandaag} icon={UserPlus} />
+            <Stat label="Joins deze week" value={invites.week} icon={UserPlus} />
+            <Stat label="Vertrokken" value={invites.vertrokken} icon={Users} />
+            <Stat label="Nep-accounts" value={invites.nep} icon={Bug} />
+          </div>
+          <div className="mt-5 grid gap-6 lg:grid-cols-3">
+            <div>
+              <p className="mb-2 text-xs uppercase tracking-wide text-zinc-500">Top uitnodigers</p>
+              {invites.top.length === 0 ? (
+                <p className="text-sm text-zinc-400">Nog niemand.</p>
+              ) : (
+                <ol className="space-y-1.5 text-sm">
+                  {invites.top.map((r, i) => (
+                    <li key={r.id} className="flex justify-between gap-3">
+                      <span className="truncate"><span className="text-zinc-500">{i + 1}.</span> {r.naam}</span>
+                      <span className="shrink-0 text-white" title={`${r.echt} actief, ${r.weg} vertrokken, ${r.nep} nep, ${r.bonus} bonus`}>{r.totaal}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+            <div>
+              <p className="mb-2 text-xs uppercase tracking-wide text-zinc-500">Waar komen leden vandaan</p>
+              <ul className="space-y-1.5 text-sm">
+                {Object.entries(invites.perBron).sort(([, a], [, b]) => b - a).map(([bron, n]) => (
+                  <li key={bron} className="flex justify-between gap-3">
+                    <span className="flex items-center gap-1.5 truncate">{bron === "Website" ? <Globe className="size-3.5 text-brand-300" /> : null}{bron}</span>
+                    <span className="text-white">{n}</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-zinc-500">Labels per link stel je in onder Instellingen → invites → LINK_LABELS.</p>
+            </div>
+            <div>
+              <p className="mb-2 text-xs uppercase tracking-wide text-zinc-500">Laatste joins</p>
+              <ul className="space-y-1.5 text-sm">
+                {invites.recent.map((j) => (
+                  <li key={`${j.id}-${j.t}`} className="flex justify-between gap-3">
+                    <span className={cn("truncate", j.weg && "text-zinc-500 line-through")}>
+                      {j.naam}
+                      {j.nep && <span className="ml-1 text-xs text-amber-300">nep</span>}
+                    </span>
+                    <span className="shrink-0 truncate text-zinc-400">{j.bron ?? j.door ?? "onbekend"}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Panel>
+      )}
 
       <Charts />
     </div>

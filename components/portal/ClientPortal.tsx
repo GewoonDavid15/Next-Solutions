@@ -1,4 +1,4 @@
-import { AlertCircle, Bot, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
+import { AlertCircle, Bot, UserPlus, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
@@ -28,6 +28,11 @@ const texts = {
     bugs: "Bugmeldingen", noBugs: "Je hebt nog geen bugs gemeld. Iets gevonden? Meld het via het bugkanaal in onze Discord.",
     reportedOn: "Gemeld op {date}",
     phases: "Projectfases", lastUpdate: "Laatste update", earlier: "Eerdere updates",
+    invites: "Jouw invites", invitesCount: "mensen uitgenodigd", rank: "#{n} op het leaderboard",
+    invitesDetail: "{echt} actief • {weg} vertrokken • {nep} nep", bonus: "{n} bonus",
+    nextReward: "Nog {n} voor {rol}", nextRewardNoName: "Nog {n} voor de volgende beloning",
+    yourLinks: "Jouw links", used: "{n}× gebruikt",
+    invitesEmpty: "Maak in Discord een invite-link (rechtsklik op de server → Mensen uitnodigen) en deel hem. Iedereen die via jouw link joint en blijft, telt mee.",
   },
   en: {
     active: "Active projects", delivered: "Delivered", openTickets: "Open tickets", openBugs: "Open bug reports",
@@ -44,6 +49,11 @@ const texts = {
     bugs: "Bug reports", noBugs: "You haven't reported any bugs yet. Found something? Report it in the bug channel in our Discord.",
     reportedOn: "Reported on {date}",
     phases: "Project phases", lastUpdate: "Last update", earlier: "Earlier updates",
+    invites: "Your invites", invitesCount: "people invited", rank: "#{n} on the leaderboard",
+    invitesDetail: "{echt} active • {weg} left • {nep} fake", bonus: "{n} bonus",
+    nextReward: "{n} more for {rol}", nextRewardNoName: "{n} more for the next reward",
+    yourLinks: "Your links", used: "used {n}×",
+    invitesEmpty: "Create an invite link in Discord (right-click the server → Invite People) and share it. Everyone who joins through your link and stays is counted.",
   },
 };
 
@@ -264,6 +274,8 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           </div>
         </div>
 
+        {data?.invites && <InvitesCard invites={data.invites} tx={tx} />}
+
         {data?.email?.beschikbaar && (
           <div className="mt-12 max-w-2xl">
             <EmailSettings initial={data.email} />
@@ -331,6 +343,50 @@ function ProjectCard({ project: p, tx, date }: { project: ClientProject; tx: Tex
             ))}
           </ul>
         </details>
+      )}
+    </div>
+  );
+}
+
+function InvitesCard({ invites: inv, tx }: { invites: NonNullable<ClientData["invites"]>; tx: Texts }) {
+  const next = inv.volgende;
+  return (
+    <div className="glass mt-12 max-w-2xl rounded-3xl p-6">
+      <h2 className="flex items-center gap-2 text-xl font-semibold"><UserPlus className="size-5 text-brand-300" /> {tx.invites}</h2>
+      <div className="mt-4 flex flex-wrap items-end gap-x-6 gap-y-2">
+        <p className="font-display text-4xl font-semibold text-white">
+          {inv.totaal} <span className="text-base font-normal text-zinc-400">{tx.invitesCount}</span>
+        </p>
+        {inv.plek !== null && <p className="text-sm text-amber-300">{fmt(tx.rank, { n: inv.plek })}</p>}
+      </div>
+      <p className="mt-1 text-sm text-zinc-400">
+        {fmt(tx.invitesDetail, { echt: inv.echt, weg: inv.weg, nep: inv.nep })}
+        {inv.bonus ? ` • ${fmt(tx.bonus, { n: inv.bonus })}` : ""}
+      </p>
+      {next && (
+        <div className="mt-4">
+          <div className="h-2 overflow-hidden rounded-full bg-white/5">
+            <div className="h-full rounded-full bg-brand-gradient" style={{ width: `${Math.min(100, (inv.totaal / next.invites) * 100)}%` }} />
+          </div>
+          <p className="mt-1.5 text-xs text-zinc-400">
+            {next.rol ? fmt(tx.nextReward, { n: next.invites - inv.totaal, rol: next.rol }) : fmt(tx.nextRewardNoName, { n: next.invites - inv.totaal })}
+          </p>
+        </div>
+      )}
+      {inv.links.length > 0 ? (
+        <div className="mt-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">{tx.yourLinks}</p>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {inv.links.map((l) => (
+              <li key={l.code} className="flex justify-between gap-3">
+                <span className="truncate font-mono text-zinc-300">discord.gg/{l.code}{l.label ? <span className="ml-2 font-sans text-xs text-brand-200">{l.label}</span> : null}</span>
+                <span className="shrink-0 text-zinc-400">{fmt(tx.used, { n: l.uses })}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        inv.totaal === 0 && <p className="mt-4 text-sm text-zinc-400">{tx.invitesEmpty}</p>
       )}
     </div>
   );

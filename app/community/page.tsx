@@ -1,9 +1,11 @@
 import { Gift, Headphones, MessageSquare, Rocket } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
+import { InviteLeaderboard } from "@/components/live/InviteLeaderboard";
 import { DiscordWidget } from "@/components/sections/DiscordWidget";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { getPublicData } from "@/lib/bot-api";
 import { getCommunityStats } from "@/lib/discord";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 
@@ -36,7 +38,7 @@ const perks = {
 };
 
 export default async function CommunityPage() {
-  const stats = await getCommunityStats();
+  const [stats, live] = await Promise.all([getCommunityStats(), getPublicData()]);
   const { locale } = await getI18n();
   const en = locale === "en";
 
@@ -74,6 +76,11 @@ export default async function CommunityPage() {
             ))}
           </Stagger>
         </div>
+        {live?.invites && (
+          <FadeUp className="container mt-10">
+            <InviteLeaderboard invites={live.invites} locale={locale} />
+          </FadeUp>
+        )}
       </section>
     </>
   );

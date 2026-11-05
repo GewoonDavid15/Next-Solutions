@@ -64,6 +64,26 @@ export interface PublicData {
   incidenten: { dienst: string; start: number; eind: number | null }[];
   reviews: ReviewSummary | null;
   team: TeamMember[];
+  /** Invite leaderboard (missing when the bot runs an older version) */
+  invites?: PublicInvites | null;
+}
+
+export interface PublicInvites {
+  /** Members still in the server who joined through someone's invite */
+  totaal: number;
+  top: { naam: string; avatar: string | null; invites: number }[];
+  beloningen: { invites: number; rol: string | null }[];
+}
+
+export interface ClientInvites {
+  echt: number;
+  weg: number;
+  nep: number;
+  bonus: number;
+  totaal: number;
+  plek: number | null;
+  volgende: { invites: number; rol: string | null } | null;
+  links: { code: string; uses: number; label: string | null }[];
 }
 
 export interface ClientProject {
@@ -120,6 +140,7 @@ export interface ClientData {
   bestanden?: ClientFile[];
   email?: ClientEmailStatus | null;
   bugs: ClientBug[];
+  invites?: ClientInvites | null;
 }
 
 export const DAYS = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];

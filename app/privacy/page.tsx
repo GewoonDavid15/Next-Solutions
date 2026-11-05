@@ -24,6 +24,7 @@ const sections: LegalSection[] = [
       "Reviews: je sterren, je toelichting en je Discord-naam. Reviews met vier of vijf sterren kunnen op onze website verschijnen.",
       "Sollicitaties: je Discord-gebruikersnaam en je antwoorden op de vragen bij de vacature.",
       "E-mailmeldingen: alleen als je die zelf aanzet en bevestigt, je e-mailadres en welke meldingen je wilt ontvangen.",
+      "Invites in onze Discord: via welke invite-link je bent binnengekomen, wie die link maakte, en wanneer je joinde of vertrok. Op de website tonen we alleen de naam en het aantal invites van de beste uitnodigers.",
     ],
   },
   {
@@ -90,6 +91,7 @@ const sectionsEn: LegalSection[] = [
       "Reviews: your stars, your comment and your Discord name. Reviews with four or five stars may appear on our website.",
       "Applications: your Discord username and your answers to the questions for the vacancy.",
       "Email notifications: only if you turn them on and confirm them yourself, your email address and which notifications you want to receive.",
+      "Invites in our Discord: which invite link you joined through, who created that link, and when you joined or left. On the website we only show the name and number of invites of the top inviters.",
     ],
   },
   {
