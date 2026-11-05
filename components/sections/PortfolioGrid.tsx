@@ -3,7 +3,8 @@
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import type { Content, ProjectCategory } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,23 @@ type Filter = "all" | ProjectCategory;
 
 export function PortfolioGrid({ projects, filters }: { projects: Content["projects"]; filters: Content["projectFilters"] }) {
   const { locale, lp } = useI18n();
-  const [filter, setFilter] = useState<Filter>("all");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // The active filter lives in the URL, so a filtered view can be shared and
+  // survives the back button.
+  const requested = searchParams.get("filter");
+  const filter: Filter = filters.some((f) => f.id === requested) ? (requested as Filter) : "all";
+
+  const setFilter = useCallback(
+    (next: Filter) => {
+      const query = next === "all" ? "" : `?filter=${next}`;
+      router.replace(`${pathname}${query}`, { scroll: false });
+    },
+    [router, pathname],
+  );
+
   const visible = projects.filter((p) => filter === "all" || p.category === filter);
 
   return (
@@ -62,7 +79,7 @@ export function PortfolioGrid({ projects, filters }: { projects: Content["projec
                 <ProjectMockup project={project} />
                 <div className="p-5">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-lg font-semibold">{project.title}</h3>
+                    <h2 className="text-lg font-semibold">{project.title}</h2>
                     <span className="rounded-full bg-white/5 px-2.5 py-1 text-xs capitalize text-zinc-400">{project.category}</span>
                   </div>
                   <p className="mt-1 text-sm text-zinc-500">{project.client}</p>

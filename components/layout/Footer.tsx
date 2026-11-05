@@ -94,7 +94,7 @@ export async function Footer() {
 function FooterColumn({ title, className, children }: { title: string; className?: string; children: React.ReactNode }) {
   return (
     <div className={className}>
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{title}</h3>
+      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{title}</h2>
       <ul className="space-y-3">{children}</ul>
     </div>
   );

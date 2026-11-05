@@ -217,3 +217,19 @@ export const faqEn = [
       "Absolutely. Everything is modular. If you only want a logo, only a bot or only hosting, we can arrange that. If you combine several services, we align the designs with each other.",
   },
 ];
+
+/** Same order as `values` in lib/data.ts (about page) */
+export const valuesEn = [
+  { title: "Honest about what's possible", text: "We'd rather give a tight schedule that holds than a nice promise we can't keep. If something doesn't fit your budget, we say so straight away." },
+  { title: "Code that lasts", text: "We build as if someone else has to maintain it tomorrow. Readable, tested and documented, even when it could be done faster." },
+  { title: "Short lines", text: "No ticket system you disappear into. You talk directly to the people working on your project, through your own channel in our Discord." },
+  { title: "Built for communities", text: "We come from the world of Discord servers and game communities ourselves. We know what players expect and where they drop off." },
+];
+
+/** Same order as `timeline` in lib/data.ts (about page) */
+export const timelineEn = [
+  { title: "Started as a hobby", text: "Two friends build Discord bots for their own server. The first requests from outside come in." },
+  { title: "First paid assignments", text: "A steady stream of clients from the FiveM and Minecraft world. The team grows to four people." },
+  { title: "Next Solutions", text: "The three departments are set up: Software, Game Development and Media, with its own client portal." },
+  { title: "Where we are now", text: "A community of thousands of members and hundreds of delivered projects." },
+];

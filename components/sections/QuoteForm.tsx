@@ -84,14 +84,14 @@ const deptIcons = { software: Code2, game: Gamepad2, media: Sparkles } as const;
 
 type Errors = Partial<Record<keyof QuoteRequest, string>>;
 
-export function QuoteForm() {
+export function QuoteForm({ initialDepartment = "" }: { initialDepartment?: string } = {}) {
   const { locale } = useI18n();
   const tx = texts[locale];
   const steps = tx.steps;
   const { departmentOptions, serviceOptions, budgetOptions, timelineOptions } = getQuoteOptions(locale);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [data, setData] = useState<QuoteRequest>(emptyQuote);
+  const [data, setData] = useState<QuoteRequest>({ ...emptyQuote, department: initialDepartment });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [serverError, setServerError] = useState("");
@@ -289,7 +289,7 @@ export function QuoteForm() {
 
               {step === 3 && (
                 <div>
-                  <h3 className="text-xl font-semibold">{tx.review}</h3>
+                  <h2 className="text-xl font-semibold">{tx.review}</h2>
                   <dl className="mt-5 grid gap-3 sm:grid-cols-2">
                     {[
                       [tx.departmentShort, labelFor(departmentOptions, data.department)],

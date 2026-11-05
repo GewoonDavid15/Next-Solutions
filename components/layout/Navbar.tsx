@@ -45,13 +45,13 @@ export function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <Logo href={lp("/")} />
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden items-center gap-1 xl:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={lp(link.href)}
                   className={cn(
-                    "relative rounded-xl px-3.5 py-2 text-sm font-medium transition-colors",
+                    "relative whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-colors",
                     isActive(link.href) ? "text-white" : "text-zinc-400 hover:text-white",
                   )}
                 >
@@ -85,7 +85,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="xl:hidden"
               aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
@@ -102,7 +102,7 @@ export function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden lg:hidden"
+              className="overflow-hidden xl:hidden"
             >
               <div className="flex flex-col gap-1 pb-2 pt-4">
                 {navLinks.map((link, i) => (

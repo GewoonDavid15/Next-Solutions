@@ -10,7 +10,10 @@ export const site = {
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/diensten", label: "Diensten" },
+  { href: "/prijzen", label: "Prijzen" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/over-ons", label: "Over ons" },
+  { href: "/nieuws", label: "Nieuws" },
   { href: "/community", label: "Community" },
   { href: "/klantportaal", label: "Klantportaal" },
   { href: "/contact", label: "Contact" },

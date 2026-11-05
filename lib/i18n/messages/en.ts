@@ -9,7 +9,7 @@ export const en: Messages = {
   skipLink: "Skip to content",
   nav: {
     aria: "Main navigation",
-    links: { "/": "Home", "/diensten": "Services", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact" },
+    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Pricing", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact" },
     quote: "Request a quote",
     openMenu: "Open menu",
     closeMenu: "Close menu",

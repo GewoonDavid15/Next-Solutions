@@ -11,7 +11,7 @@ export const nl = {
   skipLink: "Naar inhoud",
   nav: {
     aria: "Hoofdnavigatie",
-    links: { "/": "Home", "/diensten": "Diensten", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact" } as Record<string, string>,
+    links: { "/": "Home", "/diensten": "Diensten", "/prijzen": "Prijzen", "/over-ons": "Over ons", "/nieuws": "Nieuws", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact" } as Record<string, string>,
     quote: "Offerte aanvragen",
     openMenu: "Menu openen",
     closeMenu: "Menu sluiten",

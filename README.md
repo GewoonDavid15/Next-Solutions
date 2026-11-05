@@ -20,8 +20,11 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | --- | --- |
 | `/` | Hero met typewriter en zwevende parallax-elementen, live teller, kerndiensten, werkwijze, CTA |
 | `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
-| `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers) |
-| `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
+| `/prijzen` | Richtprijzen per pakket voor elke afdeling, met FAQ. "Kies pakket" opent het offerteformulier met de juiste afdeling |
+| `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers); het filter staat in de URL |
+| `/over-ons` | Verhaal, waarden, tijdlijn en team |
+| `/nieuws` | Artikelen uit `content/blog/*.md` (Markdown met frontmatter; de bestandsnaam wordt de URL). Artikelen zijn alleen in het Nederlands |
+| `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop en het invite-leaderboard uit de bot |
 | `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets, transcripts van gesloten tickets, bestanden, bugmeldingen en sollicitaties, kunnen een ticket openen en e-mailmeldingen aanzetten; de demo toont voorbeelddata |
 | `/status` | Openbare statuspagina: uptime per dienst (24 uur), drukte van support, openingstijden en recente storingen, live uit de bot |
 | `/team` | Teamleden met de staff-rollen uit de bot, met functie, afdelingen en skills |
@@ -29,6 +32,8 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/vacatures` | Open vacatures uit de bot. Solliciteren gaat met Discord-login; het team beoordeelt in Discord |
 | `/contact` | Offerteformulier in 4 stappen met Radix-dropdowns, optioneel doorgestuurd naar een Discord webhook |
 | `/dashboard` | Bot-dashboard, alleen voor de eigenaar: overzicht met grafieken, instellingen van alle bot-systemen, botstatus, scripts, live console en een wijzigingslog met terugdraaien |
+
+Online zetten: zie [DEPLOY.md](DEPLOY.md).
 
 ## Talen (NL / EN)
 

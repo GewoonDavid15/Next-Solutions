@@ -34,7 +34,8 @@ export function Select({ id, value, onValueChange, placeholder, options, invalid
         <SelectPrimitive.Content
           position="popper"
           sideOffset={8}
-          className="z-[70] max-h-72 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-2xl border border-white/10 bg-ink-800/95 p-1.5 shadow-glow backdrop-blur-xl"
+          // Above the dialog overlay (z-80) so the options stay clickable inside a dialog.
+          className="z-[100] max-h-72 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-2xl border border-white/10 bg-ink-800/95 p-1.5 shadow-glow backdrop-blur-xl"
         >
           <SelectPrimitive.Viewport>
             {options.map((o) => (

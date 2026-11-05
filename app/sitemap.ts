@@ -1,12 +1,16 @@
 import type { MetadataRoute } from "next";
+import { getPosts } from "@/lib/blog";
 import { projects } from "@/lib/data";
 import { localePath } from "@/lib/i18n/config";
 import { navLinks, site } from "@/lib/site";
 
 type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number };
 
-/** Every page exists in Dutch (plain URL) and English (/en/...); both are listed with hreflang alternates. */
-export default function sitemap(): MetadataRoute.Sitemap {
+/**
+ * Every page exists in Dutch (plain URL) and English (/en/...); both are listed with hreflang alternates.
+ * News articles are written in Dutch only, so they are listed once.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
   const entries: Entry[] = [
     ...navLinks
@@ -18,11 +22,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const url = (path: string) => `${site.url}${path === "/" ? "" : path}`;
-  return entries.flatMap(({ path, changeFrequency, priority }) => {
+  const pages = entries.flatMap(({ path, changeFrequency, priority }) => {
     const languages = { "nl-NL": url(path), en: url(localePath("en", path)) };
     return [
       { url: languages["nl-NL"], lastModified: now, changeFrequency, priority, alternates: { languages } },
       { url: languages.en, lastModified: now, changeFrequency, priority: Math.max(0.1, priority - 0.1), alternates: { languages } },
     ];
   });
+
+  const posts: MetadataRoute.Sitemap = (await getPosts()).map((post) => ({
+    url: `${site.url}/nieuws/${post.slug}`,
+    lastModified: post.date ? new Date(post.date) : now,
+    changeFrequency: "yearly",
+    priority: 0.5,
+  }));
+
+  return [...pages, ...posts];
 }

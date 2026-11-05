@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { getPublicData } from "@/lib/bot-api";
 import { formatMinutes } from "@/lib/live";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
+import { departmentForPackage } from "@/lib/pricing";
 import { site } from "@/lib/site";
 
 export async function generateMetadata() {
@@ -18,7 +19,11 @@ export async function generateMetadata() {
 
 export const dynamic = "force-dynamic";
 
-export default async function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string }> }) {
+  // Arriving from a package on /prijzen preselects the matching department.
+  const { pakket } = await searchParams;
+  const initialDepartment = departmentForPackage(pakket);
+
   // Live crowd level and response time from the Discord bot (falls back to the static text)
   const live = await getPublicData();
   const { locale } = await getI18n();
@@ -43,7 +48,7 @@ export default async function ContactPage() {
       <section className="pb-12">
         <div className="container grid gap-8 lg:grid-cols-3">
           <FadeUp className="lg:col-span-2">
-            <QuoteForm />
+            <QuoteForm initialDepartment={initialDepartment} />
           </FadeUp>
           <FadeUp delay={0.15} className="space-y-4">
             {tickets && <CrowdCard tickets={tickets} locale={locale} />}

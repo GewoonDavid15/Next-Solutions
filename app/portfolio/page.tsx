@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CallToAction } from "@/components/sections/CallToAction";
 import { PortfolioGrid } from "@/components/sections/PortfolioGrid";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -28,7 +29,9 @@ export default async function PortfolioPage() {
       />
       <section className="pb-12">
         <div className="container">
-          <PortfolioGrid projects={content.projects} filters={content.projectFilters} />
+          <Suspense fallback={<div className="h-96" />}>
+            <PortfolioGrid projects={content.projects} filters={content.projectFilters} />
+          </Suspense>
         </div>
       </section>
       <CallToAction />
