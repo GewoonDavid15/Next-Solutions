@@ -24,7 +24,8 @@ export interface BotResponse {
   data: unknown;
 }
 
-export async function botRequest(method: string, pathWithQuery: string, body?: string): Promise<BotResponse> {
+/** Sends a signed request to the bot and returns the raw response. */
+async function signedFetch(method: string, pathWithQuery: string, body?: string, timeoutMs = 10_000) {
   const base = process.env.BOT_API_URL!.replace(/\/+$/, "");
   const secret = process.env.BOT_API_SECRET!;
   const payload = body ?? "";
@@ -32,7 +33,7 @@ export async function botRequest(method: string, pathWithQuery: string, body?: s
   const bodyHash = createHash("sha256").update(payload).digest("hex");
   const signature = createHmac("sha256", secret).update(`${time}\n${method}\n${pathWithQuery}\n${bodyHash}`).digest("hex");
 
-  const res = await fetch(`${base}${pathWithQuery}`, {
+  return fetch(`${base}${pathWithQuery}`, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -41,11 +42,25 @@ export async function botRequest(method: string, pathWithQuery: string, body?: s
     },
     body: payload || undefined,
     cache: "no-store",
-    signal: AbortSignal.timeout(10_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
+}
 
+export async function botRequest(method: string, pathWithQuery: string, body?: string): Promise<BotResponse> {
+  const res = await signedFetch(method, pathWithQuery, body);
   const data: unknown = await res.json().catch(() => ({ fout: "Ongeldig antwoord van de bot." }));
   return { status: res.status, data };
+}
+
+/** Downloads a client file from the bot, only when `userId` is the client it belongs to. */
+export async function getClientFile(id: string, userId: string): Promise<Response | null> {
+  if (!isBotApiConfigured() || !/^[a-f0-9]{10}$/.test(id) || !/^\d{17,20}$/.test(userId)) return null;
+  try {
+    const res = await signedFetch("GET", `/bestand?id=${id}&gebruiker=${userId}`, undefined, 60_000);
+    return res.ok ? res : null;
+  } catch {
+    return null;
+  }
 }
 
 // Public data is shared by every visitor, so it is cached briefly instead of asking the bot on each page view.

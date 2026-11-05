@@ -117,6 +117,8 @@ export interface ClientData {
   /** Closed tickets of this client (missing when the bot runs an older version) */
   transcripts?: ClientTranscript[];
   sollicitaties?: ClientApplication[];
+  bestanden?: ClientFile[];
+  email?: ClientEmailStatus | null;
   bugs: ClientBug[];
 }
 
@@ -171,4 +173,28 @@ export interface ClientApplication {
   statusEmoji: string;
   afgesloten: boolean;
   t: number;
+}
+
+export interface ClientFile {
+  id: string;
+  naam: string;
+  grootte: number;
+  type: string;
+  beschrijving: string | null;
+  project: string | null;
+  t: number;
+}
+
+export function formatSize(bytes: number) {
+  return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+export interface ClientEmailStatus {
+  /** false when the bot has no RESEND_API_KEY */
+  beschikbaar: boolean;
+  email: string | null;
+  bevestigd: boolean;
+  voorkeuren: Record<string, boolean>;
+  /** Notification type -> label */
+  soorten: Record<string, string>;
 }

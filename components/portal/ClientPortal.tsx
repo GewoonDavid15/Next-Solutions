@@ -1,12 +1,13 @@
-import { AlertCircle, Bot, Briefcase, Bug, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
+import { AlertCircle, Bot, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
+import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
-import { formatDate, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
+import { formatDate, formatSize, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
   const bugs = data?.bugs ?? [];
   const transcripts = data?.transcripts ?? [];
   const applications = data?.sollicitaties ?? [];
+  const files = data?.bestanden ?? [];
 
   const kpis = [
     { label: "Actieve projecten", value: projects.filter((p) => p.percentage < 100).length, icon: FolderKanban },
@@ -95,6 +97,29 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
               </FadeUp>
             ))}
           </div>
+        )}
+
+        {/* Files */}
+        {files.length > 0 && (
+          <>
+            <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderOpen className="size-5 text-brand-300" /> Bestanden</h2>
+            <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {files.map((f) => (
+                <li key={f.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-white" title={f.naam}>{f.naam}</p>
+                    <p className="mt-0.5 truncate text-sm text-zinc-400">
+                      {formatSize(f.grootte)} • {formatDate(f.t)}{f.project ? ` • ${f.project}` : ""}
+                    </p>
+                    {f.beschrijving && <p className="mt-1 truncate text-xs text-zinc-500">{f.beschrijving}</p>}
+                  </div>
+                  <Button asChild size="sm" variant="secondary">
+                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={`${f.naam} downloaden`}><Download /></a>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
@@ -196,6 +221,12 @@ export function ClientPortal({ user, data, isOwner, departments }: ClientPortalP
             )}
           </div>
         </div>
+
+        {data?.email?.beschikbaar && (
+          <div className="mt-12 max-w-2xl">
+            <EmailSettings initial={data.email} />
+          </div>
+        )}
       </div>
     </section>
   );

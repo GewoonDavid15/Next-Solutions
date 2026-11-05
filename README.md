@@ -22,7 +22,7 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 | `/diensten` | Grid per afdeling (Software, Game Dev, Media), kaarten met glow + `scale-105` bij hover |
 | `/portfolio` | Masonry-grid met geanimeerde filters (Alle, Bots, Websites, Servers) |
 | `/community` | Live Discord widget (online leden, ledental, kanalen), pulserende "Join de Server" knop |
-| `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets, transcripts van gesloten tickets, bugmeldingen en sollicitaties, en kunnen een ticket openen; de demo toont voorbeelddata |
+| `/klantportaal` | Login met Discord OAuth2 (of demo). Echte klanten zien live hun projecten, tickets, transcripts van gesloten tickets, bestanden, bugmeldingen en sollicitaties, kunnen een ticket openen en e-mailmeldingen aanzetten; de demo toont voorbeelddata |
 | `/status` | Openbare statuspagina: uptime per dienst (24 uur), drukte van support, openingstijden en recente storingen, live uit de bot |
 | `/team` | Teamleden met de staff-rollen uit de bot, met functie, afdelingen en skills |
 | `/reviews` | Reviews van klanten (gevraagd door de bot na elk ticket en project), met gemiddelde en verdeling. De nieuwste staan ook op de homepage |
@@ -43,6 +43,8 @@ Zonder `.env.local` draait alles op demo-data: de Discord widget toont voorbeeld
 De projecten en tickets in het klantportaal komen uit `lib/portal.ts` (mockdata). Koppel daar je eigen database of CRM aan, op basis van het Discord user-id.
 
 ## Bot-dashboard
+
+Bestanden zet je team klaar in Discord met `/bestand upload`; de bot bewaart ze op zijn eigen server en de klant downloadt ze in het portaal. E-mailmeldingen (opt-in met bevestigingsmail, afmeldlink in elke mail) verstuurt de bot via Resend zodra `RESEND_API_KEY` in de `.env` van de bot staat.
 
 De contactpagina toont de live drukte en reactietijd van support. Zonder gekoppelde bot vallen alle live onderdelen terug op vaste teksten.
 
