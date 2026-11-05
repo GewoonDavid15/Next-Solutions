@@ -5,6 +5,13 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   discordInvite: process.env.NEXT_PUBLIC_DISCORD_INVITE ?? "https://discord.gg/",
   email: "hello@nextsolutions.nl",
+  /** Social accounts in the footer. Leave a link empty ("") to hide it. */
+  socials: {
+    x: "",
+    instagram: "",
+    youtube: "",
+    github: "",
+  },
 };
 
 /**

@@ -14,7 +14,7 @@ export function OrganizationSchema() {
     email: site.email,
     areaServed: "NL",
     knowsLanguage: ["nl", "en"],
-    sameAs: [site.discordInvite],
+    sameAs: [site.discordInvite, ...Object.values(site.socials)].filter(Boolean),
     makesOffer: [
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Software Development" } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Game Development" } },
