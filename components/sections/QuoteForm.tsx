@@ -137,7 +137,7 @@ export function QuoteForm({ initialDepartment = "" }: { initialDepartment?: stri
           transition={{ type: "spring", stiffness: 260, damping: 15, delay: 0.1 }}
           className="mx-auto grid size-20 place-items-center rounded-3xl bg-brand-gradient shadow-glow-lg"
         >
-          <PartyPopper className="size-9 text-white" />
+          <PartyPopper className="size-9 text-ink" />
         </motion.div>
         <h2 className="mt-6 text-3xl font-semibold">{tx.sentTitle}</h2>
         <p className="mx-auto mt-3 max-w-md text-zinc-400">
@@ -166,7 +166,7 @@ export function QuoteForm({ initialDepartment = "" }: { initialDepartment?: stri
               <span
                 className={cn(
                   "grid size-9 place-items-center rounded-xl border font-display text-sm transition-all duration-300",
-                  i < step && "border-brand-500 bg-brand-600 text-white",
+                  i < step && "border-brand-500 bg-brand-600 text-ink",
                   i === step && "border-brand-500 bg-brand-600/20 text-white shadow-glow",
                   i > step && "border-white/10 text-zinc-500",
                 )}

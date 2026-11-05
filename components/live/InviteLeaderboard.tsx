@@ -62,7 +62,7 @@ export function InviteLeaderboard({ invites, locale = "nl" }: { invites: PublicI
               {r.avatar ? (
                 <Image src={r.avatar} alt="" width={32} height={32} className="size-8 rounded-full" />
               ) : (
-                <span className="grid size-8 place-items-center rounded-full bg-brand-gradient text-sm text-white">{r.naam.charAt(0)}</span>
+                <span className="grid size-8 place-items-center rounded-full bg-brand-gradient text-sm text-ink">{r.naam.charAt(0)}</span>
               )}
               <span className="min-w-0 flex-1 truncate text-white">{r.naam}</span>
               <span className="shrink-0 font-display text-white">

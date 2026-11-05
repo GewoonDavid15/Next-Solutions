@@ -26,7 +26,7 @@ export function ReviewCard({ review, locale = "nl" }: { review: Review; locale?:
         {review.avatar ? (
           <Image src={review.avatar} alt="" width={36} height={36} className="size-9 rounded-full" />
         ) : (
-          <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-sm text-white">{review.naam.charAt(0)}</span>
+          <span className="grid size-9 place-items-center rounded-full bg-brand-gradient text-sm text-ink">{review.naam.charAt(0)}</span>
         )}
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-white">{review.naam}</p>

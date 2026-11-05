@@ -95,7 +95,7 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
             {user.avatar ? (
               <Image src={user.avatar} alt="" width={56} height={56} className="size-14 rounded-2xl border border-white/10" />
             ) : (
-              <span className="grid size-14 place-items-center rounded-2xl bg-brand-gradient font-display text-xl font-semibold text-white">{user.name.charAt(0).toUpperCase()}</span>
+              <span className="grid size-14 place-items-center rounded-2xl bg-brand-gradient font-display text-xl font-semibold text-ink">{user.name.charAt(0).toUpperCase()}</span>
             )}
             <div>
               <p className="text-sm text-zinc-400">{tx.welcome}</p>

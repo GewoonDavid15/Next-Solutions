@@ -48,7 +48,7 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {user.avatar ? (
                 <Image src={user.avatar} alt="" width={24} height={24} className="size-6 rounded-full" />
               ) : (
-                <span className="grid size-6 place-items-center rounded-full bg-brand-gradient text-xs font-semibold">{user.name.charAt(0)}</span>
+                <span className="grid size-6 place-items-center rounded-full bg-brand-gradient text-xs font-semibold text-ink">{user.name.charAt(0)}</span>
               )}
               {user.name}
             </span>

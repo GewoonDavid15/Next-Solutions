@@ -38,7 +38,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             width: 560,
             height: 560,
             borderRadius: "50%",
-            background: "#7C3AED",
+            background: "#C6F432",
             opacity: 0.3,
             filter: "blur(130px)",
           }}
@@ -53,19 +53,18 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               width: 48,
               height: 48,
               borderRadius: 14,
-              background: "linear-gradient(135deg, #7C3AED, #9333EA)",
-              color: "white",
-              fontSize: 28,
-              fontWeight: 700,
+              background: "#C6F432",
             }}
           >
-            N
+            <svg width="60" height="60" viewBox="0 0 52 52">
+              <path d="M17 15 L29 26 L17 37 M27 15 L39 26 L27 37" fill="none" stroke="#0A0C10" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
           <div style={{ display: "flex", color: "#a1a1aa", fontSize: 24 }}>{site.name} · Portfolio</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", color: "#c4b5fd", fontSize: 28 }}>{project?.client ?? "Case study"}</div>
+          <div style={{ display: "flex", color: "#DAF96A", fontSize: 28 }}>{project?.client ?? "Case study"}</div>
           <div style={{ display: "flex", color: "white", fontSize: 76, fontWeight: 700, marginTop: 8 }}>
             {project?.title ?? "Project"}
           </div>
@@ -84,9 +83,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 display: "flex",
                 padding: "10px 22px",
                 borderRadius: 16,
-                border: "1px solid rgba(167,139,250,0.35)",
-                background: "rgba(124,58,237,0.15)",
-                color: "#ddd6fe",
+                border: "1px solid rgba(198,244,50,0.35)",
+                background: "rgba(198,244,50,0.08)",
+                color: "#DAF96A",
                 fontSize: 24,
               }}
             >

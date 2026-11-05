@@ -22,10 +22,10 @@ const RANGES = [
 ] as const;
 
 const SERIES = [
-  { key: "leden", label: "Leden", stroke: "#a78bfa", unit: "" },
-  { key: "openTickets", label: "Open tickets", stroke: "#f59e0b", unit: "" },
-  { key: "ping", label: "Ping", stroke: "#34d399", unit: " ms" },
-  { key: "ramMb", label: "RAM", stroke: "#60a5fa", unit: " MB" },
+  { key: "leden", label: "Leden", stroke: "#C6F432", unit: "" },
+  { key: "openTickets", label: "Open tickets", stroke: "#FFB547", unit: "" },
+  { key: "ping", label: "Ping", stroke: "#FF9B5E", unit: " ms" },
+  { key: "ramMb", label: "RAM", stroke: "#6E9BFF", unit: " MB" },
 ] as const;
 
 type SeriesKey = (typeof SERIES)[number]["key"];

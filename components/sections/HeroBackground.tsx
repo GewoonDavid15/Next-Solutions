@@ -32,17 +32,17 @@ export function HeroBackground() {
       <div className="absolute inset-0 bg-grid-pattern bg-[size:56px_56px] [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]" />
 
       <motion.div
-        className="absolute -left-32 top-0 h-[28rem] w-[28rem] rounded-full bg-brand-600/30 blur-[110px]"
+        className="absolute -left-32 top-0 h-[28rem] w-[28rem] rounded-full bg-brand-600/[0.12] blur-[110px]"
         animate={{ x: [0, 80, -20, 0], y: [0, 40, 90, 0] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute -right-24 top-20 h-[26rem] w-[26rem] rounded-full bg-fuchsia-600/20 blur-[110px]"
+        className="absolute -right-24 top-20 h-[26rem] w-[26rem] rounded-full bg-brand-500/10 blur-[110px]"
         animate={{ x: [0, -70, 30, 0], y: [0, 60, -30, 0] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-0 left-1/3 h-[22rem] w-[30rem] rounded-full bg-indigo-700/25 blur-[120px]"
+        className="absolute bottom-0 left-1/3 h-[22rem] w-[30rem] rounded-full bg-status-blue/10 blur-[120px]"
         animate={{ x: [0, 60, -60, 0] }}
         transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -51,7 +51,7 @@ export function HeroBackground() {
         <ParallaxTile key={i} sx={sx} sy={sy} depth={depth} className={className}>
           <div className={`${anim} size-full`} style={{ animationDelay: `${i * -1.7}s` }}>
             <div className="glass grid size-full place-items-center rounded-3xl [transform:perspective(600px)_rotateX(12deg)_rotateY(-14deg)]">
-              <Icon className="size-1/2 text-brand-300 drop-shadow-[0_0_12px_rgba(167,139,250,0.8)]" />
+              <Icon className="size-1/2 text-brand-300 drop-shadow-[0_0_12px_rgba(198,244,50,0.6)]" />
             </div>
           </div>
         </ParallaxTile>

@@ -69,7 +69,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
             {user.avatar ? (
               <Image src={user.avatar} alt="" width={56} height={56} className="size-14 rounded-2xl border border-white/10" />
             ) : (
-              <span className="grid size-14 place-items-center rounded-2xl bg-brand-gradient font-display text-xl font-semibold text-white">
+              <span className="grid size-14 place-items-center rounded-2xl bg-brand-gradient font-display text-xl font-semibold text-ink">
                 {user.name.charAt(0).toUpperCase()}
               </span>
             )}
@@ -118,7 +118,7 @@ export function Dashboard({ user, projects, tickets, isOwner = false }: Dashboar
                   role="tab"
                   aria-selected={tab === t}
                   onClick={() => setTab(t)}
-                  className={cn("relative rounded-xl px-4 py-2 font-display text-sm", tab === t ? "text-white" : "text-zinc-400 hover:text-white")}
+                  className={cn("relative rounded-xl px-4 py-2 font-display text-sm", tab === t ? "text-ink" : "text-zinc-400 hover:text-white")}
                 >
                   {tab === t && <motion.span layoutId="portal-tab" className="absolute inset-0 -z-10 rounded-xl bg-brand-gradient shadow-glow" />}
                   {t === "projects" ? (en ? "Projects" : "Projecten") : "Tickets"}

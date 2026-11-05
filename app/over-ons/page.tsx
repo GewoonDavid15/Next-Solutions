@@ -111,7 +111,7 @@ export default async function OverOnsPage() {
                 <Card interactive className="group h-full text-center">
                   <span
                     className={cn(
-                      "mx-auto grid size-20 place-items-center rounded-3xl bg-gradient-to-br font-display text-3xl font-semibold text-white shadow-glow transition-transform duration-300 group-hover:rotate-6",
+                      "mx-auto grid size-20 place-items-center rounded-3xl bg-gradient-to-br font-display text-3xl font-semibold text-ink shadow-glow transition-transform duration-300 group-hover:rotate-6",
                       member.gradient,
                     )}
                   >

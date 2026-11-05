@@ -10,33 +10,36 @@ const config: Config = {
     },
     extend: {
       colors: {
-        ink: { DEFAULT: "#09090b", 900: "#0b0b12", 800: "#0f172a", 700: "#151d33" },
+        // Huisstijl Next Solutions: lime #C6F432, donker #0A0C10, tegel #11141B, rand #2A3040
+        ink: { DEFAULT: "#0A0C10", 900: "#0D1015", 800: "#11141B", 700: "#1A1F29" },
+        line: "#2A3040",
         brand: {
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          200: "#ddd6fe",
-          300: "#c4b5fd",
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7C3AED",
-          700: "#9333EA",
-          800: "#6d28d9",
-          900: "#4c1d95",
+          50: "#FAFFE8",
+          100: "#F3FECB",
+          200: "#E8FC9C",
+          300: "#DAF96A",
+          400: "#CFF74A",
+          500: "#C6F432",
+          600: "#C6F432",
+          700: "#A8DB1A",
+          800: "#7A9D12",
+          900: "#4F6612",
         },
+        status: { red: "#FF6B6B", orange: "#FF9B5E", amber: "#FFB547", blue: "#6E9BFF", grey: "#7D8494" },
       },
       fontFamily: {
-        display: ["var(--font-fredoka)", "ui-rounded", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "system-ui", "sans-serif"],
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       backgroundImage: {
-        "brand-gradient": "linear-gradient(135deg, #7C3AED 0%, #9333EA 50%, #c026d3 100%)",
-        "ink-gradient": "linear-gradient(180deg, #09090b 0%, #0f172a 50%, #09090b 100%)",
+        "brand-gradient": "linear-gradient(135deg, #DAF96A 0%, #C6F432 50%, #A8DB1A 100%)",
+        "ink-gradient": "linear-gradient(180deg, #0A0C10 0%, #11141B 50%, #0A0C10 100%)",
         "grid-pattern":
           "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
       },
       boxShadow: {
-        glow: "0 0 24px -4px rgba(124, 58, 237, 0.55)",
-        "glow-lg": "0 0 48px -6px rgba(147, 51, 234, 0.6)",
+        glow: "0 0 24px -6px rgba(198, 244, 50, 0.45)",
+        "glow-lg": "0 0 48px -8px rgba(198, 244, 50, 0.5)",
         glass: "inset 0 1px 0 0 rgba(255,255,255,0.06), 0 8px 32px -8px rgba(0,0,0,0.6)",
       },
       keyframes: {
@@ -49,8 +52,8 @@ const config: Config = {
           "50%": { transform: "translateY(-20px) rotate(6deg)" },
         },
         "pulse-glow": {
-          "0%, 100%": { opacity: "1", filter: "drop-shadow(0 0 4px rgba(147,51,234,0.5))" },
-          "50%": { opacity: "0.75", filter: "drop-shadow(0 0 14px rgba(147,51,234,0.9))" },
+          "0%, 100%": { opacity: "1", filter: "drop-shadow(0 0 4px rgba(198,244,50,0.4))" },
+          "50%": { opacity: "0.8", filter: "drop-shadow(0 0 12px rgba(198,244,50,0.75))" },
         },
         "ping-slow": {
           "0%": { transform: "scale(1)", opacity: "0.6" },

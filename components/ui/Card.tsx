@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Adds the purple glow + scale-105 hover state. */
+  /** Adds the lime glow + scale-105 hover state. */
   interactive?: boolean;
 }
 

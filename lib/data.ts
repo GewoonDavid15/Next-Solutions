@@ -35,7 +35,7 @@ export const departments: Department[] = [
     description:
       "Van krachtige Discord bots tot razendsnelle web-apps. Schaalbare code, strak gebouwd met moderne stacks.",
     icon: Code2,
-    gradient: "from-violet-500 to-indigo-500",
+    gradient: "from-brand-200 to-brand-700",
   },
   {
     id: "game",
@@ -44,7 +44,7 @@ export const departments: Department[] = [
     description:
       "Unieke FiveM scripts en volledig geconfigureerde Minecraft netwerken die spelers vasthouden.",
     icon: Gamepad2,
-    gradient: "from-fuchsia-500 to-purple-600",
+    gradient: "from-brand-300 to-brand-800",
   },
   {
     id: "media",
@@ -53,7 +53,7 @@ export const departments: Department[] = [
     description:
       "Een merk dat blijft hangen. Logo's, huisstijlen en interfaces die net zo goed werken als ze eruitzien.",
     icon: Sparkles,
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-brand-100 to-brand-600",
   },
 ];
 
@@ -169,7 +169,7 @@ export const projects: Project[] = [
     category: "bots",
     tags: ["Discord.js", "Postgres"],
     size: "md",
-    accent: "from-violet-600 to-indigo-600",
+    accent: "from-brand-500 to-ink-700",
     year: 2026,
     duration: "3 weken",
     summary:
@@ -193,7 +193,7 @@ export const projects: Project[] = [
     category: "websites",
     tags: ["Next.js", "Framer"],
     size: "lg",
-    accent: "from-fuchsia-600 to-purple-700",
+    accent: "from-brand-700 to-ink-800",
     year: 2026,
     duration: "5 weken",
     summary:
@@ -241,7 +241,7 @@ export const projects: Project[] = [
     category: "bots",
     tags: ["Python", "Redis"],
     size: "sm",
-    accent: "from-purple-600 to-pink-600",
+    accent: "from-brand-600 to-ink-700",
     year: 2025,
     duration: "2 weken",
     summary:
@@ -289,7 +289,7 @@ export const projects: Project[] = [
     category: "websites",
     tags: ["React", "tRPC"],
     size: "md",
-    accent: "from-sky-500 to-indigo-600",
+    accent: "from-status-blue to-ink-800",
     year: 2026,
     duration: "7 weken",
     summary:
@@ -313,7 +313,7 @@ export const projects: Project[] = [
     category: "bots",
     tags: ["TypeScript", "AI"],
     size: "lg",
-    accent: "from-violet-500 to-fuchsia-600",
+    accent: "from-brand-400 to-ink-700",
     year: 2026,
     duration: "4 weken",
     summary:
@@ -361,7 +361,7 @@ export const projects: Project[] = [
     category: "websites",
     tags: ["Next.js", "Tailwind"],
     size: "sm",
-    accent: "from-indigo-500 to-violet-700",
+    accent: "from-brand-800 to-ink-800",
     year: 2026,
     duration: "2 weken",
     summary:
@@ -468,5 +468,5 @@ export const values = [
 ];
 
 export const team = [
-  { name: "Nexify", role: "Oprichter", focus: "Software • Game • Media", initial: "N", gradient: "from-violet-500 via-brand-600 to-fuchsia-500" },
+  { name: "Nexify", role: "Oprichter", focus: "Software • Game • Media", initial: "N", gradient: "from-brand-200 via-brand-500 to-brand-700" },
 ];

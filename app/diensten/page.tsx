@@ -49,7 +49,7 @@ export default async function DienstenPage() {
                 title={
                   <span className="flex items-center gap-4">
                     <span className={cn("grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br shadow-glow", dept.gradient)}>
-                      <Icon className="size-6 text-white" />
+                      <Icon className="size-6 text-ink" />
                     </span>
                     {dept.title}
                   </span>
