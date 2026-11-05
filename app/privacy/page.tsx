@@ -11,6 +11,12 @@ export async function generateMetadata() {
 
 const sections: LegalSection[] = [
   {
+    heading: "Wie we zijn",
+    paragraphs: [
+      `Next Solutions is een online onderneming van Nexify, zonder fysiek kantoor en (nog) niet ingeschreven bij de Kamer van Koophandel. Wij zijn verantwoordelijk voor de gegevens in deze verklaring. Vragen over je gegevens stel je via ${site.email} of een ticket in onze Discord.`,
+    ],
+  },
+  {
     heading: "Welke gegevens we verwerken",
     paragraphs: [
       "We verwerken alleen gegevens die je zelf aan ons geeft of die nodig zijn om de website te laten werken.",
@@ -59,7 +65,7 @@ const sections: LegalSection[] = [
   {
     heading: "Hoe lang we ze bewaren",
     paragraphs: [
-      "Offerteaanvragen die niet tot een opdracht leiden, verwijderen we na twaalf maanden. Gegevens van klanten bewaren we tot zeven jaar na de laatste factuur, omdat de Belastingdienst dat van ons verlangt. Je sessie in het klantportaal vervalt automatisch na zeven dagen.",
+      "Offerteaanvragen die niet tot een opdracht leiden, verwijderen we na twaalf maanden. Gegevens van klanten bewaren we zolang je klant bent, en daarna alleen zo lang als de wet dat van ons vraagt, bijvoorbeeld voor de administratie van betalingen. Je sessie in het klantportaal vervalt automatisch na zeven dagen.",
       "Van tickets bewaren we de laatste duizend transcripts; oudere worden automatisch verwijderd. Je e-mailadres verwijderen we zodra je je afmeldt. Bestanden, reviews en sollicitaties verwijderen we op je verzoek.",
     ],
   },
@@ -79,6 +85,12 @@ const sections: LegalSection[] = [
 
 
 const sectionsEn: LegalSection[] = [
+  {
+    heading: "Who we are",
+    paragraphs: [
+      `Next Solutions is an online business run by Nexify, without a physical office and not (yet) registered with the Dutch Chamber of Commerce (KvK). We are responsible for the data described in this policy. Questions about your data can be sent to ${site.email} or asked in a ticket in our Discord.`,
+    ],
+  },
   {
     heading: "What data we process",
     paragraphs: ["We only process data that you give us yourself or that is needed to make the website work."],
@@ -126,7 +138,7 @@ const sectionsEn: LegalSection[] = [
   {
     heading: "How long we keep it",
     paragraphs: [
-      "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for up to seven years after the last invoice, because the Dutch Tax Administration requires this of us. Your client portal session expires automatically after seven days.",
+      "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for as long as you are a client, and after that only as long as the law requires, for example for the records of payments. Your client portal session expires automatically after seven days.",
       "We keep the last thousand ticket transcripts; older ones are deleted automatically. We delete your email address as soon as you unsubscribe. Files, reviews and applications are deleted at your request.",
     ],
   },

@@ -22,60 +22,51 @@ export const departmentsEn: Record<string, { title: string; tagline: string; des
 };
 
 /** Same order as `services` in lib/data.ts */
-export const servicesEn: { title: string; description: string; features: string[]; from: string }[] = [
+export const servicesEn: { title: string; description: string; features: string[] }[] = [
   {
     title: "Discord Bots",
     description: "Custom bots with moderation, tickets, economies, dashboards and integrations with your own APIs.",
-    features: ["Slash commands", "Web dashboard", "24/7 hosting", "Database integration"],
-    from: "€149",
+    features: ["Slash commands", "Web dashboard", "Hosting & monitoring", "Database integration"],
   },
   {
     title: "Websites & Web Apps",
     description: "Fast, SEO-friendly sites and applications built with Next.js, TypeScript and Tailwind.",
-    features: ["Next.js / React", "CMS integration", "Animations", "Performance 95+"],
-    from: "€499",
+    features: ["Next.js / React", "CMS integration", "Animations", "Fast load times"],
   },
   {
     title: "Automation",
     description: "Connect your tools. Webhooks, APIs and workflows that save you hours of work every week.",
     features: ["API integrations", "Webhooks", "Cron jobs", "Monitoring"],
-    from: "€199",
   },
   {
     title: "FiveM Scripts",
     description: "Optimised ESX/QBCore scripts with sleek NUI interfaces and 0.00 ms idle resmon.",
     features: ["ESX & QBCore", "Custom NUI", "Optimised", "Escrow support"],
-    from: "€79",
   },
   {
     title: "Minecraft Servers",
     description: "Complete networks: setup, plugins, custom configuration, anti-cheat and performance tuning.",
     features: ["Velocity / Paper", "Custom plugins", "Anti-cheat", "Server tuning"],
-    from: "€129",
   },
   {
     title: "Server Hosting & Management",
     description: "Managed game and bot servers with monitoring, backups and DDoS protection.",
-    features: ["Daily backups", "DDoS protection", "99.9% uptime", "Support"],
-    from: "€15 /mo",
+    features: ["Daily backups", "DDoS protection", "Status monitoring", "Support"],
   },
   {
     title: "Branding",
     description: "Logo, colour palette, typography and a complete brand guide for a consistent look.",
     features: ["Logo design", "Brand guide", "Social kit", "Merchandise"],
-    from: "€249",
   },
   {
     title: "UI/UX Design",
     description: "Interfaces designed around your users, from wireframe to pixel-perfect Figma prototype.",
     features: ["Wireframes", "Figma prototypes", "Design systems", "User testing"],
-    from: "€349",
   },
   {
     title: "Content & Socials",
     description: "Trailers, banners, thumbnails and social content that stand out in every feed.",
     features: ["Trailers", "Thumbnails", "Banners", "Motion graphics"],
-    from: "€59",
   },
 ];
 
@@ -192,12 +183,12 @@ export const faqEn = [
   {
     question: "What exactly does it cost?",
     answer:
-      "The services page lists indicative prices per service. After a short introduction you get a fixed price, so you never face surprises. Larger projects are split into phases, each with its own amount.",
+      "Every project is different, so prices are on request. Tell us what you want through the quote form or a ticket in our Discord, and you get a fixed price before we start. That way you never face surprises.",
   },
   {
     question: "Do I own the code?",
     answer:
-      "Yes. After the final payment, all code and design are yours, including the repository. For FiveM scripts you can choose escrow protection if you plan to resell the work yourself.",
+      "Yes. Once you have paid, all code and design are yours, including the repository. For FiveM scripts you can choose escrow protection if you plan to resell the work yourself.",
   },
   {
     question: "Do you offer maintenance after delivery?",

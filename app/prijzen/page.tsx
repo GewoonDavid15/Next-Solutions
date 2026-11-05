@@ -18,39 +18,39 @@ import { cn } from "@/lib/utils";
 export async function generateMetadata() {
   const { locale } = await getI18n();
   return locale === "en"
-    ? pageMetadata("/prijzen", "Pricing", "What does a Discord bot, a website, a FiveM script or a brand identity cost? Guide prices per package, without surprises afterwards.")
-    : pageMetadata("/prijzen", "Prijzen", "Wat kost een Discord bot, een website, een FiveM script of een huisstijl? Richtprijzen per pakket, zonder verrassingen achteraf.");
+    ? pageMetadata("/prijzen", "Packages", "Packages for Discord bots, websites, FiveM scripts, Minecraft servers and branding. Every price is custom, on request.")
+    : pageMetadata("/prijzen", "Pakketten", "Pakketten voor Discord bots, websites, FiveM scripts, Minecraft servers en branding. Elke prijs op maat, op aanvraag.");
 }
 
 const texts = {
   nl: {
-    eyebrow: "Prijzen",
-    title: ["Heldere prijzen, ", "geen", " verrassingen"],
-    intro: "Richtprijzen per afdeling, zodat je weet waar je aan toe bent. Je krijgt altijd een vaste prijs voordat we beginnen.",
-    vat: "Alle bedragen zijn exclusief btw.",
+    eyebrow: "Pakketten",
+    title: ["Heldere pakketten, ", "geen", " verrassingen"],
+    intro: "Wat we per afdeling voor je kunnen doen. Elke prijs is op maat: je krijgt een vaste prijs voordat we beginnen.",
+    note: "Prijzen op aanvraag.",
     included: "Bij elk pakket inbegrepen",
     includedList: ["Vaste prijs vooraf", "Eigen kanaal in onze Discord", "Code en ontwerp worden jouw eigendom", "Nazorg op bugs na oplevering"],
-    faqEyebrow: "Over prijzen",
+    faqEyebrow: "Over prijzen en betalen",
     faqTitle: "Veelgestelde vragen",
     faqIntro: "Staat je vraag er niet tussen? Stel hem in onze Discord, we antwoorden meestal dezelfde dag.",
     ctaTitle: "Benieuwd wat jouw project kost?",
-    ctaText: "Vul het offerteformulier in en je hebt binnen 24 uur een prijs op maat.",
-    popular: "Meest gekozen",
+    ctaText: "Vul het offerteformulier in. Je krijgt meestal binnen 24 uur een reactie en daarna een prijs op maat.",
+    popular: "Aanrader",
     choose: "Kies {name}",
   },
   en: {
-    eyebrow: "Pricing",
-    title: ["Clear prices, ", "no", " surprises"],
-    intro: "Guide prices per department, so you know where you stand. You always get a fixed price before we start.",
-    vat: "All amounts exclude VAT.",
+    eyebrow: "Packages",
+    title: ["Clear packages, ", "no", " surprises"],
+    intro: "What we can do for you per department. Every price is custom: you get a fixed price before we start.",
+    note: "Prices on request.",
     included: "Included in every package",
     includedList: ["Fixed price up front", "Your own channel in our Discord", "Code and design become yours", "Bug aftercare after delivery"],
-    faqEyebrow: "About pricing",
+    faqEyebrow: "About pricing and payment",
     faqTitle: "Frequently asked questions",
     faqIntro: "Is your question not listed? Ask it in our Discord, we usually reply the same day.",
     ctaTitle: "Curious what your project costs?",
-    ctaText: "Fill in the quote form and you'll have a tailored price within 24 hours.",
-    popular: "Most chosen",
+    ctaText: "Fill in the quote form. You usually hear back within 24 hours, followed by a tailored price.",
+    popular: "Recommended",
     choose: "Choose {name}",
   },
 };
@@ -73,7 +73,7 @@ export default async function PrijzenPage() {
         title={<>{tx.title[0]}<span className="text-gradient">{tx.title[1]}</span>{tx.title[2]}</>}
         description={tx.intro}
       >
-        <p className="text-sm text-zinc-500">{tx.vat}</p>
+        <p className="text-sm text-zinc-500">{tx.note}</p>
       </PageHeader>
 
       {groups.map(({ id, items }) => {
@@ -165,8 +165,7 @@ function PackageCard({ pkg, locale, tx }: { pkg: Package; locale: Locale; tx: (t
       <p className="mt-1 text-sm text-zinc-400">{pkg.tagline}</p>
 
       <p className="mt-6 flex items-baseline gap-2">
-        <span className="font-display text-4xl font-semibold text-white">{pkg.price}</span>
-        {pkg.period && <span className="text-sm text-zinc-500">{pkg.period}</span>}
+        <span className="font-display text-2xl font-semibold text-white">{locale === "en" ? "On request" : "Op aanvraag"}</span>
       </p>
       <p className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500">
         <Clock className="size-3.5" /> {pkg.delivery}

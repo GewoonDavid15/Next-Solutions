@@ -63,7 +63,6 @@ export interface Service {
   icon: LucideIcon;
   features: string[];
   department: DepartmentId;
-  from: string;
 }
 
 export const services: Service[] = [
@@ -71,17 +70,15 @@ export const services: Service[] = [
     title: "Discord Bots",
     description: "Maatwerk bots met moderatie, tickets, economie, dashboards en integraties met je eigen API's.",
     icon: Bot,
-    features: ["Slash commands", "Web dashboard", "24/7 hosting", "Database koppeling"],
+    features: ["Slash commands", "Web dashboard", "Hosting & monitoring", "Database koppeling"],
     department: "software",
-    from: "€ 149",
   },
   {
     title: "Websites & Web-apps",
     description: "Snelle, SEO-vriendelijke sites en applicaties gebouwd met Next.js, TypeScript en Tailwind.",
     icon: Globe,
-    features: ["Next.js / React", "CMS integratie", "Animaties", "Performance 95+"],
+    features: ["Next.js / React", "CMS integratie", "Animaties", "Snelle laadtijden"],
     department: "software",
-    from: "€ 499",
   },
   {
     title: "Automatisering",
@@ -89,7 +86,6 @@ export const services: Service[] = [
     icon: Workflow,
     features: ["API integraties", "Webhooks", "Cron jobs", "Monitoring"],
     department: "software",
-    from: "€ 199",
   },
   {
     title: "FiveM Scripts",
@@ -97,7 +93,6 @@ export const services: Service[] = [
     icon: Car,
     features: ["ESX & QBCore", "Custom NUI", "Geoptimaliseerd", "Escrow support"],
     department: "game",
-    from: "€ 79",
   },
   {
     title: "Minecraft Servers",
@@ -105,15 +100,13 @@ export const services: Service[] = [
     icon: Pickaxe,
     features: ["Velocity / Paper", "Custom plugins", "Anti-cheat", "Server tuning"],
     department: "game",
-    from: "€ 129",
   },
   {
     title: "Server Hosting & Beheer",
     description: "Beheerde game- en botservers met monitoring, backups en DDoS-bescherming.",
     icon: Server,
-    features: ["Daily backups", "DDoS protectie", "99.9% uptime", "Support"],
+    features: ["Daily backups", "DDoS protectie", "Statusmonitoring", "Support"],
     department: "game",
-    from: "€ 15 /mnd",
   },
   {
     title: "Branding",
@@ -121,7 +114,6 @@ export const services: Service[] = [
     icon: Brush,
     features: ["Logo ontwerp", "Brand guide", "Social kit", "Merchandise"],
     department: "media",
-    from: "€ 249",
   },
   {
     title: "UI/UX Design",
@@ -129,7 +121,6 @@ export const services: Service[] = [
     icon: LayoutTemplate,
     features: ["Wireframes", "Figma prototypes", "Design systems", "User testing"],
     department: "media",
-    from: "€ 349",
   },
   {
     title: "Content & Socials",
@@ -137,7 +128,6 @@ export const services: Service[] = [
     icon: Megaphone,
     features: ["Trailers", "Thumbnails", "Banners", "Motion graphics"],
     department: "media",
-    from: "€ 59",
   },
 ];
 
@@ -405,12 +395,12 @@ export const faq = [
   {
     question: "Wat kost het precies?",
     answer:
-      "Op de dienstenpagina staan richtprijzen per dienst. Na een korte kennismaking krijg je een vaste prijs, zodat je nooit voor verrassingen komt te staan. Grotere projecten splitsen we op in fases met een eigen deelbedrag.",
+      "Elk project is anders, dus prijzen zijn op aanvraag. Vertel ons wat je wilt via het offerteformulier of een ticket in onze Discord, en je krijgt een vaste prijs voordat we beginnen. Zo kom je nooit voor verrassingen te staan.",
   },
   {
     question: "Blijf ik eigenaar van de code?",
     answer:
-      "Ja. Na de laatste betaling is alle code en het ontwerp van jou, inclusief de repository. Bij FiveM scripts kun je kiezen voor escrow-beveiliging als je het werk zelf gaat doorverkopen.",
+      "Ja. Zodra je hebt betaald is alle code en het ontwerp van jou, inclusief de repository. Bij FiveM scripts kun je kiezen voor escrow-beveiliging als je het werk zelf gaat doorverkopen.",
   },
   {
     question: "Bieden jullie ook onderhoud aan na de oplevering?",

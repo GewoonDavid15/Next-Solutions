@@ -19,10 +19,11 @@ export async function generateMetadata() {
 
 export const dynamic = "force-dynamic";
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string }> }) {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string; afdeling?: string }> }) {
   // Arriving from a package on /prijzen preselects the matching department.
-  const { pakket } = await searchParams;
-  const initialDepartment = departmentForPackage(pakket);
+  // Arriving from a service on /diensten does the same.
+  const { pakket, afdeling } = await searchParams;
+  const initialDepartment = departmentForPackage(pakket) || (["software", "game", "media"].includes(afdeling ?? "") ? afdeling! : "");
 
   // Live crowd level and response time from the Discord bot (falls back to the static text)
   const live = await getPublicData();
@@ -30,7 +31,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
   const en = locale === "en";
   const tickets = live?.tickets ?? null;
   const responseText =
-    tickets?.reactietijdMs != null ? `Recent ± ${formatMinutes(tickets.reactietijdMs, locale)}` : en ? "Within 24 hours on average" : "Gemiddeld binnen 24 uur";
+    tickets?.reactietijdMs != null ? `Recent ± ${formatMinutes(tickets.reactietijdMs, locale)}` : en ? "Usually within 24 hours" : "Meestal binnen 24 uur";
 
   const channels = [
     { icon: DiscordIcon, title: "Discord", text: en ? "Open a ticket in our server" : "Open een ticket in onze server", href: site.discordInvite },
@@ -43,7 +44,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       <PageHeader
         eyebrow="Contact"
         title={en ? <>Let&apos;s build something <span className="text-gradient">great</span></> : <>Laten we iets <span className="text-gradient">moois</span> bouwen</>}
-        description={en ? "Fill in the form and receive a tailored, no-obligation quote within 24 hours." : "Vul het formulier in en ontvang binnen 24 uur een vrijblijvende offerte op maat."}
+        description={en ? "Fill in the form. You usually hear back within 24 hours, followed by a tailored, no-obligation quote." : "Vul het formulier in. Je krijgt meestal binnen 24 uur een reactie, en daarna een vrijblijvende offerte op maat."}
       />
       <section className="pb-12">
         <div className="container grid gap-8 lg:grid-cols-3">

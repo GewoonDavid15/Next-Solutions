@@ -11,7 +11,7 @@ export const nl = {
   skipLink: "Naar inhoud",
   nav: {
     aria: "Hoofdnavigatie",
-    links: { "/": "Home", "/diensten": "Diensten", "/prijzen": "Prijzen", "/over-ons": "Over ons", "/nieuws": "Nieuws", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact" } as Record<string, string>,
+    links: { "/": "Home", "/diensten": "Diensten", "/prijzen": "Pakketten", "/over-ons": "Over ons", "/nieuws": "Nieuws", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact" } as Record<string, string>,
     quote: "Offerte aanvragen",
     openMenu: "Menu openen",
     closeMenu: "Menu sluiten",
@@ -32,7 +32,7 @@ export const nl = {
     titleBefore: "Klaar om iets ",
     titleHighlight: "next-level",
     titleAfter: " te bouwen?",
-    description: "Vertel ons over je idee. Binnen 24 uur heb je een vrijblijvend voorstel in je inbox of Discord DM.",
+    description: "Vertel ons over je idee. Je krijgt meestal binnen 24 uur een reactie in je inbox of Discord DM.",
     quote: "Offerte aanvragen",
     discord: "Praat met ons op Discord",
   },

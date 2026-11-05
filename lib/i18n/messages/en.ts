@@ -9,7 +9,7 @@ export const en: Messages = {
   skipLink: "Skip to content",
   nav: {
     aria: "Main navigation",
-    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Pricing", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact" },
+    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Packages", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact" },
     quote: "Request a quote",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -30,7 +30,7 @@ export const en: Messages = {
     titleBefore: "Ready to build something ",
     titleHighlight: "next-level",
     titleAfter: "?",
-    description: "Tell us about your idea. Within 24 hours you'll have a no-obligation proposal in your inbox or Discord DMs.",
+    description: "Tell us about your idea. You usually hear back within 24 hours in your inbox or Discord DMs.",
     quote: "Request a quote",
     discord: "Talk to us on Discord",
   },
