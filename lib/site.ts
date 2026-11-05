@@ -7,7 +7,13 @@ export const site = {
   email: "hello@nextsolutions.nl",
 };
 
-export const navLinks = [
+/**
+ * The portfolio (lib/data.ts → projects) still holds example cases. It stays hidden until there are real
+ * projects: set this to true to bring back the menu item, the pages and the sitemap entries.
+ */
+export const SHOW_PORTFOLIO = false;
+
+const allNavLinks = [
   { href: "/", label: "Home" },
   { href: "/diensten", label: "Diensten" },
   { href: "/prijzen", label: "Prijzen" },
@@ -18,3 +24,5 @@ export const navLinks = [
   { href: "/klantportaal", label: "Klantportaal" },
   { href: "/contact", label: "Contact" },
 ] as const;
+
+export const navLinks = allNavLinks.filter((l) => SHOW_PORTFOLIO || l.href !== "/portfolio");

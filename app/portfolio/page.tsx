@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { CallToAction } from "@/components/sections/CallToAction";
 import { PortfolioGrid } from "@/components/sections/PortfolioGrid";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { notFound } from "next/navigation";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
+import { SHOW_PORTFOLIO } from "@/lib/site";
 
 export async function generateMetadata() {
   const { locale } = await getI18n();
@@ -14,6 +16,7 @@ export async function generateMetadata() {
 }
 
 export default async function PortfolioPage() {
+  if (!SHOW_PORTFOLIO) notFound();
   const { locale, content } = await getI18n();
   const en = locale === "en";
   return (

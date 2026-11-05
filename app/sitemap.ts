@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getPosts } from "@/lib/blog";
 import { projects } from "@/lib/data";
 import { localePath } from "@/lib/i18n/config";
-import { navLinks, site } from "@/lib/site";
+import { navLinks, SHOW_PORTFOLIO, site } from "@/lib/site";
 
 type Entry = { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number };
 
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((l) => l.href !== "/klantportaal")
       .map((l) => ({ path: l.href, changeFrequency: l.href === "/" ? ("weekly" as const) : ("monthly" as const), priority: l.href === "/" ? 1 : 0.8 })),
     ...["/team", "/reviews", "/vacatures", "/status"].map((path) => ({ path, changeFrequency: "daily" as const, priority: 0.5 })),
-    ...projects.map((p) => ({ path: `/portfolio/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.6 })),
+    ...(SHOW_PORTFOLIO ? projects : []).map((p) => ({ path: `/portfolio/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.6 })),
     ...["/privacy", "/voorwaarden"].map((path) => ({ path, changeFrequency: "yearly" as const, priority: 0.3 })),
   ];
 

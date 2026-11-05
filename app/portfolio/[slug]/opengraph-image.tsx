@@ -1,17 +1,19 @@
 import { ImageResponse } from "next/og";
 import { projects } from "@/lib/data";
-import { site } from "@/lib/site";
+import { notFound } from "next/navigation";
+import { SHOW_PORTFOLIO, site } from "@/lib/site";
 
 export const alt = "Project bij Next Solutions";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return SHOW_PORTFOLIO ? projects.map((p) => ({ slug: p.slug })) : [];
 }
 
 /** Share card per case study, so a shared link shows the project, not the site. */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
+  if (!SHOW_PORTFOLIO) notFound();
   const { slug } = await params;
   const project = projects.find((p) => p.slug === slug);
 
