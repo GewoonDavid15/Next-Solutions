@@ -17,8 +17,8 @@ export async function CoreServices() {
           title={en ? <>Three disciplines, <span className="text-gradient">one team</span></> : <>Drie disciplines, <span className="text-gradient">één team</span></>}
           description={
             en
-              ? "Everything under one roof. Our specialists work together so your project is right — from code to pixel."
-              : "Alles onder één dak. Onze specialisten werken samen zodat jouw project klopt — van code tot pixel."
+              ? "Everything under one roof, so your project fits together — from code to pixel."
+              : "Alles onder één dak, zodat jouw project klopt — van code tot pixel."
           }
         />
         <Stagger className="grid gap-6 md:grid-cols-3">

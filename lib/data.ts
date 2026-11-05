@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/config";
-import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultValuesEn, servicesEn, statsEn, timelineEn, valuesEn } from "@/lib/content-en";
+import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultValuesEn, servicesEn, valuesEn } from "@/lib/content-en";
 import {
   Bot,
   Brush,
@@ -389,12 +389,6 @@ export const projects: Project[] = [
   },
 ];
 
-export const stats = [
-  { label: "Community leden", value: 4280, suffix: "+" },
-  { label: "Projecten opgeleverd", value: 350, suffix: "+" },
-  { label: "Uptime", value: 99.9, suffix: "%", decimals: 1 },
-];
-
 export const process = [
   { step: "01", title: "Kennismaking", text: "We bespreken je idee, doelen en budget in onze Discord of via een call." },
   { step: "02", title: "Ontwerp & Plan", text: "Je ontvangt een helder voorstel met planning, mockups en vaste prijs." },
@@ -439,7 +433,7 @@ export const faq = [
 
 /** All content in one language. Dutch is the source; English swaps the texts and keeps icons, colours and slugs. */
 export function getContent(locale: Locale) {
-  if (locale === "nl") return { departments, services, projectFilters, projects, stats, process, faq, values, timeline, team };
+  if (locale === "nl") return { departments, services, projectFilters, projects, process, faq, values, team };
   return {
     departments: departments.map((d) => ({ ...d, ...departmentsEn[d.id] })),
     services: services.map((s, i) => ({ ...s, ...servicesEn[i] })),
@@ -456,12 +450,10 @@ export function getContent(locale: Locale) {
         results: p.results.map((r, i) => ({ label: en.results[i] ?? r.label, value: resultValuesEn[r.value] ?? r.value })),
       };
     }),
-    stats: stats.map((s, i) => ({ ...s, label: statsEn[i] ?? s.label })),
     process: process.map((p, i) => ({ ...p, ...processEn[i] })),
     faq: faqEn,
     values: values.map((v, i) => ({ ...v, ...valuesEn[i] })),
-    timeline: timeline.map((t, i) => ({ ...t, ...timelineEn[i] })),
-    team,
+    team: team.map((m) => ({ ...m, role: m.role === "Oprichter" ? "Founder" : m.role })),
   };
 }
 
@@ -485,16 +477,6 @@ export const values = [
   },
 ];
 
-export const timeline = [
-  { year: "2021", title: "Begonnen als hobby", text: "Twee vrienden bouwen Discord bots voor hun eigen server. De eerste vragen van buitenaf komen binnen." },
-  { year: "2023", title: "Eerste betaalde opdrachten", text: "Een vaste stroom klanten uit de FiveM- en Minecraft-wereld. Het team groeit naar vier mensen." },
-  { year: "2025", title: "Next Solutions", text: "De drie afdelingen worden opgezet: Software, Game Development en Media, met een eigen klantportaal." },
-  { year: "2026", title: "Waar we nu staan", text: "Een community van duizenden leden en honderden opgeleverde projecten." },
-];
-
 export const team = [
-  { name: "Davey", role: "Founder & Lead Developer", focus: "Software", initial: "D", gradient: "from-violet-500 to-indigo-600" },
-  { name: "Sem", role: "Game Developer", focus: "Game", initial: "S", gradient: "from-fuchsia-500 to-purple-600" },
-  { name: "Noor", role: "Designer", focus: "Media", initial: "N", gradient: "from-purple-500 to-pink-500" },
-  { name: "Tim", role: "Backend Developer", focus: "Software", initial: "T", gradient: "from-indigo-500 to-violet-600" },
+  { name: "Nexify", role: "Oprichter", focus: "Software • Game • Media", initial: "N", gradient: "from-violet-500 via-brand-600 to-fuchsia-500" },
 ];

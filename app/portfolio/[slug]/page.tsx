@@ -9,6 +9,7 @@ import { ProjectMockup } from "@/components/sections/ProjectMockup";
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
+import { SHOW_PORTFOLIO } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -28,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectPage({ params }: Props) {
+  if (!SHOW_PORTFOLIO) notFound();
   const { slug } = await params;
   const { locale, content, lp } = await getI18n();
   const en = locale === "en";
