@@ -43,6 +43,10 @@ const config: Config = {
         glass: "inset 0 1px 0 0 rgba(255,255,255,0.06), 0 8px 32px -8px rgba(0,0,0,0.6)",
       },
       keyframes: {
+        "rise-in": {
+          "0%": { opacity: "0", transform: "translateY(24px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
         "gradient-x": {
           "0%, 100%": { backgroundPosition: "0% 50%" },
           "50%": { backgroundPosition: "100% 50%" },
@@ -70,6 +74,7 @@ const config: Config = {
         },
       },
       animation: {
+        "rise-in": "rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
         "gradient-x": "gradient-x 8s ease infinite",
         float: "float 7s ease-in-out infinite",
         "float-slow": "float 11s ease-in-out infinite",

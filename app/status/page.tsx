@@ -3,6 +3,7 @@ import { FadeUp } from "@/components/motion/FadeUp";
 import { CrowdCard } from "@/components/live/CrowdCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getPublicData } from "@/lib/bot-api";
+import { getUptimeMonitors } from "@/lib/uptime";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { fmt, type Locale } from "@/lib/i18n/config";
 import { DAYS, DAYS_EN, formatDate, formatMinutes, formatUptime, type LiveService } from "@/lib/live";
@@ -66,7 +67,7 @@ function overall(services: LiveService[], locale: Locale) {
 }
 
 export default async function StatusPage() {
-  const data = await getPublicData();
+  const [data, monitors] = await Promise.all([getPublicData(), getUptimeMonitors()]);
   const { locale } = await getI18n();
   const tx = texts[locale];
   const days = locale === "en" ? DAYS_EN : DAYS;
@@ -81,6 +82,29 @@ export default async function StatusPage() {
 
       <section className="pb-16">
         <div className="container max-w-4xl space-y-6">
+          {monitors && monitors.length > 0 && (
+            <FadeUp>
+              <div className="glass rounded-3xl p-6">
+                <h2 className="font-display text-lg text-white">{locale === "en" ? "Website & bot (external check)" : "Website & bot (externe controle)"}</h2>
+                <p className="mt-1 text-xs text-zinc-500">{locale === "en" ? "Checked every 5 minutes from outside by UptimeRobot." : "Elke 5 minuten van buitenaf gecontroleerd door UptimeRobot."}</p>
+                <ul className="mt-4 divide-y divide-white/5">
+                  {monitors.map((m) => (
+                    <li key={m.name} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                      <span className="flex items-center gap-2 text-zinc-200">
+                        <span className={cn("size-2.5 rounded-full", m.up === true ? "bg-emerald-400" : m.up === false ? "bg-rose-400" : "bg-zinc-500")} />
+                        {m.name}
+                      </span>
+                      <span className="flex gap-4 text-xs text-zinc-400">
+                        {([["24u", m.uptime.day], [locale === "en" ? "7d" : "7d", m.uptime.week], ["30d", m.uptime.month]] as const).map(([l, v]) => (
+                          <span key={l}>{l}: <b className="text-zinc-200">{v === null ? "–" : `${v.toFixed(2).replace(".", locale === "en" ? "." : ",")}%`}</b></span>
+                        ))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </FadeUp>
+          )}
           {!data ? (
             <div className="glass rounded-3xl p-8 text-center">
               <p className="font-display text-xl text-white">{tx.unavailable}</p>

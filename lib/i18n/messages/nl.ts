@@ -6,7 +6,7 @@ export const nl = {
   meta: {
     title: "Next Solutions — Media, Software & Game Development",
     description:
-      "Next Solutions is een digital agency voor Media, Software en Game Development. Discord bots, websites, FiveM scripts, Minecraft servers en branding.",
+      "Next Solutions is een digital agency voor social media, software en game development. Social media beheer, content, Discord bots, websites, FiveM scripts, Minecraft servers en branding.",
   },
   skipLink: "Naar inhoud",
   nav: {

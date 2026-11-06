@@ -137,7 +137,7 @@ export function Navbar() {
               href={localePath(other, pathname)}
               hrefLang={other}
               title={t.nav.switchTo}
-              aria-label={t.nav.switchTo}
+              aria-label={`${other.toUpperCase()}: ${t.nav.switchTo}`}
               className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-2.5 py-1.5 text-xs font-semibold uppercase text-zinc-300 transition-colors hover:border-brand-500/40 hover:text-white"
             >
               <Languages className="size-3.5" /> {other}

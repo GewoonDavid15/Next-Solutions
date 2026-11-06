@@ -54,26 +54,17 @@ export function Hero() {
           {tx.badge}
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease }}
-          className="mx-auto max-w-5xl text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl lg:text-8xl"
-        >
+        {/* CSS animation (not JavaScript): the headline is visible before the page is interactive, for a fast LCP */}
+        <h1 className="mx-auto max-w-5xl animate-rise-in text-5xl font-semibold leading-[1.05] tracking-tight [animation-delay:60ms] motion-reduce:animate-none sm:text-7xl lg:text-8xl">
           {tx.heading}
           <br />
           <Typewriter key={locale} words={tx.words} />
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25, ease }}
-          className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-xl"
-        >
+        <p className="mx-auto mt-6 max-w-2xl animate-rise-in text-base leading-relaxed text-zinc-400 [animation-delay:150ms] motion-reduce:animate-none sm:text-xl">
           {tx.intro[0]}<span className="text-white">Media</span>{tx.intro[1]}
           <span className="text-white">Software</span>{tx.intro[2]}<span className="text-white">Game Development</span>{tx.intro[3]}
-        </motion.p>
+        </p>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}

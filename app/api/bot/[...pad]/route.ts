@@ -9,7 +9,7 @@ const ALLOWED: Record<string, string[]> = {
     "beheer/tickets", "beheer/ticket", "beheer/transcript", "beheer/offertes", "beheer/giveaways", "beheer/verificatie",
     "beheer/rollen", "beheer/leden", "beheer/lid", "beheer/logbestanden", "beheer/log", "beheer/backups", "beheer/stats",
     "beheer/moderatie", "beheer/kanalen", "beheer/afspraken", "beheer/social",
-    "beheer/projecten", "beheer/weekrapport", "beheer/veiligheid", "beheer/waarschuwingen", "beheer/suggesties", "beheer/levels",
+    "beheer/projecten", "beheer/weekrapport", "beheer/veiligheid", "beheer/waarschuwingen", "beheer/suggesties", "beheer/levels", "beheer/verwijderverzoeken", "beheer/funnel",
   ],
   PUT: ["instellingen", "modules/code"],
   POST: [
@@ -19,7 +19,7 @@ const ALLOWED: Record<string, string[]> = {
     "beheer/lid/moderatie", "beheer/aankondiging", "beheer/melding/test", "beheer/backups/extern", "beheer/afspraak/annuleer",
     "beheer/social/post", "beheer/social/post/verwijder", "beheer/social/rapport", "beheer/social/rapport/verwijder",
     "beheer/social/abonnement", "beheer/social/abonnement/betaald", "beheer/social/notities",
-    "beheer/weekrapport/stuur", "beheer/waarschuw", "beheer/waarschuwing/intrekken", "beheer/raid", "beheer/suggestie",
+    "beheer/weekrapport/stuur", "beheer/waarschuw", "beheer/waarschuwing/intrekken", "beheer/raid", "beheer/suggestie", "beheer/verwijderverzoek",
   ],
   DELETE: ["modules/code"],
 };

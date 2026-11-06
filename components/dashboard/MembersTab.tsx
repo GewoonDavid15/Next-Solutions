@@ -210,6 +210,27 @@ function Warnings({ id }: { id: string }) {
   );
 }
 
+function DeletionRequests() {
+  const { data, reload } = useBotData<{ verzoeken: { id: string; userId: string; naam: string; toelichting: string; t: number; status: string }[] }>("beheer/verwijderverzoeken", 120_000);
+  const open = data?.verzoeken.filter((v) => v.status === "open") ?? [];
+  if (!open.length) return null;
+  return (
+    <div className="mb-4 rounded-3xl border border-amber-400/40 bg-amber-400/[0.06] p-4 lg:col-span-2">
+      <p className="text-sm font-semibold text-amber-100">🗑️ {open.length} verzoek(en) om gegevens te verwijderen (reageer binnen 30 dagen)</p>
+      <ul className="mt-2 space-y-2 text-sm">
+        {open.map((v) => (
+          <li key={v.id} className="flex flex-wrap items-center gap-3">
+            <span className="font-medium">{v.naam || v.userId}</span>
+            <span className="min-w-0 flex-1 truncate text-zinc-400">{v.toelichting || "Alles verwijderen"}</span>
+            <span className="text-xs text-zinc-500">{timeAgo(v.t)}</span>
+            <Button size="sm" variant="secondary" onClick={async () => { await botApi("POST", "beheer/verwijderverzoek", { id: v.id }).catch(() => null); reload(); }}>Afgehandeld</Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function MembersTab() {
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -228,6 +249,7 @@ export function MembersTab() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_minmax(0,420px)]">
+      <DeletionRequests />
       <Panel title={`Leden${members.data ? ` • ${members.data.totaal}` : ""}`} icon={Users} className={cn(selected && "hidden lg:block")}>
         <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <div className="relative">
