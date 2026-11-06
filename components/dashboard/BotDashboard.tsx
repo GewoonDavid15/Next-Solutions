@@ -39,7 +39,7 @@ const groups = [
     tabs: [
       { id: "tickets", label: "Tickets", icon: Ticket },
       { id: "offertes", label: "Offertes & aanvragen", icon: FileSignature },
-      { id: "projecten", label: "Projecten & uren", icon: FolderKanban },
+      { id: "projecten", label: "Projecten", icon: FolderKanban },
       { id: "social", label: "Social klanten", icon: Megaphone },
       { id: "leden", label: "Leden", icon: Users },
       { id: "afspraken", label: "Afspraken", icon: CalendarDays },

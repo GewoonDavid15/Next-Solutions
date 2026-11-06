@@ -52,7 +52,7 @@ export function StatsTab() {
             {([
               ["Nieuwe leden", week.data.cijfers.nieuweLeden], ["Tickets gesloten", week.data.cijfers.ticketsGesloten], ["Offertes betaald", week.data.cijfers.offertesBetaald],
               ["Omzet", `€ ${Number(week.data.cijfers.omzet ?? 0).toLocaleString("nl-NL")}`], ["Abonnementen", week.data.cijfers.abonnementen], ["Per maand (MRR)", `€ ${Number(week.data.cijfers.mrr ?? 0).toLocaleString("nl-NL")}`],
-              ["Tevreden klanten", week.data.cijfers.tevreden === null ? "–" : `${week.data.cijfers.tevreden}%`], ["Uren", week.data.cijfers.uren],
+              ["Tevreden klanten", week.data.cijfers.tevreden === null ? "–" : `${week.data.cijfers.tevreden}%`],
             ] as [string, unknown][]).map(([l, v]) => (
               <div key={l} className="rounded-2xl border border-white/10 p-3"><p className="text-xs text-zinc-500">{l}</p><p className="mt-0.5 text-lg font-semibold">{String(v ?? "–")}</p></div>
             ))}
