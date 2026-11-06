@@ -4,7 +4,7 @@ import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { Logo } from "@/components/ui/Logo";
 import { GithubIcon, InstagramIcon, XIcon, YoutubeIcon } from "@/components/ui/SocialIcons";
 import { getI18n } from "@/lib/i18n/server";
-import { navLinks, site } from "@/lib/site";
+import { moreNav, navLinks, site } from "@/lib/site";
 
 const socials = [
   { label: "Discord", href: site.discordInvite, icon: DiscordIcon },
@@ -34,10 +34,7 @@ export async function Footer() {
           <FooterColumn title={t.footer.sitelinks} className="lg:col-span-2">
             {[
               ...navLinks.map((l) => ({ href: l.href, label: t.nav.links[l.href] ?? l.label })),
-              { href: "/team", label: t.footer.extra.team },
-              { href: "/reviews", label: t.footer.extra.reviews },
-              { href: "/vacatures", label: t.footer.extra.vacatures },
-              { href: "/status", label: t.footer.extra.status },
+              ...moreNav.filter((m) => !navLinks.some((l) => l.href === m.href)).map((m) => ({ href: m.href, label: t.nav.links[m.href] ?? m.href })),
             ].map((l) => (
               <FooterLink key={l.href} href={lp(l.href)}>
                 {l.label}
@@ -82,9 +79,12 @@ export async function Footer() {
 
         <p className="mt-10 text-center font-display text-lg text-zinc-300 sm:text-xl">
           Made by{" "}
-          <span className="inline-block animate-pulse-glow bg-gradient-to-r from-brand-200 via-brand-400 to-brand-700 bg-clip-text font-bold text-transparent">
+          <Link
+            href={lp("/nexify")}
+            className="inline-block animate-pulse-glow bg-gradient-to-r from-brand-200 via-brand-400 to-brand-700 bg-clip-text font-bold text-transparent transition hover:brightness-125"
+          >
             nexify
-          </span>
+          </Link>
         </p>
       </div>
     </footer>

@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
+import { OfferCard } from "@/components/portal/OfferCard";
+import { TicketChat } from "@/components/portal/TicketChat";
 import { formatDate, formatSize, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
 import { fmt, localePath, type Locale } from "@/lib/i18n/config";
 import { site } from "@/lib/site";
@@ -28,7 +30,7 @@ const texts = {
     bugs: "Bugmeldingen", noBugs: "Je hebt nog geen bugs gemeld. Iets gevonden? Meld het via het bugkanaal in onze Discord.",
     reportedOn: "Gemeld op {date}",
     phases: "Projectfases", lastUpdate: "Laatste update", earlier: "Eerdere updates",
-    offers: "Offertes", offerFrom: "{date}", offersHint: "Akkoord geven en betalen doe je in je ticket in onze Discord.",
+    offers: "Offertes", offerFrom: "{date}", offersHint: "Akkoord geven kan hier of in je ticket in onze Discord. Na je akkoord zie je hoe je betaalt.",
     invites: "Jouw invites", invitesCount: "mensen uitgenodigd", rank: "#{n} op het leaderboard",
     invitesDetail: "{echt} actief • {weg} vertrokken • {nep} nep", bonus: "{n} bonus",
     nextReward: "Nog {n} voor {rol}", nextRewardNoName: "Nog {n} voor de volgende beloning",
@@ -50,7 +52,7 @@ const texts = {
     bugs: "Bug reports", noBugs: "You haven't reported any bugs yet. Found something? Report it in the bug channel in our Discord.",
     reportedOn: "Reported on {date}",
     phases: "Project phases", lastUpdate: "Last update", earlier: "Earlier updates",
-    offers: "Quotes", offerFrom: "{date}", offersHint: "You approve and pay in your ticket in our Discord. Status names come from our bot and are in Dutch.",
+    offers: "Quotes", offerFrom: "{date}", offersHint: "You can accept here or in your ticket in our Discord. After accepting you will see how to pay. Status names come from our bot and are in Dutch.",
     invites: "Your invites", invitesCount: "people invited", rank: "#{n} on the leaderboard",
     invitesDetail: "{echt} active • {weg} left • {nep} fake", bonus: "{n} bonus",
     nextReward: "{n} more for {rol}", nextRewardNoName: "{n} more for the next reward",
@@ -63,7 +65,7 @@ type Texts = (typeof texts)["nl"];
 
 interface ClientPortalProps {
   locale?: Locale;
-  user: { name: string; avatar: string | null };
+  user: { id: string; name: string; avatar: string | null };
   /** null when the bot could not be reached */
   data: ClientData | null;
   isOwner: boolean;
@@ -188,16 +190,19 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
             ) : (
               <ul className="mt-4 space-y-3">
                 {tickets.map((t) => (
-                  <li key={t.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
-                    <div className="min-w-0">
-                      <p className="truncate font-medium text-white">{t.emoji} {t.afdeling}</p>
-                      <p className="mt-0.5 text-sm text-zinc-400">
-                        {fmt(tx.openedOn, { date: date(t.geopend, true) })} • {t.geclaimdDoor ? <span className="text-emerald-300">{fmt(tx.helping, { name: t.geclaimdDoor })}</span> : <span className="text-amber-300">{tx.waiting}</span>}
-                      </p>
+                  <li key={t.id} className="glass rounded-3xl p-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-white">{t.emoji} {t.afdeling}</p>
+                        <p className="mt-0.5 text-sm text-zinc-400">
+                          {fmt(tx.openedOn, { date: date(t.geopend, true) })} • {t.geclaimdDoor ? <span className="text-emerald-300">{fmt(tx.helping, { name: t.geclaimdDoor })}</span> : <span className="text-amber-300">{tx.waiting}</span>}
+                        </p>
+                      </div>
+                      <Button asChild size="sm" variant="discord">
+                        <a href={t.link} target="_blank" rel="noopener noreferrer"><DiscordIcon className="size-4" /> {tx.open}</a>
+                      </Button>
                     </div>
-                    <Button asChild size="sm" variant="discord">
-                      <a href={t.link} target="_blank" rel="noopener noreferrer"><DiscordIcon className="size-4" /> {tx.open}</a>
-                    </Button>
+                    <TicketChat ticketId={t.id} userId={user.id} />
                   </li>
                 ))}
               </ul>
@@ -358,17 +363,7 @@ function OffersCard({ offers, tx, date }: { offers: NonNullable<ClientData["offe
       <h2 className="flex items-center gap-2 text-xl font-semibold"><Receipt className="size-5 text-brand-300" /> {tx.offers}</h2>
       <ul className="mt-4 grid gap-3 md:grid-cols-2">
         {offers.map((o) => (
-          <li key={o.nummer} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
-            <div className="min-w-0">
-              <p className="truncate font-medium text-white">{o.titel}</p>
-              <p className="mt-0.5 text-sm text-zinc-400">
-                <span className="font-mono text-xs text-zinc-500">{o.nummer}</span> • {o.prijs} • {fmt(tx.offerFrom, { date: date(o.t) })}
-              </p>
-            </div>
-            <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs", o.betaald ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : "border-brand-500/30 bg-brand-600/10 text-brand-200")}>
-              {o.statusEmoji} {o.status}
-            </span>
-          </li>
+          <OfferCard key={o.nummer} offer={o} dateLabel={fmt(tx.offerFrom, { date: date(o.t) })} />
         ))}
       </ul>
       <p className="mt-3 text-sm text-zinc-500">{tx.offersHint}</p>

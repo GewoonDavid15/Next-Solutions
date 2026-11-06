@@ -9,7 +9,10 @@ export const en: Messages = {
   skipLink: "Skip to content",
   nav: {
     aria: "Main navigation",
-    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Packages", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact" },
+    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Packages", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact", "/nexify": "Nexify", "/team": "Team", "/reviews": "Reviews", "/vacatures": "Careers", "/status": "Status" },
+    more: "More",
+    portal: "Client portal",
+    descriptions: { "/over-ons": "Our story and what we stand for", "/nexify": "The founder and maker", "/team": "Who you talk to", "/reviews": "What clients say", "/nieuws": "Updates and articles", "/vacatures": "Work at Next Solutions", "/status": "Live status of our services", "/portfolio": "Our work" },
     quote: "Request a quote",
     openMenu: "Open menu",
     closeMenu: "Close menu",

@@ -1,6 +1,8 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
+import { getSession } from "@/lib/session";
 import {
   budgetOptions,
   departmentOptions,
@@ -53,7 +55,35 @@ export async function POST(request: Request) {
     );
   }
 
+  // First choice: the bot posts the request as a lead in Discord, with buttons to open a ticket.
+  // When the visitor is logged in with Discord, the bot can open that ticket for them straight away.
+  if (isBotApiConfigured()) {
+    const session = await getSession();
+    const lead = await botRequest(
+      "POST",
+      "/leads",
+      JSON.stringify({
+        afdelingId: data.department,
+        afdeling: labelFor(departmentOptions, data.department),
+        dienst: labelFor(serviceOptions[data.department], data.service),
+        budget: labelFor(budgetOptions, data.budget),
+        planning: labelFor(timelineOptions, data.timeline),
+        omschrijving: data.description,
+        naam: data.name,
+        email: data.email,
+        discord: data.discord,
+        discordId: session && !session.demo ? session.id : null,
+        taal: locale,
+      }),
+    ).catch(() => null);
+    if (lead?.status === 200) return NextResponse.json({ ok: true });
+    // Bot offline or no leads channel: fall through to the webhook below.
+  }
+
   const webhook = process.env.DISCORD_CONTACT_WEBHOOK_URL;
+  if (!webhook && isBotApiConfigured()) {
+    return NextResponse.json({ ok: false, error: locale === "en" ? "Sending failed, please try again later or contact us on Discord." : "Versturen mislukt, probeer het later opnieuw of neem contact op via Discord." }, { status: 502 });
+  }
   if (webhook) {
     const clip = (s: string, n = 1000) => (s.length > n ? `${s.slice(0, n)}…` : s);
     const res = await fetch(webhook, {
@@ -65,7 +95,7 @@ export async function POST(request: Request) {
         embeds: [
           {
             title: `Nieuwe offerte: ${labelFor(serviceOptions[data.department], data.service)}`,
-            color: 0x7c3aed,
+            color: 0xc6f432,
             fields: [
               { name: "Afdeling", value: labelFor(departmentOptions, data.department), inline: true },
               { name: "Budget", value: labelFor(budgetOptions, data.budget), inline: true },

@@ -25,7 +25,7 @@ export interface BotResponse {
 }
 
 /** Sends a signed request to the bot and returns the raw response. */
-async function signedFetch(method: string, pathWithQuery: string, body?: string, timeoutMs = 10_000) {
+export async function signedFetch(method: string, pathWithQuery: string, body?: string, timeoutMs = 10_000) {
   const base = process.env.BOT_API_URL!.replace(/\/+$/, "");
   const secret = process.env.BOT_API_SECRET!;
   const payload = body ?? "";
