@@ -4,7 +4,8 @@ import { site } from "@/lib/site";
  * JSON-LD for search engines. Rendered server-side so crawlers read it
  * without executing any JavaScript.
  */
-export function OrganizationSchema() {
+/** rating: real reviews from the bot. Only added when there are reviews, never made up. */
+export function OrganizationSchema({ rating }: { rating?: { average: number; count: number } | null } = {}) {
   const schema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -20,6 +21,9 @@ export function OrganizationSchema() {
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Game Development" } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Media & Branding" } },
     ],
+    ...(rating && rating.count > 0
+      ? { aggregateRating: { "@type": "AggregateRating", ratingValue: Math.round(rating.average * 10) / 10, reviewCount: rating.count, bestRating: 5, worstRating: 1 } }
+      : {}),
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 }

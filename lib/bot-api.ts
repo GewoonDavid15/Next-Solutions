@@ -128,3 +128,23 @@ export async function getVacancies(): Promise<Vacancy[] | null> {
   }
   return vacancyCache.data;
 }
+
+export interface Calculator {
+  diensten: { id: string; naam: string; afdeling: string; vanaf: number; opties: { id: string; naam: string; prijs: number }[] }[];
+  spoedProcent: number;
+}
+
+let calculatorCache: { t: number; data: Calculator | null } = { t: 0, data: null };
+
+/** Prices for the calculator on /prijzen, set in the bot dashboard. null = calculator off or no prices yet. */
+export async function getCalculator(): Promise<Calculator | null> {
+  if (!isBotApiConfigured()) return null;
+  if (Date.now() - calculatorCache.t < 60_000) return calculatorCache.data;
+  try {
+    const { status, data } = await botRequest("GET", "/calculator");
+    calculatorCache = { t: Date.now(), data: status === 200 ? ((data as { calculator: Calculator | null }).calculator ?? null) : null };
+  } catch {
+    calculatorCache = { t: Date.now() - 50_000, data: null };
+  }
+  return calculatorCache.data;
+}

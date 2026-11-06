@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, Download, FileText, HardDriveDownload, Loader2, Save, Search } from "lucide-react";
+import { Archive, BellRing, CloudUpload, Download, FileText, HardDriveDownload, Loader2, Save, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Loading, Notice, Panel, inputClass } from "@/components/dashboard/ui";
 import { Button } from "@/components/ui/Button";
@@ -31,6 +31,18 @@ export function LogsTab() {
 
   const params = new URLSearchParams({ dag: day ?? "", zoek: debounced, niveau: onlyErrors ? "fout" : "" });
   const log = useBotData<{ totaal: number; gevonden: number; regels: string[] }>(day ? `beheer/log?${params}` : null);
+
+  async function action(path: string, success: (r: { dag?: string; grootte?: number }) => string) {
+    setMaking(true);
+    setMessage(null);
+    try {
+      const r = await botApi<{ dag?: string; grootte?: number }>("POST", path);
+      setMessage({ kind: "success", text: success(r) });
+    } catch (err) {
+      setMessage({ kind: "error", text: (err as Error).message });
+    }
+    setMaking(false);
+  }
 
   async function makeBackup() {
     setMaking(true);
@@ -99,12 +111,20 @@ export function LogsTab() {
         title="Back-ups"
         icon={Archive}
         actions={
-          <Button size="sm" onClick={makeBackup} disabled={making}>
-            {making ? <Loader2 className="animate-spin" /> : <Save />} Nu back-up maken
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" onClick={makeBackup} disabled={making}>
+              {making ? <Loader2 className="animate-spin" /> : <Save />} Nu back-up maken
+            </Button>
+            <Button size="sm" variant="secondary" disabled={making} onClick={() => action("beheer/backups/extern", (r) => `Back-up van ${r.dag} staat in het privékanaal 🔒・backups in Discord.`)}>
+              <CloudUpload /> Naar Discord sturen
+            </Button>
+            <Button size="sm" variant="ghost" disabled={making} onClick={() => action("beheer/melding/test", () => "Testmelding verstuurd. Je krijgt hem als DM van de bot.")}>
+              <BellRing /> Testmelding
+            </Button>
+          </div>
         }
       >
-        <p className="mb-3 text-sm text-zinc-400">Elke dag maakt de bot automatisch een back-up van alle gegevens (tickets, offertes, invites, reviews en meer). Download een back-up als één JSON-bestand om hem veilig te bewaren.</p>
+        <p className="mb-3 text-sm text-zinc-400">Elke dag maakt de bot automatisch een back-up van alle gegevens (tickets, offertes, invites, reviews en meer) en zet hij een kopie in het privékanaal 🔒・backups in Discord, zodat je niets kwijt bent als de server crasht. Je kunt een back-up hier ook als één JSON-bestand downloaden.</p>
         {backups.error && <Notice>{backups.error}</Notice>}
         {!backups.data && !backups.error && <Loading />}
         <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">

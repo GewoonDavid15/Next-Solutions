@@ -19,10 +19,10 @@ export async function generateMetadata() {
 
 export const dynamic = "force-dynamic";
 
-export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string; afdeling?: string }> }) {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ pakket?: string; afdeling?: string; dienst?: string; indicatie?: string; spoed?: string }> }) {
   // Arriving from a package on /prijzen preselects the matching department.
   // Arriving from a service on /diensten does the same.
-  const { pakket, afdeling } = await searchParams;
+  const { pakket, afdeling, dienst, indicatie, spoed } = await searchParams;
   const initialDepartment = departmentForPackage(pakket) || (["software", "game", "media"].includes(afdeling ?? "") ? afdeling! : "");
 
   // Live crowd level and response time from the Discord bot (falls back to the static text)
@@ -49,7 +49,12 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       <section className="pb-12">
         <div className="container grid gap-8 lg:grid-cols-3">
           <FadeUp className="lg:col-span-2">
-            <QuoteForm initialDepartment={initialDepartment} />
+            <QuoteForm
+              initialDepartment={initialDepartment}
+              initialService={typeof dienst === "string" ? dienst.slice(0, 40) : ""}
+              estimate={typeof indicatie === "string" ? indicatie.slice(0, 160) : ""}
+              rush={spoed === "1"}
+            />
           </FadeUp>
           <FadeUp delay={0.15} className="space-y-4">
             {tickets && <CrowdCard tickets={tickets} locale={locale} />}

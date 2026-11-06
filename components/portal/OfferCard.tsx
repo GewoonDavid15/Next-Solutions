@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, ChevronDown, Loader2 } from "lucide-react";
+import { CheckCircle2, ChevronDown, Loader2, Receipt } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
@@ -11,12 +11,12 @@ const texts = {
   nl: {
     details: "Details", included: "Wat je krijgt", delivery: "Levertijd", validUntil: "Geldig tot {date}",
     accept: "Akkoord geven", confirm: "Weet je het zeker? Je gaat akkoord met deze offerte.", yes: "Ja, akkoord", no: "Annuleren",
-    accepted: "Bedankt! Je hebt akkoord gegeven. Hieronder staat hoe je betaalt.", pay: "Betalen", failed: "Er ging iets mis. Probeer het opnieuw of geef akkoord in je ticket.",
+    accepted: "Bedankt! Je hebt akkoord gegeven. Hieronder staat hoe je betaalt.", pay: "Betalen", receipt: "Betaalbewijs (PDF)", failed: "Er ging iets mis. Probeer het opnieuw of geef akkoord in je ticket.",
   },
   en: {
     details: "Details", included: "What you get", delivery: "Delivery time", validUntil: "Valid until {date}",
     accept: "Accept quote", confirm: "Are you sure? You are accepting this quote.", yes: "Yes, accept", no: "Cancel",
-    accepted: "Thank you! You accepted the quote. See below how to pay.", pay: "Payment", failed: "Something went wrong. Please try again or accept in your ticket.",
+    accepted: "Thank you! You accepted the quote. See below how to pay.", pay: "Payment", receipt: "Payment receipt (PDF)", failed: "Something went wrong. Please try again or accept in your ticket.",
   },
 };
 
@@ -100,6 +100,11 @@ export function OfferCard({ offer, dateLabel }: { offer: ClientOffer; dateLabel:
           <p className="font-medium text-amber-100">{tx.pay}</p>
           <p className="mt-1 whitespace-pre-wrap text-zinc-300">{offer.betaalinstructie}</p>
         </div>
+      )}
+      {paid && offer.id && (
+        <a href={`/klantportaal/bon/${offer.id}`} className="mt-4 inline-flex items-center gap-2 text-sm text-brand-300 hover:text-white">
+          <Receipt className="size-4" /> {tx.receipt}
+        </a>
       )}
       {message && <p role={message.ok ? "status" : "alert"} className={cn("mt-3 text-sm", message.ok ? "text-emerald-300" : "text-rose-300")}>{message.text}</p>}
     </li>

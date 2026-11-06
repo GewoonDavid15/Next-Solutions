@@ -3,6 +3,7 @@
 import { Copy, Crown, Minus, Plus, Search, ShieldAlert, Star, UserRound, Users, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ModerateForm } from "@/components/dashboard/ModerateForm";
 import { Loading, Notice, Panel, inputClass } from "@/components/dashboard/ui";
 import { Button } from "@/components/ui/Button";
 import { useBotData, timeAgo, dateTime, type ManagedRole, type MemberDetail, type MemberSummary, type Role } from "@/lib/beheer";
@@ -33,7 +34,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function Detail({ id, roles, onClose }: { id: string; roles: ManagedRole[]; onClose: () => void }) {
-  const { data, error, setData } = useBotData<MemberDetail>(`beheer/lid?id=${id}`);
+  const { data, error, setData, reload } = useBotData<MemberDetail>(`beheer/lid?id=${id}`);
+  const [modMessage, setModMessage] = useState("");
   const [addRole, setAddRole] = useState("");
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
@@ -100,6 +102,13 @@ function Detail({ id, roles, onClose }: { id: string; roles: ManagedRole[]; onCl
         <Notice>
           <ShieldAlert className="mr-1 inline size-4" /> Time-out tot {dateTime(data.timeoutTot)}
         </Notice>
+      )}
+
+      {!data.bot && !data.beheerder && (
+        <Section title="Moderatie">
+          {modMessage && <div className="mb-2"><Notice kind="success">{modMessage}</Notice></div>}
+          <ModerateForm id={data.id} name={data.naam} timedOut={Boolean(data.timeoutTot && data.timeoutTot > Date.now())} onDone={(msg) => { setModMessage(msg); reload(); }} />
+        </Section>
       )}
 
       <Section title={`Rollen (${data.rollen.length})`}>

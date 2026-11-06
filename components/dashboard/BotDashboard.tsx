@@ -1,6 +1,8 @@
 "use client";
 
-import { Archive, ArrowLeft, BarChart3, Bot, FileCode2, FileSignature, Gift, History, LayoutDashboard, Radio, Settings, Terminal, Ticket, Users } from "lucide-react";
+import { Archive, ArrowLeft, BarChart3, Bot, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
+import { AnnouncementsTab } from "@/components/dashboard/AnnouncementsTab";
+import { ModerationTab } from "@/components/dashboard/ModerationTab";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -37,7 +39,11 @@ const groups = [
   },
   {
     label: "Community",
-    tabs: [{ id: "community", label: "Giveaways & verificatie", icon: Gift }],
+    tabs: [
+      { id: "aankondigingen", label: "Aankondigingen", icon: Megaphone },
+      { id: "moderatie", label: "Moderatie", icon: ShieldAlert },
+      { id: "community", label: "Giveaways & verificatie", icon: Gift },
+    ],
   },
   {
     label: "Bot",
@@ -142,6 +148,8 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {tab === "leden" && <MembersTab />}
               {tab === "community" && <CommunityTab />}
               {tab === "logs" && <LogsTab />}
+              {tab === "aankondigingen" && <AnnouncementsTab />}
+              {tab === "moderatie" && <ModerationTab />}
             </div>
             </div>
           </>
