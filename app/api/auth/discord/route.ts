@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { RETURN_COOKIE, STATE_COOKIE, canonicalOrigin, isOAuthConfigured, oauthConfig, portalPath, redirectUri, safeReturnPath } from "@/lib/session";
+import { APP_COOKIE, RETURN_COOKIE, STATE_COOKIE, canonicalOrigin, isOAuthConfigured, oauthConfig, portalPath, redirectUri, safeReturnPath } from "@/lib/session";
 
 const tempCookie = { httpOnly: true, sameSite: "lax" as const, secure: process.env.NODE_ENV === "production", path: "/", maxAge: 600 };
 
@@ -37,5 +37,9 @@ export function GET(request: NextRequest) {
   // Where to go after logging in, e.g. back to /vacatures
   if (back) response.cookies.set(RETURN_COOKIE, safeReturnPath(back), tempCookie);
   else response.cookies.delete(RETURN_COOKIE);
+  // Login from the Android app: remember its PKCE challenge, so only that app can use the result
+  const app = request.nextUrl.searchParams.get("app");
+  if (app && /^[A-Za-z0-9_-]{43}$/.test(app)) response.cookies.set(APP_COOKIE, app, tempCookie);
+  else response.cookies.delete(APP_COOKIE);
   return response;
 }
