@@ -2,11 +2,14 @@
 
 import { RotateCcw } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
+import { reportError } from "@/lib/report-error";
 
-export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const { locale, lp } = useI18n();
+  useEffect(() => reportError(error, { digest: error.digest }), [error]);
   const en = locale === "en";
   return (
     <section className="container flex min-h-[80svh] flex-col items-center justify-center pt-24 text-center">

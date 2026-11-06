@@ -5,7 +5,7 @@ import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
  * Cookieless visitor count: the browser reports a visit or page view, the bot keeps daily counters.
  * Nothing that identifies a person is stored or forwarded (no IP address, no user agent).
  */
-const EVENTS = new Set(["bezoek", "pagina", "calculator", "offerteformulier", "socialformulier"]);
+const EVENTS = new Set(["bezoek", "pagina", "calculator", "offerteformulier", "socialformulier", "checklist"]);
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as { e?: unknown; p?: unknown } | null;

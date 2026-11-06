@@ -98,3 +98,9 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Printing (for example the free checklists): white paper, no navigation */
+@media print {
+  html, body { background: #fff !important; color: #000 !important; }
+  header, footer, .fixed { display: none !important; }
+}

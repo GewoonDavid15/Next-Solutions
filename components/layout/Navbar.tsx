@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Activity, BookOpen, Briefcase, ChevronDown, Folder, Info, Languages, Menu, Newspaper, Sparkles, Star, UserRound, Users, X } from "lucide-react";
+import { Activity, BookOpen, Briefcase, ChevronDown, Folder, Gift, Info, Scale, Languages, Menu, Newspaper, Sparkles, Star, UserRound, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -9,11 +9,12 @@ import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { SiteSearch } from "@/components/layout/SiteSearch";
 import { moreNav, primaryNav } from "@/lib/site";
 import { localePath, stripLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
-const ICONS = { book: BookOpen, info: Info, sparkles: Sparkles, users: Users, star: Star, newspaper: Newspaper, briefcase: Briefcase, activity: Activity, folder: Folder } as const;
+const ICONS = { book: BookOpen, info: Info, sparkles: Sparkles, users: Users, star: Star, newspaper: Newspaper, briefcase: Briefcase, activity: Activity, folder: Folder, gift: Gift, scale: Scale } as const;
 
 export function Navbar() {
   const { locale, t, lp } = useI18n();
@@ -132,6 +133,7 @@ export function Navbar() {
           </ul>
 
           <div className="flex items-center gap-2">
+            <SiteSearch />
             {/* A plain <a> on purpose: the language lives in the root layout, so switching needs a full page load */}
             <a
               href={localePath(other, pathname)}

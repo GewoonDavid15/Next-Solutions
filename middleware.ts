@@ -6,6 +6,16 @@ import { LOCALE_HEADER } from "@/lib/i18n/config";
  * same page, with a header telling the page to render in English.
  */
 export function middleware(request: NextRequest) {
+  const response = route(request);
+  // Referral links (?ref=code): remember the code for 30 days, so a request sent later still counts
+  const ref = request.nextUrl.searchParams.get("ref");
+  if (ref && /^[a-z0-9]{6,10}$/.test(ref)) {
+    response.cookies.set("ns_ref", ref, { maxAge: 30 * 86_400, httpOnly: true, sameSite: "lax", secure: request.nextUrl.protocol === "https:", path: "/" });
+  }
+  return response;
+}
+
+function route(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const headers = new Headers(request.headers);
   headers.delete(LOCALE_HEADER); // never trust a language header sent by the visitor

@@ -6,6 +6,7 @@ import { BackToTop } from "@/components/layout/BackToTop";
 import { Navbar } from "@/components/layout/Navbar";
 import { getLocale, getMessages } from "@/lib/i18n/server";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { ServiceWorker } from "@/components/layout/ServiceWorker";
 import { Tracker } from "@/components/layout/Tracker";
 import { Analytics } from "@vercel/analytics/next";
 import { site } from "@/lib/site";
@@ -23,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: t.meta.title, template: `%s · ${site.name}` },
     description: t.meta.description,
     openGraph: { title: site.name, description: t.meta.description, type: "website", locale: locale === "en" ? "en_GB" : "nl_NL" },
+    appleWebApp: { capable: true, title: site.name, statusBarStyle: "black-translucent" },
   };
 }
 
@@ -44,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
           <BackToTop />
           <Tracker />
+          <ServiceWorker />
         </I18nProvider>
         <Analytics />
       </body>

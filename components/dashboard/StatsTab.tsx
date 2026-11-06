@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { botApi } from "@/lib/dashboard";
 import { useState } from "react";
 import { BarChart } from "@/components/dashboard/BarChart";
+import { ErrorsPanel } from "@/components/dashboard/ErrorsPanel";
 import { FunnelPanel } from "@/components/dashboard/FunnelPanel";
 import { Loading, Notice, Panel } from "@/components/dashboard/ui";
 import { useBotData, type DayStats } from "@/lib/beheer";
@@ -44,6 +45,7 @@ export function StatsTab() {
         </div>
       </div>
       <FunnelPanel days={range} />
+      <ErrorsPanel />
       {week.data && (
         <Panel title="Afgelopen 7 dagen" icon={Mail} actions={
           <Button size="sm" variant="secondary" onClick={() => botApi("POST", "beheer/weekrapport/stuur").then(() => setSent("Verstuurd als DM.")).catch((e) => setSent((e as Error).message))}>

@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
@@ -55,6 +55,7 @@ export async function POST(request: Request) {
       discord: "",
       discordId: session && !session.demo ? session.id : null,
       taal: en ? "en" : "nl",
+      ref: (await cookies()).get("ns_ref")?.value ?? null,
     }),
   ).catch(() => null);
   if (res?.status !== 200) return err("Versturen mislukt, probeer het later opnieuw of neem contact op via Discord.", "Sending failed, please try again later or contact us on Discord.", 502);

@@ -9,7 +9,7 @@ export const en: Messages = {
   skipLink: "Skip to content",
   nav: {
     aria: "Main navigation",
-    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Packages", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact", "/social-media": "Social media", "/nexify": "Nexify", "/kennisbank": "Knowledge base", "/team": "Team", "/reviews": "Reviews", "/vacatures": "Careers", "/status": "Status" },
+    links: { "/": "Home", "/diensten": "Services", "/prijzen": "Packages", "/over-ons": "About us", "/nieuws": "News", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Client portal", "/contact": "Contact", "/social-media": "Social media", "/nexify": "Nexify", "/kennisbank": "Knowledge base", "/team": "Team", "/reviews": "Reviews", "/vacatures": "Careers", "/status": "Status", "/gratis": "Free checklists", "/vergelijk": "DIY or outsource?" },
     more: "More",
     portal: "Client portal",
     descriptions: { "/over-ons": "Our story and what we stand for", "/nexify": "The founder and maker", "/kennisbank": "Answers to your questions", "/team": "Who you talk to", "/reviews": "What clients say", "/nieuws": "Updates and articles", "/vacatures": "Work at Next Solutions", "/status": "Live status of our services", "/portfolio": "Our work" },
