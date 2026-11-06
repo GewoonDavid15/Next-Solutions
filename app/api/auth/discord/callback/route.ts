@@ -2,10 +2,12 @@ import { timingSafeEqual } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
 import {
+  APP_COOKIE,
   HINT_COOKIE,
   RETURN_COOKIE,
   SESSION_COOKIE,
   STATE_COOKIE,
+  encodeLoginCode,
   encodeSession,
   isOAuthConfigured,
   oauthConfig,
@@ -29,9 +31,11 @@ const sameState = (a: string, b: string) => a.length === b.length && timingSafeE
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const returnPath = request.cookies.get(RETURN_COOKIE)?.value;
+  const appChallenge = request.cookies.get(APP_COOKIE)?.value;
   const fail = (reason: string) => {
-    const res = NextResponse.redirect(new URL(`${portalPath(request, returnPath)}?error=${reason}`, origin));
+    const res = NextResponse.redirect(new URL(`${appChallenge ? "/app/login" : portalPath(request, returnPath)}?error=${reason}`, origin));
     res.cookies.delete(STATE_COOKIE);
+    res.cookies.delete(APP_COOKIE);
     return res;
   };
 
@@ -97,10 +101,21 @@ export async function GET(request: NextRequest) {
       await botRequest("POST", "/klant/profiel/sync", JSON.stringify({ gebruiker: user.id, nitro: user.premium_type ?? 0, gebruikersnaam: user.username })).catch(() => null);
     }
 
+    const sessionUser = { id: user.id, username: user.username, globalName: user.global_name, avatar: user.avatar };
+
+    // Login from the Android app: hand a one-time code back to the app (it opens /app/login)
+    if (appChallenge) {
+      const res = NextResponse.redirect(new URL(`/app/login?code=${encodeURIComponent(encodeLoginCode(sessionUser, appChallenge))}`, origin));
+      res.cookies.delete(STATE_COOKIE);
+      res.cookies.delete(RETURN_COOKIE);
+      res.cookies.delete(APP_COOKIE);
+      return res;
+    }
+
     const res = NextResponse.redirect(new URL(safeReturnPath(returnPath ?? portalPath(request)), origin));
     res.cookies.delete(STATE_COOKIE);
     res.cookies.delete(RETURN_COOKIE);
-    res.cookies.set(SESSION_COOKIE, encodeSession({ id: user.id, username: user.username, globalName: user.global_name, avatar: user.avatar }), sessionCookieOptions);
+    res.cookies.set(SESSION_COOKIE, encodeSession(sessionUser), sessionCookieOptions);
     res.cookies.set(HINT_COOKIE, "1", { ...sessionCookieOptions, httpOnly: false });
     return res;
   } catch (err) {

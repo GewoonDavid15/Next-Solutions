@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
-import { getSession, type SessionUser } from "@/lib/session";
+import { getSession, isAppRequest, type SessionUser } from "@/lib/session";
 
 /**
  * Shared guard for client-portal API routes: logged in with Discord (not demo), same-origin for writes,
@@ -15,7 +15,7 @@ export async function portalRoute(
   if (!session || session.demo) return NextResponse.json({ fout: "Log eerst in met Discord." }, { status: 401 });
   if (write) {
     const origin = request.headers.get("origin");
-    if (!origin || origin !== request.nextUrl.origin) return NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 });
+    if (!isAppRequest(request) && (!origin || origin !== request.nextUrl.origin)) return NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 });
   }
   if (!isBotApiConfigured()) return NextResponse.json({ fout: "Niet beschikbaar." }, { status: 503 });
   try {

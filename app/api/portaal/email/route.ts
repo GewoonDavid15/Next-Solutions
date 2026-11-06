@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
-import { getSession } from "@/lib/session";
+import { getSession, isAppRequest } from "@/lib/session";
 
 /** Email notification settings of the logged-in client: subscribe, unsubscribe and preferences. */
 export async function POST(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   if (!session || session.demo) return NextResponse.json({ fout: "Log eerst in met Discord." }, { status: 401 });
 
   const origin = request.headers.get("origin");
-  if (!origin || origin !== request.nextUrl.origin) return NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 });
+  if (!isAppRequest(request) && (!origin || origin !== request.nextUrl.origin)) return NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 });
   if (!isBotApiConfigured()) return NextResponse.json({ fout: "E-mailmeldingen zijn nog niet beschikbaar." }, { status: 503 });
 
   const body = (await request.json().catch(() => null)) as { actie?: string; email?: unknown; voorkeuren?: unknown } | null;

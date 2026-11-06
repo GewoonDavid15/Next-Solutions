@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
-import { avatarUrl, getSession } from "@/lib/session";
+import { avatarUrl, getSession, isAppRequest } from "@/lib/session";
 
 /** Read and answer your own open ticket from the client portal. The bot checks the ticket is yours. */
 
@@ -12,7 +12,7 @@ async function guard(request: NextRequest, write: boolean) {
   if (!session || session.demo) return { error: NextResponse.json({ fout: "Log eerst in met Discord." }, { status: 401 }) };
   if (write) {
     const origin = request.headers.get("origin");
-    if (!origin || origin !== request.nextUrl.origin) return { error: NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 }) };
+    if (!isAppRequest(request) && (!origin || origin !== request.nextUrl.origin)) return { error: NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 }) };
   }
   if (!isBotApiConfigured()) return { error: NextResponse.json({ fout: "Niet beschikbaar." }, { status: 503 }) };
   return { session };
