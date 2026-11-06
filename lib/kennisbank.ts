@@ -99,6 +99,43 @@ Once your payment is in, you receive a PDF payment receipt: in your ticket, by D
     },
   },
   {
+    slug: "social-media-beheer",
+    categorie: "start",
+    icon: "📱",
+    titel: { nl: "Hoe werkt social media beheer?", en: "How does social media management work?" },
+    samenvatting: { nl: "Van analyse tot maandrapport, en wat we van je nodig hebben.", en: "From analysis to monthly report, and what we need from you." },
+    inhoud: {
+      nl: `We werken op Instagram, TikTok, YouTube, LinkedIn, X en Facebook.
+## De stappen
+1. Je vraagt het aan via de pagina Social media en zet links naar je accounts erbij.
+2. We bekijken je accounts, doelgroep en concurrenten.
+3. Je krijgt een strategie en een contentplan.
+4. Wij maken de content. Je keurt de contentkalender goed voordat er iets online gaat.
+5. We plannen in en posten, en bij het pakket Social Groei reageren we ook op comments en DM's.
+6. Elke maand krijg je een rapport met resultaten en advies.
+## Wat we van je nodig hebben
+- Toegang tot je accounts. Liefst door ons toe te voegen als beheerder of teamlid via de zakelijke tools van het platform, zodat je je wachtwoord niet hoeft te delen.
+- Je logo en huisstijl, als je die hebt. Nog niet? Dan kunnen we die ook maken.
+- Eigen foto's of video's, als je die wilt gebruiken.
+## Pakketten
+Social Start (1 platform), Social Groei (meerdere platformen, video's en community management) en Content op maat (per opdracht). Prijzen zijn op aanvraag.`,
+      en: `We work on Instagram, TikTok, YouTube, LinkedIn, X and Facebook.
+## The steps
+1. Request it on the Social media page and add links to your accounts.
+2. We look at your accounts, audience and competitors.
+3. You receive a strategy and a content plan.
+4. We create the content. You approve the content calendar before anything goes live.
+5. We schedule and post, and with the Social Growth package we also reply to comments and DMs.
+6. Every month you receive a report with results and advice.
+## What we need from you
+- Access to your accounts. Preferably by adding us as an admin or team member through the platform's business tools, so you don't have to share your password.
+- Your logo and brand identity, if you have them. Not yet? We can make those too.
+- Your own photos or videos, if you'd like to use them.
+## Packages
+Social Start (1 platform), Social Growth (several platforms, videos and community management) and Custom content (per job). Prices are on request.`,
+    },
+  },
+  {
     slug: "ticket-openen",
     categorie: "support",
     icon: "🎫",

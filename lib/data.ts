@@ -3,7 +3,9 @@ import { departmentsEn, faqEn, processEn, projectFiltersEn, projectsEn, resultVa
 import {
   Bot,
   Brush,
+  Clapperboard,
   Code2,
+  TrendingUp,
   Gamepad2,
   Globe,
   LayoutTemplate,
@@ -48,10 +50,10 @@ export const departments: Department[] = [
   },
   {
     id: "media",
-    title: "Media",
-    tagline: "Branding & UI/UX",
+    title: "Media & Social",
+    tagline: "Social media, content & branding",
     description:
-      "Een merk dat blijft hangen. Logo's, huisstijlen en interfaces die net zo goed werken als ze eruitzien.",
+      "Wij runnen je socials. Strategie, content en dagelijks beheer op Instagram, TikTok, YouTube en meer, met branding als stevige basis.",
     icon: Sparkles,
     gradient: "from-brand-100 to-brand-600",
   },
@@ -109,6 +111,27 @@ export const services: Service[] = [
     department: "game",
   },
   {
+    title: "Social Media Management",
+    description: "Wij beheren je accounts: contentkalender, inplannen en posten, reageren op comments en DM's, en elke maand een rapport.",
+    icon: Megaphone,
+    features: ["Contentkalender", "Inplannen & posten", "Community management", "Maandrapport"],
+    department: "media",
+  },
+  {
+    title: "Content creatie",
+    description: "Reels, TikToks, Shorts, carrousels en posts die opvallen in de feed en passen bij je merk.",
+    icon: Clapperboard,
+    features: ["Reels & TikToks", "YouTube Shorts", "Carrousels & posts", "Montage & ondertiteling"],
+    department: "media",
+  },
+  {
+    title: "Strategie & groei",
+    description: "Een plan dat werkt: doelgroep, contentpijlers, concurrentie en een groeistrategie per platform.",
+    icon: TrendingUp,
+    features: ["Contentplan", "Doelgroep & concurrentie", "Hashtag- & zoekwoordonderzoek", "Groeistrategie"],
+    department: "media",
+  },
+  {
     title: "Branding",
     description: "Logo, kleurenpalet, typografie en een complete brand guide voor een consistente uitstraling.",
     icon: Brush,
@@ -120,13 +143,6 @@ export const services: Service[] = [
     description: "Interfaces ontworpen rond je gebruiker, van wireframe tot pixel-perfect Figma prototype.",
     icon: LayoutTemplate,
     features: ["Wireframes", "Figma prototypes", "Design systems", "User testing"],
-    department: "media",
-  },
-  {
-    title: "Content & Socials",
-    description: "Trailers, banners, thumbnails en social content die opvallen in elke feed.",
-    icon: Megaphone,
-    features: ["Trailers", "Thumbnails", "Banners", "Motion graphics"],
     department: "media",
   },
 ];

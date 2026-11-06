@@ -15,9 +15,9 @@ export const departmentsEn: Record<string, { title: string; tagline: string; des
     description: "Unique FiveM scripts and fully configured Minecraft networks that keep players coming back.",
   },
   media: {
-    title: "Media",
-    tagline: "Branding & UI/UX",
-    description: "A brand that sticks. Logos, brand identities and interfaces that work as well as they look.",
+    title: "Media & Social",
+    tagline: "Social media, content & branding",
+    description: "We run your socials. Strategy, content and day-to-day management on Instagram, TikTok, YouTube and more, built on solid branding.",
   },
 };
 
@@ -54,6 +54,21 @@ export const servicesEn: { title: string; description: string; features: string[
     features: ["Daily backups", "DDoS protection", "Status monitoring", "Support"],
   },
   {
+    title: "Social Media Management",
+    description: "We manage your accounts: content calendar, scheduling and posting, replying to comments and DMs, and a monthly report.",
+    features: ["Content calendar", "Scheduling & posting", "Community management", "Monthly report"],
+  },
+  {
+    title: "Content creation",
+    description: "Reels, TikToks, Shorts, carousels and posts that stand out in the feed and fit your brand.",
+    features: ["Reels & TikToks", "YouTube Shorts", "Carousels & posts", "Editing & subtitles"],
+  },
+  {
+    title: "Strategy & growth",
+    description: "A plan that works: audience, content pillars, competitors and a growth strategy per platform.",
+    features: ["Content plan", "Audience & competitors", "Hashtag & keyword research", "Growth strategy"],
+  },
+  {
     title: "Branding",
     description: "Logo, colour palette, typography and a complete brand guide for a consistent look.",
     features: ["Logo design", "Brand guide", "Social kit", "Merchandise"],
@@ -62,11 +77,6 @@ export const servicesEn: { title: string; description: string; features: string[
     title: "UI/UX Design",
     description: "Interfaces designed around your users, from wireframe to pixel-perfect Figma prototype.",
     features: ["Wireframes", "Figma prototypes", "Design systems", "User testing"],
-  },
-  {
-    title: "Content & Socials",
-    description: "Trailers, banners, thumbnails and social content that stand out in every feed.",
-    features: ["Trailers", "Thumbnails", "Banners", "Motion graphics"],
   },
 ];
 

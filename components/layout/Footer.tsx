@@ -34,6 +34,7 @@ export async function Footer() {
           <FooterColumn title={t.footer.sitelinks} className="lg:col-span-2">
             {[
               ...navLinks.map((l) => ({ href: l.href, label: t.nav.links[l.href] ?? l.label })),
+              { href: "/social-media", label: t.nav.links["/social-media"] },
               ...moreNav.filter((m) => !navLinks.some((l) => l.href === m.href)).map((m) => ({ href: m.href, label: t.nav.links[m.href] ?? m.href })),
             ].map((l) => (
               <FooterLink key={l.href} href={lp(l.href)}>

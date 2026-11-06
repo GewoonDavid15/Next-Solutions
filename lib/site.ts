@@ -1,7 +1,7 @@
 export const site = {
   name: "Next Solutions",
   description:
-    "Next Solutions is een digital agency voor Media, Software en Game Development. Discord bots, websites, FiveM scripts, Minecraft servers en branding.",
+    "Next Solutions is een digital agency voor Media, Software en Game Development. Discord bots, websites, social media management, content, FiveM scripts, Minecraft servers en branding.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.NODE_ENV === "production" ? "https://nextsolutionshq.nl" : "http://localhost:3000"),
   discordInvite: process.env.NEXT_PUBLIC_DISCORD_INVITE ?? "https://discord.gg/",
   email: "info@nextsolutionshq.nl",
@@ -35,7 +35,7 @@ const allNavLinks = [
 export const navLinks = allNavLinks.filter((l) => SHOW_PORTFOLIO || l.href !== "/portfolio");
 
 /** Shown directly in the top bar on large screens. */
-export const primaryNav = ["/", "/diensten", "/prijzen", "/community", "/contact"] as const;
+export const primaryNav = ["/", "/diensten", "/social-media", "/prijzen", "/community", "/contact"] as const;
 
 /** Grouped under "Meer" in the top bar, and as sections in the mobile menu. */
 export const moreNav = [
