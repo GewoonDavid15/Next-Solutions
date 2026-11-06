@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "nl.nextsolutionshq.app",
+      "sha256_cert_fingerprints": ["22:9A:8B:9A:54:91:94:8D:98:CD:C1:DE:AF:78:B0:25:F2:32:59:0B:C5:70:EF:80:7A:9A:29:5D:6D:D4:98:96"]
+    }
+  }
+]

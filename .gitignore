@@ -6,3 +6,11 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
+
+# Android-app: ondertekensleutel en lokale build
+android/release.keystore
+android/signing.properties
+android/local.properties
+android/.gradle/
+android/build/
+android/app/build/

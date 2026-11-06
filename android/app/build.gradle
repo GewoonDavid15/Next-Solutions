@@ -1,0 +1,39 @@
+plugins { id 'com.android.application' }
+
+def keyProps = new Properties()
+def keyFile = rootProject.file('signing.properties')
+if (keyFile.exists()) keyProps.load(new FileInputStream(keyFile))
+
+android {
+    namespace 'nl.nextsolutionshq.app'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'nl.nextsolutionshq.app'
+        minSdk 21
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+    }
+    signingConfigs {
+        release {
+            storeFile rootProject.file(keyProps['storeFile'] ?: 'release.keystore')
+            storePassword keyProps['storePassword']
+            keyAlias keyProps['keyAlias']
+            keyPassword keyProps['keyPassword']
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}

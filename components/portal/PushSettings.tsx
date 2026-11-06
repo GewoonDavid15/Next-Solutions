@@ -10,13 +10,13 @@ const texts = {
     title: "Pushmeldingen en app", intro: "Krijg een melding op je telefoon of computer bij een nieuw antwoord, een projectupdate of een offerte. Ook als de site dicht is.",
     on: "Meldingen aanzetten op dit apparaat", off: "Uitzetten op dit apparaat", test: "Stuur een testmelding", active: "Aan op dit apparaat", devices: "{n} apparaat/apparaten gekoppeld",
     unsupported: "Deze browser ondersteunt geen pushmeldingen.", ios: "Op iPhone en iPad: tik op Delen → Zet op beginscherm, open de app vanaf je beginscherm en zet daar de meldingen aan.",
-    denied: "Je hebt meldingen geblokkeerd voor deze site. Zet ze aan in de instellingen van je browser.", install: "Installeer als app", installed: "Je gebruikt het portaal als app.", failed: "Er ging iets mis.", tested: "Testmelding verstuurd!",
+    denied: "Je hebt meldingen geblokkeerd voor deze site. Zet ze aan in de instellingen van je browser.", install: "Installeer als app", android: "Download de Android-app (.apk)", androidNote: "Na het downloaden: open het bestand en sta installeren toe als je telefoon daarom vraagt.", installed: "Je gebruikt het portaal als app.", failed: "Er ging iets mis.", tested: "Testmelding verstuurd!",
   },
   en: {
     title: "Push notifications and app", intro: "Get a notification on your phone or computer for a new reply, a project update or a quote. Even when the site is closed.",
     on: "Turn on for this device", off: "Turn off for this device", test: "Send a test notification", active: "On for this device", devices: "{n} device(s) connected",
     unsupported: "This browser does not support push notifications.", ios: "On iPhone and iPad: tap Share → Add to Home Screen, open the app from your home screen and turn on notifications there.",
-    denied: "You blocked notifications for this site. Turn them on in your browser settings.", install: "Install as app", installed: "You are using the portal as an app.", failed: "Something went wrong.", tested: "Test notification sent!",
+    denied: "You blocked notifications for this site. Turn them on in your browser settings.", install: "Install as app", android: "Download the Android app (.apk)", androidNote: "After downloading: open the file and allow the install if your phone asks for it.", installed: "You are using the portal as an app.", failed: "Something went wrong.", tested: "Test notification sent!",
   },
 };
 
@@ -48,10 +48,12 @@ export function PushSettings() {
   const [msg, setMsg] = useState("");
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [standalone, setStandalone] = useState(false);
+  const [android, setAndroid] = useState(false);
 
   useEffect(() => {
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
     setStandalone(isStandalone);
+    setAndroid(/Android/i.test(navigator.userAgent));
     const onPrompt = (e: Event) => { e.preventDefault(); setInstallEvent(e as BeforeInstallPromptEvent); };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
@@ -134,11 +136,15 @@ export function PushSettings() {
       {devices > 0 && <p className="mt-2 text-xs text-zinc-500">{tx.devices.replace("{n}", String(devices))}</p>}
       {msg && <p role="status" className="mt-2 text-sm text-zinc-300">{msg}</p>}
 
-      {(standalone || installEvent) && (
+      {(standalone || installEvent || android) && (
         <div className="mt-5 border-t border-white/10 pt-4">
-          {standalone ? <p className="text-sm text-zinc-400">📱 {tx.installed}</p> : installEvent && (
-            <Button size="sm" variant="secondary" onClick={async () => { await installEvent.prompt(); await installEvent.userChoice.catch(() => null); setInstallEvent(null); }}><Download /> {tx.install}</Button>
+          {standalone ? <p className="text-sm text-zinc-400">📱 {tx.installed}</p> : (
+            <div className="flex flex-wrap gap-2">
+              {android && <Button asChild size="sm"><a href="/downloads/next-solutions.apk" download><Smartphone /> {tx.android}</a></Button>}
+              {installEvent && <Button size="sm" variant="secondary" onClick={async () => { await installEvent.prompt(); await installEvent.userChoice.catch(() => null); setInstallEvent(null); }}><Download /> {tx.install}</Button>}
+            </div>
           )}
+          {android && !standalone && <p className="mt-2 text-xs text-zinc-500">{tx.androidNote}</p>}
         </div>
       )}
     </div>
