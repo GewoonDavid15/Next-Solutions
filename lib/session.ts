@@ -74,12 +74,26 @@ export const sessionCookieOptions = {
   maxAge: MAX_AGE,
 };
 
+/** OAuth settings from the environment, trimmed: a pasted secret often ends with a space or newline. */
+export function oauthConfig() {
+  return {
+    clientId: process.env.DISCORD_CLIENT_ID?.trim() ?? "",
+    clientSecret: process.env.DISCORD_CLIENT_SECRET?.trim() ?? "",
+  };
+}
+
 export function isOAuthConfigured() {
-  return Boolean(process.env.DISCORD_CLIENT_ID && process.env.DISCORD_CLIENT_SECRET);
+  const { clientId, clientSecret } = oauthConfig();
+  return Boolean(clientId && clientSecret);
+}
+
+/** The one address the site is meant to be used on (NEXT_PUBLIC_SITE_URL), without a trailing slash. */
+export function canonicalOrigin(origin: string) {
+  return (process.env.NEXT_PUBLIC_SITE_URL?.trim() || origin).replace(/\/+$/, "");
 }
 
 export function redirectUri(origin: string) {
-  return `${process.env.NEXT_PUBLIC_SITE_URL ?? origin}/api/auth/discord/callback`;
+  return `${canonicalOrigin(origin)}/api/auth/discord/callback`;
 }
 
 export function avatarUrl(user: SessionUser) {
