@@ -2,6 +2,7 @@ import { ArrowLeft, CalendarClock, CheckCircle2, Circle, Download, FolderOpen, H
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { OnboardingChecklist } from "@/components/portal/OnboardingChecklist";
 import { ProjectFeedback } from "@/components/portal/ProjectFeedback";
 import { TicketChat } from "@/components/portal/TicketChat";
 import { Button } from "@/components/ui/Button";
@@ -111,7 +112,10 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               </div>
             )}
           </div>
-          {!done && <div className="lg:sticky lg:top-28 lg:self-start"><ProjectFeedback projectId={id} /></div>}
+          <div className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+            <OnboardingChecklist projectId={id} />
+            {!done && <ProjectFeedback projectId={id} />}
+          </div>
         </div>
       </div>
     </section>

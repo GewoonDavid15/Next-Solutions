@@ -10,7 +10,7 @@ import { PLATFORMS, STATUS_LABEL, TYPE_LABEL, type PostStatus, type SocialPost, 
 import { cn } from "@/lib/utils";
 
 interface Overview { klanten: { id: string; naam: string; teKeuren: number; aanpassing: number; nieuweUploads: number; abonnement: { pakket: string; status: string; volgendeBetaling: number; prijs: string } | null }[] }
-interface ClientData { klant: { id: string; naam: string }; posts: SocialPost[]; rapporten: SocialReport[]; uploads: SocialUpload[]; abonnement: Subscription | null; types: string[]; statussen: PostStatus[] }
+interface ClientData { notities: { tekst: string; bijgewerkt: number | null }; klant: { id: string; naam: string }; posts: SocialPost[]; rapporten: SocialReport[]; uploads: SocialUpload[]; abonnement: Subscription | null; types: string[]; statussen: PostStatus[] }
 
 const toLocalInput = (t: number) => { const d = new Date(t); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); };
 const when = (t: number) => new Date(t).toLocaleString("nl-NL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -202,14 +202,15 @@ function SubscriptionEditor({ klant, sub, onSaved }: { klant: string; sub: Subsc
 
 function ClientManager({ id, onChanged }: { id: string; onChanged: () => void }) {
   const { data, error, reload } = useBotData<ClientData>(`beheer/social?klant=${id}`);
-  const [tab, setTab] = useState<"kalender" | "rapport" | "uploads" | "abonnement">("kalender");
+  const [tab, setTab] = useState<"kalender" | "rapport" | "uploads" | "abonnement" | "notities">("kalender");
+  const [notes, setNotes] = useState<string | null>(null);
   const [editing, setEditing] = useState<SocialPost | "nieuw" | null>(null);
   const [msg, setMsg] = useState("");
   const done = (m = "") => { setMsg(m); setEditing(null); reload(); onChanged(); };
 
   if (error) return <Notice>{error}</Notice>;
   if (!data) return <Loading />;
-  const tabs = [["kalender", "Kalender", CalendarDays], ["rapport", "Maandrapport", BarChart3], ["uploads", `Uploads (${data.uploads.length})`, FileUp], ["abonnement", "Abonnement", CreditCard]] as const;
+  const tabs = [["kalender", "Kalender", CalendarDays], ["rapport", "Maandrapport", BarChart3], ["uploads", `Uploads (${data.uploads.length})`, FileUp], ["abonnement", "Abonnement", CreditCard], ["notities", "Strategie & notities", Pencil]] as const;
 
   return (
     <div className="space-y-4">
@@ -251,6 +252,18 @@ function ClientManager({ id, onChanged }: { id: string; onChanged: () => void })
             ))}
           </ul>
         )
+      )}
+      {tab === "notities" && (
+        <div className="space-y-3">
+          <p className="text-sm text-zinc-400">Alleen voor jou: doelgroep, contentpijlers, concurrenten, wat werkt en wat niet.</p>
+          <textarea value={notes ?? data.notities.tekst} onChange={(e) => setNotes(e.target.value)} rows={14} maxLength={5000}
+            placeholder={"Doelgroep:\nContentpijlers:\nConcurrenten (accounts):\nWat werkt goed:\nIdeeën:"} className={cn(inputClass, "font-mono")} />
+          <div className="flex items-center gap-3">
+            <Button size="sm" disabled={notes === null} onClick={async () => { await botApi("POST", "beheer/social/notities", { klant: id, tekst: notes ?? "" }).catch(() => null); setNotes(null); done("Notities opgeslagen."); }}><Save /> Opslaan</Button>
+            {data.notities.bijgewerkt && <span className="text-xs text-zinc-500">Laatst bijgewerkt {timeAgo(data.notities.bijgewerkt)}</span>}
+          </div>
+          <p className="text-xs text-zinc-500">Tip: zet ideeën direct in de kalender met <code>/idee</code> in Discord.</p>
+        </div>
       )}
       {tab === "abonnement" && <SubscriptionEditor key={data.abonnement?.id ?? "nieuw"} klant={id} sub={data.abonnement} onSaved={(m) => done(m)} />}
     </div>

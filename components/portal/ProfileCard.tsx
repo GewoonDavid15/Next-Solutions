@@ -4,8 +4,8 @@ import { SOCIAL_LINKS, type Profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 const texts = {
-  nl: { member: "Lid sinds", account: "Discord sinds", about: "Over mij", roles: "Rollen", badges: "Badges", level: "Niveau", booster: "Boost de server sinds" },
-  en: { member: "Member since", account: "On Discord since", about: "About me", roles: "Roles", badges: "Badges", level: "Level", booster: "Boosting since" },
+  nl: { activity: "Activiteit in Discord", rank: "#{n} van de server", member: "Lid sinds", account: "Discord sinds", about: "Over mij", roles: "Rollen", badges: "Badges", level: "Niveau", booster: "Boost de server sinds" },
+  en: { activity: "Activity on Discord", rank: "#{n} in the server", member: "Member since", account: "On Discord since", about: "About me", roles: "Roles", badges: "Badges", level: "Level", booster: "Boosting since" },
 };
 
 /**
@@ -72,6 +72,16 @@ export function ProfileCard({ profile: p, locale = "nl", compact = false }: { pr
               <div className="h-full rounded-full" style={{ width: `${Math.max(4, p.niveau.procent)}%`, background: accent }} />
             </div>
           </div>
+
+          {p.activiteit && p.activiteit.xp > 0 && (
+            <div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold uppercase tracking-wide text-zinc-400">{tx.activity}: level {p.activiteit.level}</span>
+                {p.activiteit.plek && <span className="text-zinc-500">{tx.rank.replace("{n}", String(p.activiteit.plek))}</span>}
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-white/50" style={{ width: `${Math.max(4, p.activiteit.procent)}%` }} /></div>
+            </div>
+          )}
 
           {p.bio && (
             <div>

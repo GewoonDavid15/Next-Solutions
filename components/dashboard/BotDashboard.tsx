@@ -1,9 +1,12 @@
 "use client";
 
-import { Archive, ArrowLeft, BarChart3, Bot, CalendarDays, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
+import { Archive, ArrowLeft, BarChart3, Bot, CalendarDays, FolderKanban, Lightbulb, ShieldCheck, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
 import { AnnouncementsTab } from "@/components/dashboard/AnnouncementsTab";
 import { AppointmentsTab } from "@/components/dashboard/AppointmentsTab";
 import { SocialTab } from "@/components/dashboard/SocialTab";
+import { ProjectsTab } from "@/components/dashboard/ProjectsTab";
+import { SecurityTab } from "@/components/dashboard/SecurityTab";
+import { CommunityExtraTab } from "@/components/dashboard/CommunityExtraTab";
 import { ModerationTab } from "@/components/dashboard/ModerationTab";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,6 +39,7 @@ const groups = [
     tabs: [
       { id: "tickets", label: "Tickets", icon: Ticket },
       { id: "offertes", label: "Offertes & aanvragen", icon: FileSignature },
+      { id: "projecten", label: "Projecten & uren", icon: FolderKanban },
       { id: "social", label: "Social klanten", icon: Megaphone },
       { id: "leden", label: "Leden", icon: Users },
       { id: "afspraken", label: "Afspraken", icon: CalendarDays },
@@ -46,6 +50,8 @@ const groups = [
     tabs: [
       { id: "aankondigingen", label: "Aankondigingen", icon: Megaphone },
       { id: "moderatie", label: "Moderatie", icon: ShieldAlert },
+      { id: "veiligheid", label: "Veiligheid", icon: ShieldCheck },
+      { id: "suggesties", label: "Suggesties & levels", icon: Lightbulb },
       { id: "community", label: "Giveaways & verificatie", icon: Gift },
     ],
   },
@@ -156,6 +162,9 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {tab === "moderatie" && <ModerationTab />}
               {tab === "afspraken" && <AppointmentsTab />}
               {tab === "social" && <SocialTab />}
+              {tab === "projecten" && <ProjectsTab />}
+              {tab === "veiligheid" && <SecurityTab />}
+              {tab === "suggesties" && <CommunityExtraTab />}
             </div>
             </div>
           </>
