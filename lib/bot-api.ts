@@ -148,3 +148,35 @@ export async function getCalculator(): Promise<Calculator | null> {
   }
   return calculatorCache.data;
 }
+
+/** Own profile of a logged-in client (Discord data, badges, level). null when unavailable. */
+export async function getClientProfile(userId: string): Promise<import("@/lib/profile").Profile | null> {
+  if (!isBotApiConfigured() || !/^\d{17,20}$/.test(userId)) return null;
+  try {
+    const { status, data } = await botRequest("GET", `/klant/profiel?gebruiker=${userId}`);
+    return status === 200 ? (data as import("@/lib/profile").Profile) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** A public profile by its handle (only when the member made it public). */
+export async function getPublicProfile(handle: string): Promise<import("@/lib/profile").Profile | null> {
+  if (!isBotApiConfigured() || !/^[a-z0-9_-]{3,24}$/.test(handle)) return null;
+  try {
+    const { status, data } = await botRequest("GET", `/profiel?handle=${handle}`);
+    return status === 200 ? (data as import("@/lib/profile").Profile) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getPublicProfileHandles(): Promise<{ handle: string; bijgewerkt: number | null }[]> {
+  if (!isBotApiConfigured()) return [];
+  try {
+    const { status, data } = await botRequest("GET", "/profielen");
+    return status === 200 ? (data as { handles: { handle: string; bijgewerkt: number | null }[] }).handles : [];
+  } catch {
+    return [];
+  }
+}

@@ -41,6 +41,7 @@ export const primaryNav = ["/", "/diensten", "/prijzen", "/community", "/contact
 export const moreNav = [
   { href: "/over-ons", icon: "info" },
   { href: "/nexify", icon: "sparkles" },
+  { href: "/kennisbank", icon: "book" },
   { href: "/team", icon: "users" },
   { href: "/reviews", icon: "star" },
   { href: "/nieuws", icon: "newspaper" },

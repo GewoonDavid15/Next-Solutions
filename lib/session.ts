@@ -63,6 +63,9 @@ export async function getSession() {
   return decodeSession(store.get(SESSION_COOKIE)?.value);
 }
 
+/** Readable by scripts (holds no data): lets the navbar know it is worth asking for notifications. */
+export const HINT_COOKIE = "ns_in";
+
 export const sessionCookieOptions = {
   httpOnly: true,
   sameSite: "lax" as const,

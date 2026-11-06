@@ -8,14 +8,14 @@ const ALLOWED: Record<string, string[]> = {
     "overzicht", "logs", "server", "instellingen", "modules", "modules/code", "geschiedenis", "wijzigingen",
     "beheer/tickets", "beheer/ticket", "beheer/transcript", "beheer/offertes", "beheer/giveaways", "beheer/verificatie",
     "beheer/rollen", "beheer/leden", "beheer/lid", "beheer/logbestanden", "beheer/log", "beheer/backups", "beheer/stats",
-    "beheer/moderatie", "beheer/kanalen",
+    "beheer/moderatie", "beheer/kanalen", "beheer/afspraken",
   ],
   PUT: ["instellingen", "modules/code"],
   POST: [
     "instellingen/reset", "modules/status", "acties/herstart", "wijzigingen/terugdraaien",
     "beheer/ticket/reageer", "beheer/ticket/sluit", "beheer/offerte/betaald", "beheer/offerte/intrekken", "beheer/lead",
     "beheer/giveaway/start", "beheer/giveaway/einde", "beheer/giveaway/reroll", "beheer/lid/rol", "beheer/backups/maak",
-    "beheer/lid/moderatie", "beheer/aankondiging", "beheer/melding/test", "beheer/backups/extern",
+    "beheer/lid/moderatie", "beheer/aankondiging", "beheer/melding/test", "beheer/backups/extern", "beheer/afspraak/annuleer",
   ],
   DELETE: ["modules/code"],
 };

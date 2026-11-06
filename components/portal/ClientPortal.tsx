@@ -1,4 +1,7 @@
-import { AlertCircle, Bot, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
+"use client";
+
+import { AlertCircle, ArrowRight, Bell, Bot, CalendarDays, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, MessageSquare, Plus, Settings, Ticket, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
@@ -7,10 +10,15 @@ import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
+import { AppointmentsPanel } from "@/components/portal/AppointmentsPanel";
+import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
 import { OfferCard } from "@/components/portal/OfferCard";
+import { ProfileEditor } from "@/components/portal/ProfileEditor";
+import { ReviewForm } from "@/components/portal/ReviewForm";
 import { TicketChat } from "@/components/portal/TicketChat";
 import { formatDate, formatSize, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
 import { fmt, localePath, type Locale } from "@/lib/i18n/config";
+import type { Profile } from "@/lib/profile";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +43,12 @@ const texts = {
     invitesDetail: "{echt} actief • {weg} vertrokken • {nep} nep", bonus: "{n} bonus",
     nextReward: "Nog {n} voor {rol}", nextRewardNoName: "Nog {n} voor de volgende beloning",
     yourLinks: "Jouw links", used: "{n}× gebruikt",
+    sections: "Onderdelen van je portaal",
+    tabs: { overzicht: "Overzicht", projecten: "Projecten", tickets: "Tickets", offertes: "Offertes & bonnen", bestanden: "Bestanden", afspraken: "Afspraken", meldingen: "Meldingen", profiel: "Profiel", instellingen: "Instellingen" } as Record<string, string>,
+    activeProjects: "Lopende projecten", noFiles: "Er staan nog geen bestanden voor je klaar.", noOffers: "Je hebt nog geen offertes. Vraag er een aan, dan zie je hem hier.",
+    level: "Niveau", xpToGo: "nog {n} XP tot niveau {l}", viewProfile: "Profiel bekijken",
+    quick: "Snel naar", quickTicket: "Ticket openen", quickCall: "Call plannen", quickQuote: "Offerte aanvragen", quickProfile: "Profiel bewerken",
+    projectRoom: "Projectruimte openen",
     invitesEmpty: "Maak in Discord een invite-link (rechtsklik op de server → Mensen uitnodigen) en deel hem. Iedereen die via jouw link joint en blijft, telt mee.",
   },
   en: {
@@ -57,6 +71,12 @@ const texts = {
     invitesDetail: "{echt} active • {weg} left • {nep} fake", bonus: "{n} bonus",
     nextReward: "{n} more for {rol}", nextRewardNoName: "{n} more for the next reward",
     yourLinks: "Your links", used: "used {n}×",
+    sections: "Portal sections",
+    tabs: { overzicht: "Overview", projecten: "Projects", tickets: "Tickets", offertes: "Quotes & receipts", bestanden: "Files", afspraken: "Appointments", meldingen: "Notifications", profiel: "Profile", instellingen: "Settings" } as Record<string, string>,
+    activeProjects: "Active projects", noFiles: "There are no files for you yet.", noOffers: "You don't have any quotes yet. Request one and it will show up here.",
+    level: "Level", xpToGo: "{n} XP to level {l}", viewProfile: "View profile",
+    quick: "Quick links", quickTicket: "Open a ticket", quickCall: "Schedule a call", quickQuote: "Request a quote", quickProfile: "Edit profile",
+    projectRoom: "Open project room",
     invitesEmpty: "Create an invite link in Discord (right-click the server → Invite People) and share it. Everyone who joins through your link and stays is counted.",
   },
 };
@@ -68,12 +88,32 @@ interface ClientPortalProps {
   user: { id: string; name: string; avatar: string | null };
   /** null when the bot could not be reached */
   data: ClientData | null;
+  profile?: Profile | null;
   isOwner: boolean;
   departments: TicketDepartment[];
 }
 
 /** Client portal with live data from the Discord bot: projects (/projectstatus), tickets and bug reports. */
-export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }: ClientPortalProps) {
+const TAB_IDS = ["overzicht", "projecten", "tickets", "offertes", "bestanden", "afspraken", "meldingen", "profiel", "instellingen"] as const;
+type TabId = (typeof TAB_IDS)[number];
+
+export function ClientPortal({ user, data, profile = null, isOwner, departments, locale = "nl" }: ClientPortalProps) {
+  // The open tab lives in the address (#tickets), so links from notifications open the right tab
+  const [tab, setTabState] = useState<TabId>("overzicht");
+  useEffect(() => {
+    const sync = () => {
+      const h = window.location.hash.slice(1) as TabId;
+      if (TAB_IDS.includes(h)) setTabState(h);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+  const setTab = (id: TabId) => {
+    setTabState(id);
+    window.history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const tx = texts[locale];
   const lp = (href: string) => localePath(locale, href);
   const date = (ms: number, withTime = false) => formatDate(ms, withTime, locale);
@@ -83,6 +123,19 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
   const transcripts = data?.transcripts ?? [];
   const applications = data?.sollicitaties ?? [];
   const files = data?.bestanden ?? [];
+
+  const canReview = transcripts.length > 0 || projects.length > 0 || (data?.offertes ?? []).some((o) => o.betaald);
+  const tabs: { id: TabId; icon: typeof Ticket; badge?: number }[] = [
+    { id: "overzicht", icon: LayoutDashboard },
+    { id: "projecten", icon: FolderKanban, badge: projects.filter((p) => p.percentage < 100).length || undefined },
+    { id: "tickets", icon: Ticket, badge: tickets.length || undefined },
+    { id: "offertes", icon: Receipt, badge: (data?.offertes ?? []).filter((o) => o.code === "open").length || undefined },
+    { id: "bestanden", icon: FolderOpen, badge: files.length || undefined },
+    { id: "afspraken", icon: CalendarDays },
+    { id: "meldingen", icon: Bell },
+    { id: "profiel", icon: UserRound },
+    { id: "instellingen", icon: Settings },
+  ];
 
   const kpis = [
     { label: tx.active, value: projects.filter((p) => p.percentage < 100).length, icon: FolderKanban },
@@ -104,6 +157,11 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
             <div>
               <p className="text-sm text-zinc-400">{tx.welcome}</p>
               <h1 className="text-3xl font-semibold">{user.name}</h1>
+              {profile && (
+                <button type="button" onClick={() => setTab("profiel")} className="mt-1 inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-600/10 px-2.5 py-0.5 text-xs text-brand-200 hover:text-white">
+                  {tx.level} {profile.niveau.level} • {profile.niveau.titel} {profile.badges.filter((b) => b.behaald).slice(0, 4).map((b) => <span key={b.id} title={b.naam}>{b.emoji}</span>)}
+                </button>
+              )}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -127,7 +185,31 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           </p>
         )}
 
-        <Stagger className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-8 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8">
+          <nav aria-label={tx.sections} className="lg:sticky lg:top-28 lg:self-start">
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0">
+              {tabs.map(({ id, icon: Icon, badge }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setTab(id)}
+                  aria-current={tab === id ? "page" : undefined}
+                  className={cn(
+                    "inline-flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-medium transition lg:w-full lg:border-transparent lg:px-3 lg:py-2",
+                    tab === id ? "border-brand-500/50 bg-brand-600/20 text-white lg:border-brand-500/30" : "border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white lg:bg-transparent lg:hover:bg-white/[0.04]",
+                  )}
+                >
+                  <Icon className="size-4" /> {tx.tabs[id]}
+                  {badge ? <span className="ml-auto rounded-full bg-brand-500/20 px-1.5 text-[11px] text-brand-200">{badge}</span> : null}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          <div className="mt-6 min-w-0 space-y-12 lg:mt-0">
+          {tab === "overzicht" && (
+            <>
+        <Stagger className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {kpis.map(({ label, value, icon: Icon }) => (
             <StaggerItem key={label} className="glass flex items-center gap-4 rounded-3xl p-5">
               <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-brand-600/15 text-brand-300">
@@ -141,8 +223,27 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           ))}
         </Stagger>
 
+              {profile && <LevelCard profile={profile} tx={tx} onOpen={() => setTab("profiel")} />}
+              {projects.filter((p) => p.percentage < 100).length > 0 && (
+                <div>
+                  <h2 className="flex items-center gap-2 text-xl font-semibold"><FolderKanban className="size-5 text-brand-300" /> {tx.activeProjects}</h2>
+                  <div className="mt-4 grid gap-6 lg:grid-cols-2">
+                    {projects.filter((p) => p.percentage < 100).map((p) => <ProjectCard key={p.id} project={p} tx={tx} date={date} />)}
+                  </div>
+                </div>
+              )}
+              <div className="grid gap-6 lg:grid-cols-2">
+                <QuickActions tx={tx} onTab={setTab} lp={lp} />
+                {canReview && <ReviewForm />}
+              </div>
+              {data?.invites && <InvitesCard invites={data.invites} tx={tx} />}
+            </>
+          )}
+
+          {tab === "projecten" && (
+            <div>
         {/* Projects */}
-        <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderKanban className="size-5 text-brand-300" /> {tx.projects}</h2>
+        <h2 className="flex items-center gap-2 text-xl font-semibold"><FolderKanban className="size-5 text-brand-300" /> {tx.projects}</h2>
         {projects.length === 0 ? (
           <Empty text={tx.noProjects} cta={{ href: lp("/contact"), label: tx.requestProject }} />
         ) : (
@@ -155,30 +256,11 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           </div>
         )}
 
-        {/* Files */}
-        {files.length > 0 && (
-          <>
-            <h2 className="mt-12 flex items-center gap-2 text-xl font-semibold"><FolderOpen className="size-5 text-brand-300" /> {tx.files}</h2>
-            <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-              {files.map((f) => (
-                <li key={f.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-white" title={f.naam}>{f.naam}</p>
-                    <p className="mt-0.5 truncate text-sm text-zinc-400">
-                      {formatSize(f.grootte, locale)} • {date(f.t)}{f.project ? ` • ${f.project}` : ""}
-                    </p>
-                    {f.beschrijving && <p className="mt-1 truncate text-xs text-zinc-500">{f.beschrijving}</p>}
-                  </div>
-                  <Button asChild size="sm" variant="secondary">
-                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={fmt(tx.download, { name: f.naam })}><Download /></a>
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+            </div>
+          )}
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-2">
+          {tab === "tickets" && (
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* Tickets */}
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -281,15 +363,58 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           </div>
         </div>
 
-        {data?.offertes && data.offertes.length > 0 && <OffersCard offers={data.offertes} tx={tx} date={date} />}
+          )}
 
-        {data?.invites && <InvitesCard invites={data.invites} tx={tx} />}
+          {tab === "offertes" && (
+            data?.offertes && data.offertes.length > 0 ? <OffersCard offers={data.offertes} tx={tx} date={date} /> : <Empty text={tx.noOffers} cta={{ href: lp("/contact"), label: tx.requestProject }} />
+          )}
 
+          {tab === "bestanden" && (
+            <div>
+        {/* Files */}
+        {files.length > 0 && (
+          <>
+            <h2 className="flex items-center gap-2 text-xl font-semibold"><FolderOpen className="size-5 text-brand-300" /> {tx.files}</h2>
+            <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {files.map((f) => (
+                <li key={f.id} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-white" title={f.naam}>{f.naam}</p>
+                    <p className="mt-0.5 truncate text-sm text-zinc-400">
+                      {formatSize(f.grootte, locale)} • {date(f.t)}{f.project ? ` • ${f.project}` : ""}
+                    </p>
+                    {f.beschrijving && <p className="mt-1 truncate text-xs text-zinc-500">{f.beschrijving}</p>}
+                  </div>
+                  <Button asChild size="sm" variant="secondary">
+                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={fmt(tx.download, { name: f.naam })}><Download /></a>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {files.length === 0 && <Empty text={tx.noFiles} />}
+            </div>
+          )}
+
+          {tab === "afspraken" && <AppointmentsPanel />}
+          {tab === "meldingen" && <NotificationsPanel />}
+          {tab === "profiel" && (profile ? <ProfileEditor initial={profile} /> : <Empty text={tx.unavailable} />)}
+          {tab === "instellingen" && (
+            <div className="space-y-6">
         {data?.email?.beschikbaar && (
-          <div className="mt-12 max-w-2xl">
+          <div className="max-w-2xl">
             <EmailSettings initial={data.email} />
           </div>
         )}
+              <form action={locale === "en" ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">
+                <Button type="submit" variant="secondary"><LogOut /> {tx.logout}</Button>
+              </form>
+            </div>
+          )}
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -340,6 +465,10 @@ function ProjectCard({ project: p, tx, date }: { project: ClientProject; tx: Tex
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">{tx.lastUpdate}{p.bijgewerkt ? ` • ${date(p.bijgewerkt, true)}` : ""}</p>
         <p className="mt-1.5 whitespace-pre-line text-sm text-zinc-300">{p.notitie}</p>
       </div>
+
+      <Link href={`/klantportaal/project/${p.id}`} className="mt-4 inline-flex items-center gap-1.5 text-sm text-brand-300 hover:text-white">
+        {tx.projectRoom} <ArrowRight className="size-4" />
+      </Link>
 
       {p.geschiedenis.length > 1 && (
         <details className="mt-4 text-sm">
@@ -428,6 +557,44 @@ function Empty({ text, cta }: { text: string; cta?: { href: string; label: strin
           )}
         </Button>
       )}
+    </div>
+  );
+}
+
+function LevelCard({ profile, tx, onOpen }: { profile: Profile; tx: Texts; onOpen: () => void }) {
+  const n = profile.niveau;
+  return (
+    <div className="glass flex flex-col gap-4 rounded-3xl p-6 sm:flex-row sm:items-center">
+      <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-brand-gradient font-display text-2xl font-bold text-ink">{n.level}</div>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-white">{tx.level} {n.level} • {n.titel}</p>
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-brand-gradient" style={{ width: `${Math.max(4, n.procent)}%` }} /></div>
+        <p className="mt-1.5 text-xs text-zinc-400">{fmt(tx.xpToGo, { n: n.volgende - n.xp, l: n.level + 1 })} • {profile.badges.filter((b) => b.behaald).map((b) => b.emoji).join(" ")}</p>
+      </div>
+      <Button size="sm" variant="secondary" onClick={onOpen}><UserRound /> {tx.viewProfile}</Button>
+    </div>
+  );
+}
+
+function QuickActions({ tx, onTab, lp }: { tx: Texts; onTab: (id: TabId) => void; lp: (href: string) => string }) {
+  const items = [
+    { label: tx.quickTicket, icon: Ticket, onClick: () => onTab("tickets") },
+    { label: tx.quickCall, icon: CalendarDays, onClick: () => onTab("afspraken") },
+    { label: tx.quickProfile, icon: UserRound, onClick: () => onTab("profiel") },
+  ];
+  return (
+    <div className="glass rounded-3xl p-6">
+      <h3 className="font-semibold">{tx.quick}</h3>
+      <div className="mt-4 grid gap-2">
+        {items.map(({ label, icon: Icon, onClick }) => (
+          <button key={label} type="button" onClick={onClick} className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-zinc-200 transition hover:border-brand-500/40 hover:bg-white/[0.03]">
+            <span className="flex items-center gap-2"><Icon className="size-4 text-brand-300" /> {label}</span><ArrowRight className="size-4 text-zinc-500" />
+          </button>
+        ))}
+        <Link href={lp("/contact")} className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-zinc-200 transition hover:border-brand-500/40 hover:bg-white/[0.03]">
+          <span className="flex items-center gap-2"><Plus className="size-4 text-brand-300" /> {tx.quickQuote}</span><ArrowRight className="size-4 text-zinc-500" />
+        </Link>
+      </div>
     </div>
   );
 }

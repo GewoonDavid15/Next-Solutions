@@ -1,18 +1,19 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { Activity, Briefcase, ChevronDown, Folder, Info, Languages, Menu, Newspaper, Sparkles, Star, UserRound, Users, X } from "lucide-react";
+import { Activity, BookOpen, Briefcase, ChevronDown, Folder, Info, Languages, Menu, Newspaper, Sparkles, Star, UserRound, Users, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 import { moreNav, primaryNav } from "@/lib/site";
 import { localePath, stripLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils";
 
-const ICONS = { info: Info, sparkles: Sparkles, users: Users, star: Star, newspaper: Newspaper, briefcase: Briefcase, activity: Activity, folder: Folder } as const;
+const ICONS = { book: BookOpen, info: Info, sparkles: Sparkles, users: Users, star: Star, newspaper: Newspaper, briefcase: Briefcase, activity: Activity, folder: Folder } as const;
 
 export function Navbar() {
   const { locale, t, lp } = useI18n();
@@ -141,6 +142,7 @@ export function Navbar() {
             >
               <Languages className="size-3.5" /> {other}
             </a>
+            <NotificationBell />
             <Link
               href={lp("/klantportaal")}
               title={t.nav.portal}
