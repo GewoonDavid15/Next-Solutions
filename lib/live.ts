@@ -66,6 +66,25 @@ export interface PublicData {
   team: TeamMember[];
   /** Invite leaderboard (missing when the bot runs an older version) */
   invites?: PublicInvites | null;
+  /** Running giveaways (missing when the bot runs an older version) */
+  giveaways?: PublicGiveaway[];
+}
+
+export interface PublicGiveaway {
+  prijs: string;
+  eindigt: number;
+  deelnemers: number;
+  winnaars: number;
+}
+
+export interface ClientOffer {
+  nummer: string;
+  titel: string;
+  prijs: string;
+  status: string;
+  statusEmoji: string;
+  t: number;
+  betaald: boolean;
 }
 
 export interface PublicInvites {
@@ -141,6 +160,7 @@ export interface ClientData {
   email?: ClientEmailStatus | null;
   bugs: ClientBug[];
   invites?: ClientInvites | null;
+  offertes?: ClientOffer[];
 }
 
 export const DAYS = ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"];

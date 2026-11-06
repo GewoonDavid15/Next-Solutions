@@ -31,6 +31,9 @@ const sections: LegalSection[] = [
       "Sollicitaties: je Discord-gebruikersnaam en je antwoorden op de vragen bij de vacature.",
       "E-mailmeldingen: alleen als je die zelf aanzet en bevestigt, je e-mailadres en welke meldingen je wilt ontvangen.",
       "Invites in onze Discord: via welke invite-link je bent binnengekomen, wie die link maakte, en wanneer je joinde of vertrok. Op de website tonen we alleen de naam en het aantal invites van de beste uitnodigers.",
+      "Offertes: wat we je aanbieden, de prijs, of je akkoord gaf en of je hebt betaald. Je ziet je offertes ook in het klantportaal.",
+      "Giveaways: dat je meedoet aan een giveaway en of je hebt gewonnen.",
+      "Verificatie: dat en wanneer je de captcha in onze Discord hebt gehaald. Het antwoord dat je kiest, bewaren we niet.",
     ],
   },
   {
@@ -104,6 +107,9 @@ const sectionsEn: LegalSection[] = [
       "Applications: your Discord username and your answers to the questions for the vacancy.",
       "Email notifications: only if you turn them on and confirm them yourself, your email address and which notifications you want to receive.",
       "Invites in our Discord: which invite link you joined through, who created that link, and when you joined or left. On the website we only show the name and number of invites of the top inviters.",
+      "Quotes: what we offer you, the price, whether you approved it and whether you paid. You can also see your quotes in the client portal.",
+      "Giveaways: that you entered a giveaway and whether you won.",
+      "Verification: that and when you passed the captcha in our Discord. We don't store the answer you chose.",
     ],
   },
   {
