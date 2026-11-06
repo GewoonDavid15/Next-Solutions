@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
@@ -75,6 +75,7 @@ export async function POST(request: Request) {
         discordId: session && !session.demo ? session.id : null,
         taal: locale,
         indicatie: typeof body.indicatie === "string" ? body.indicatie.slice(0, 80) : null,
+        ref: (await cookies()).get("ns_ref")?.value ?? null,
       }),
     ).catch(() => null);
     if (lead?.status === 200) return NextResponse.json({ ok: true });

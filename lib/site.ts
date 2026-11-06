@@ -45,6 +45,8 @@ export const moreNav = [
   { href: "/team", icon: "users" },
   { href: "/reviews", icon: "star" },
   { href: "/nieuws", icon: "newspaper" },
+  { href: "/gratis", icon: "gift" },
+  { href: "/vergelijk", icon: "scale" },
   { href: "/vacatures", icon: "briefcase" },
   { href: "/status", icon: "activity" },
   ...(SHOW_PORTFOLIO ? [{ href: "/portfolio", icon: "folder" } as const] : []),

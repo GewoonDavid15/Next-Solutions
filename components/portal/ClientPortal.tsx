@@ -12,6 +12,9 @@ import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
 import { AppointmentsPanel } from "@/components/portal/AppointmentsPanel";
 import { MyData } from "@/components/portal/MyData";
+import { CalendarSync } from "@/components/portal/CalendarSync";
+import { PushSettings } from "@/components/portal/PushSettings";
+import { ReferralPanel } from "@/components/portal/ReferralPanel";
 import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
 import { OfferCard } from "@/components/portal/OfferCard";
 import { ProfileEditor } from "@/components/portal/ProfileEditor";
@@ -240,6 +243,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
                 {canReview && <ReviewForm />}
               </div>
               {data?.invites && <InvitesCard invites={data.invites} tx={tx} />}
+              <ReferralPanel />
             </>
           )}
 
@@ -402,7 +406,12 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
           )}
 
           {tab === "social" && <SocialPanel />}
-          {tab === "afspraken" && <AppointmentsPanel />}
+          {tab === "afspraken" && (
+            <div className="space-y-6">
+              <AppointmentsPanel />
+              <CalendarSync userId={user.id} />
+            </div>
+          )}
           {tab === "meldingen" && <NotificationsPanel />}
           {tab === "profiel" && (profile ? <ProfileEditor initial={profile} /> : <Empty text={tx.unavailable} />)}
           {tab === "instellingen" && (
@@ -412,6 +421,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
             <EmailSettings initial={data.email} />
           </div>
         )}
+              <PushSettings />
               <MyData />
               <form action={locale === "en" ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">
                 <Button type="submit" variant="secondary"><LogOut /> {tx.logout}</Button>

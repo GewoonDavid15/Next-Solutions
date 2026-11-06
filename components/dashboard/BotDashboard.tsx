@@ -1,6 +1,7 @@
 "use client";
 
-import { Archive, ArrowLeft, BarChart3, Bot, CalendarDays, FolderKanban, Lightbulb, ShieldCheck, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
+import { Archive, ArrowLeft, BarChart3, Bot, CalendarDays, FolderKanban, KanbanSquare, Lightbulb, ShieldCheck, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
+import { PipelineTab } from "@/components/dashboard/PipelineTab";
 import { AnnouncementsTab } from "@/components/dashboard/AnnouncementsTab";
 import { AppointmentsTab } from "@/components/dashboard/AppointmentsTab";
 import { SocialTab } from "@/components/dashboard/SocialTab";
@@ -38,6 +39,7 @@ const groups = [
     label: "Klanten",
     tabs: [
       { id: "tickets", label: "Tickets", icon: Ticket },
+      { id: "pijplijn", label: "Pijplijn & groei", icon: KanbanSquare },
       { id: "offertes", label: "Offertes & aanvragen", icon: FileSignature },
       { id: "projecten", label: "Projecten", icon: FolderKanban },
       { id: "social", label: "Social klanten", icon: Megaphone },
@@ -155,6 +157,7 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {tab === "statistieken" && <StatsTab />}
               {tab === "tickets" && <TicketsTab />}
               {tab === "offertes" && <OffersTab />}
+              {tab === "pijplijn" && <PipelineTab />}
               {tab === "leden" && <MembersTab />}
               {tab === "community" && <CommunityTab />}
               {tab === "logs" && <LogsTab />}

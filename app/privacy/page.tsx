@@ -42,6 +42,11 @@ const sections: LegalSection[] = [
       "Suggesties in onze Discord: je idee, je naam en wie erop stemde.",
       "Moderatie: waarschuwingen, time-outs en wat onze automatische moderatie tegenhield (inclusief het betreffende bericht), om de community veilig te houden.",
       "Websitebezoek: geanonimiseerde tellingen per dag (zoals het aantal bezoeken aan een pagina en het aantal aanvragen), zonder cookies en zonder je IP-adres of andere gegevens die naar jou te herleiden zijn.",
+      "Gratis checklists: je voornaam, je e-mailadres en welke checklist je hebt opgevraagd. We mailen je één keer de link en sturen je verder niets.",
+      "Doorverwijzen: als je via de link van een klant bij ons komt, onthouden we die code dertig dagen in een functionele cookie. Doe je een aanvraag, dan ziet de klant die je doorverwees alleen je voornaam en of je klant bent geworden.",
+      "Pushmeldingen: als je ze aanzet, het adres dat je browser daarvoor aanmaakt (geen telefoonnummer of andere contactgegevens).",
+      "Agenda-koppeling: een geheime sleutel voor jouw agenda-link. Je kunt de link zelf vernieuwen, waarna de oude niet meer werkt.",
+      "Foutmeldingen: als een pagina bij jou vastloopt, de foutmelding, de pagina en het soort browser. Niet wie je bent.",
     ],
   },
   {
@@ -53,8 +58,9 @@ const sections: LegalSection[] = [
       "Het beheren van je social media, het opstellen van maandrapporten en het herinneren aan betalingen van je abonnement.",
       "Het tonen van je profiel, badges en niveau, en als je dat aanzet, je openbare profielpagina.",
       "Het veilig houden van onze Discord-community (verificatie, moderatie, bescherming tegen raids).",
-      "Begrijpen welke pagina's goed werken, met geanonimiseerde tellingen zonder cookies.",
-      "Het versturen van meldingen via Discord, en per e-mail als je daarvoor hebt gekozen.",
+      "Begrijpen welke pagina's goed werken, met geanonimiseerde tellingen zonder cookies, en fouten op de website snel oplossen.",
+      "Je de gratis checklist sturen die je hebt opgevraagd, en klanten laten zien wie via hun link bij ons kwam.",
+      "Het versturen van meldingen via Discord, en per e-mail of als pushmelding als je daarvoor hebt gekozen.",
       "Het beoordelen van sollicitaties en het verbeteren van onze service op basis van reviews.",
       "Het voldoen aan onze administratieve en fiscale verplichtingen.",
     ],
@@ -62,7 +68,7 @@ const sections: LegalSection[] = [
   {
     heading: "Wat we niet doen",
     paragraphs: [
-      "We verkopen je gegevens niet en verhuren ze niet aan derden. We gebruiken geen trackingcookies en geen advertentienetwerken, en daarom ook geen cookiebanner. De website gebruikt alleen functionele cookies: tijdens het inloggen twee tijdelijke cookies ter beveiliging (maximaal tien minuten), en daarna een sessiecookie plus een cookie zonder inhoud die aangeeft dat je bent ingelogd. Die verdwijnen wanneer je uitlogt of na zeven dagen. Voor bezoekersstatistieken gebruiken we Vercel Web Analytics en een eigen telling; allebei zonder cookies en zonder gegevens die naar jou te herleiden zijn.",
+      "We verkopen je gegevens niet en verhuren ze niet aan derden. We gebruiken geen trackingcookies en geen advertentienetwerken, en daarom ook geen cookiebanner. De website gebruikt alleen functionele cookies: tijdens het inloggen twee tijdelijke cookies ter beveiliging (maximaal tien minuten), en daarna een sessiecookie plus een cookie zonder inhoud die aangeeft dat je bent ingelogd. Die verdwijnen wanneer je uitlogt of na zeven dagen. Voor bezoekersstatistieken gebruiken we Vercel Web Analytics en een eigen telling; allebei zonder cookies en zonder gegevens die naar jou te herleiden zijn. Kom je binnen via een doorverwijslink, dan bewaren we de code van die link dertig dagen in een functionele cookie. Vink je in een checklist iets af, dan onthoudt alleen je eigen browser dat.",
     ],
   },
   {
@@ -93,6 +99,7 @@ const sections: LegalSection[] = [
       "Offerteaanvragen die niet tot een opdracht leiden, verwijderen we na twaalf maanden. Gegevens van klanten bewaren we zolang je klant bent, en daarna alleen zo lang als de wet dat van ons vraagt, bijvoorbeeld voor de administratie van betalingen. Je sessie in het klantportaal vervalt automatisch na zeven dagen.",
       "Van tickets bewaren we de laatste duizend transcripts; oudere worden automatisch verwijderd. Je e-mailadres verwijderen we zodra je je afmeldt. Bestanden, reviews en sollicitaties verwijderen we op je verzoek.",
       "Afgelopen of geannuleerde afspraken verwijderen we na negentig dagen. Van meldingen bewaren we de laatste zestig per persoon. Waarschuwingspunten tellen dertig dagen mee; de waarschuwing zelf bewaren we zolang je lid bent van onze Discord. Je profiel, levels, social media-gegevens en aangeleverde bestanden bewaren we tot je vraagt om ze te verwijderen of je geen klant of lid meer bent. Gegevens over betalingen bewaren we zo lang als de wet vraagt.",
+      "Aanvragen voor een gratis checklist bewaren we twaalf maanden. Foutmeldingen van de website verwijderen we na zestig dagen. Pushmeldingen stoppen zodra je ze uitzet of je browser het abonnement intrekt.",
     ],
   },
   {
@@ -141,6 +148,11 @@ const sectionsEn: LegalSection[] = [
       "Suggestions in our Discord: your idea, your name and who voted on it.",
       "Moderation: warnings, time-outs and what our automatic moderation blocked (including the message itself), to keep the community safe.",
       "Website visits: anonymised daily counts (such as the number of visits to a page and the number of requests), without cookies and without your IP address or anything else that identifies you.",
+      "Free checklists: your first name, your email address and which checklist you requested. We email you the link once and send you nothing else.",
+      "Referrals: if you come to us through a client's link, we remember that code for thirty days in a functional cookie. If you send a request, the client who referred you only sees your first name and whether you became a client.",
+      "Push notifications: if you turn them on, the address your browser creates for this (no phone number or other contact details).",
+      "Calendar link: a secret key for your calendar link. You can renew the link yourself, after which the old one stops working.",
+      "Error reports: if a page crashes for you, the error message, the page and the type of browser. Not who you are.",
     ],
   },
   {
@@ -152,8 +164,9 @@ const sectionsEn: LegalSection[] = [
       "Managing your social media, writing monthly reports and reminding you of subscription payments.",
       "Showing your profile, badges and level, and if you turn it on, your public profile page.",
       "Keeping our Discord community safe (verification, moderation, protection against raids).",
-      "Understanding which pages work well, with anonymised counts without cookies.",
-      "Sending notifications through Discord, and by email if you chose that.",
+      "Understanding which pages work well, with anonymised counts without cookies, and fixing errors on the website quickly.",
+      "Sending you the free checklist you asked for, and showing clients who came to us through their link.",
+      "Sending notifications through Discord, and by email or as a push notification if you chose that.",
       "Assessing applications and improving our service based on reviews.",
       "Meeting our administrative and tax obligations.",
     ],
@@ -161,7 +174,7 @@ const sectionsEn: LegalSection[] = [
   {
     heading: "What we don't do",
     paragraphs: [
-      "We don't sell your data and don't rent it out to third parties. We don't use tracking cookies or advertising networks, so there is no cookie banner either. The website only uses functional cookies: two temporary security cookies while logging in (ten minutes at most), and after that a session cookie plus an empty cookie that tells the site you are logged in. They disappear when you log out or after seven days. For visitor statistics we use Vercel Web Analytics and our own count; both without cookies and without anything that identifies you. Choosing a language does not set a cookie: the language is part of the address (/en).",
+      "We don't sell your data and don't rent it out to third parties. We don't use tracking cookies or advertising networks, so there is no cookie banner either. The website only uses functional cookies: two temporary security cookies while logging in (ten minutes at most), and after that a session cookie plus an empty cookie that tells the site you are logged in. They disappear when you log out or after seven days. For visitor statistics we use Vercel Web Analytics and our own count; both without cookies and without anything that identifies you. If you arrive through a referral link, we keep that link's code for thirty days in a functional cookie. If you tick items in a checklist, only your own browser remembers that. Choosing a language does not set a cookie: the language is part of the address (/en).",
     ],
   },
   {
@@ -192,6 +205,7 @@ const sectionsEn: LegalSection[] = [
       "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for as long as you are a client, and after that only as long as the law requires, for example for the records of payments. Your client portal session expires automatically after seven days.",
       "We keep the last thousand ticket transcripts; older ones are deleted automatically. We delete your email address as soon as you unsubscribe. Files, reviews and applications are deleted at your request.",
       "Past or cancelled appointments are deleted after ninety days. We keep the last sixty notifications per person. Warning points count for thirty days; the warning itself is kept for as long as you are a member of our Discord. Your profile, levels, social media data and delivered files are kept until you ask us to delete them or you are no longer a client or member. Payment records are kept for as long as the law requires.",
+      "Requests for a free checklist are kept for twelve months. Website error reports are deleted after sixty days. Push notifications stop as soon as you turn them off or your browser withdraws the subscription.",
     ],
   },
   {
