@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Bell, Bot, CalendarDays, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, MessageSquare, Plus, Settings, Ticket, UserRound } from "lucide-react";
+import { AlertCircle, ArrowRight, Bell, Bot, CalendarDays, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, Megaphone, MessageSquare, Plus, Settings, Ticket, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
 import { OfferCard } from "@/components/portal/OfferCard";
 import { ProfileEditor } from "@/components/portal/ProfileEditor";
 import { ReviewForm } from "@/components/portal/ReviewForm";
+import { SocialPanel } from "@/components/portal/SocialPanel";
 import { TicketChat } from "@/components/portal/TicketChat";
 import { formatDate, formatSize, type ClientData, type ClientProject, type TicketDepartment } from "@/lib/live";
 import { fmt, localePath, type Locale } from "@/lib/i18n/config";
@@ -44,7 +45,7 @@ const texts = {
     nextReward: "Nog {n} voor {rol}", nextRewardNoName: "Nog {n} voor de volgende beloning",
     yourLinks: "Jouw links", used: "{n}× gebruikt",
     sections: "Onderdelen van je portaal",
-    tabs: { overzicht: "Overzicht", projecten: "Projecten", tickets: "Tickets", offertes: "Offertes & bonnen", bestanden: "Bestanden", afspraken: "Afspraken", meldingen: "Meldingen", profiel: "Profiel", instellingen: "Instellingen" } as Record<string, string>,
+    tabs: { overzicht: "Overzicht", projecten: "Projecten", social: "Social media", tickets: "Tickets", offertes: "Offertes & bonnen", bestanden: "Bestanden", afspraken: "Afspraken", meldingen: "Meldingen", profiel: "Profiel", instellingen: "Instellingen" } as Record<string, string>,
     activeProjects: "Lopende projecten", noFiles: "Er staan nog geen bestanden voor je klaar.", noOffers: "Je hebt nog geen offertes. Vraag er een aan, dan zie je hem hier.",
     level: "Niveau", xpToGo: "nog {n} XP tot niveau {l}", viewProfile: "Profiel bekijken",
     quick: "Snel naar", quickTicket: "Ticket openen", quickCall: "Call plannen", quickQuote: "Offerte aanvragen", quickProfile: "Profiel bewerken",
@@ -72,7 +73,7 @@ const texts = {
     nextReward: "{n} more for {rol}", nextRewardNoName: "{n} more for the next reward",
     yourLinks: "Your links", used: "used {n}×",
     sections: "Portal sections",
-    tabs: { overzicht: "Overview", projecten: "Projects", tickets: "Tickets", offertes: "Quotes & receipts", bestanden: "Files", afspraken: "Appointments", meldingen: "Notifications", profiel: "Profile", instellingen: "Settings" } as Record<string, string>,
+    tabs: { overzicht: "Overview", projecten: "Projects", social: "Social media", tickets: "Tickets", offertes: "Quotes & receipts", bestanden: "Files", afspraken: "Appointments", meldingen: "Notifications", profiel: "Profile", instellingen: "Settings" } as Record<string, string>,
     activeProjects: "Active projects", noFiles: "There are no files for you yet.", noOffers: "You don't have any quotes yet. Request one and it will show up here.",
     level: "Level", xpToGo: "{n} XP to level {l}", viewProfile: "View profile",
     quick: "Quick links", quickTicket: "Open a ticket", quickCall: "Schedule a call", quickQuote: "Request a quote", quickProfile: "Edit profile",
@@ -94,7 +95,7 @@ interface ClientPortalProps {
 }
 
 /** Client portal with live data from the Discord bot: projects (/projectstatus), tickets and bug reports. */
-const TAB_IDS = ["overzicht", "projecten", "tickets", "offertes", "bestanden", "afspraken", "meldingen", "profiel", "instellingen"] as const;
+const TAB_IDS = ["overzicht", "projecten", "social", "tickets", "offertes", "bestanden", "afspraken", "meldingen", "profiel", "instellingen"] as const;
 type TabId = (typeof TAB_IDS)[number];
 
 export function ClientPortal({ user, data, profile = null, isOwner, departments, locale = "nl" }: ClientPortalProps) {
@@ -128,6 +129,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
   const tabs: { id: TabId; icon: typeof Ticket; badge?: number }[] = [
     { id: "overzicht", icon: LayoutDashboard },
     { id: "projecten", icon: FolderKanban, badge: projects.filter((p) => p.percentage < 100).length || undefined },
+    { id: "social", icon: Megaphone },
     { id: "tickets", icon: Ticket, badge: tickets.length || undefined },
     { id: "offertes", icon: Receipt, badge: (data?.offertes ?? []).filter((o) => o.code === "open").length || undefined },
     { id: "bestanden", icon: FolderOpen, badge: files.length || undefined },
@@ -398,6 +400,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
             </div>
           )}
 
+          {tab === "social" && <SocialPanel />}
           {tab === "afspraken" && <AppointmentsPanel />}
           {tab === "meldingen" && <NotificationsPanel />}
           {tab === "profiel" && (profile ? <ProfileEditor initial={profile} /> : <Empty text={tx.unavailable} />)}

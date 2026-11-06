@@ -3,6 +3,7 @@
 import { Archive, ArrowLeft, BarChart3, Bot, CalendarDays, FileCode2, FileSignature, Gift, History, LayoutDashboard, Megaphone, Radio, Settings, ShieldAlert, Terminal, Ticket, Users } from "lucide-react";
 import { AnnouncementsTab } from "@/components/dashboard/AnnouncementsTab";
 import { AppointmentsTab } from "@/components/dashboard/AppointmentsTab";
+import { SocialTab } from "@/components/dashboard/SocialTab";
 import { ModerationTab } from "@/components/dashboard/ModerationTab";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,6 +36,7 @@ const groups = [
     tabs: [
       { id: "tickets", label: "Tickets", icon: Ticket },
       { id: "offertes", label: "Offertes & aanvragen", icon: FileSignature },
+      { id: "social", label: "Social klanten", icon: Megaphone },
       { id: "leden", label: "Leden", icon: Users },
       { id: "afspraken", label: "Afspraken", icon: CalendarDays },
     ],
@@ -153,6 +155,7 @@ export function BotDashboard({ configured, user }: { configured: boolean; user: 
               {tab === "aankondigingen" && <AnnouncementsTab />}
               {tab === "moderatie" && <ModerationTab />}
               {tab === "afspraken" && <AppointmentsTab />}
+              {tab === "social" && <SocialTab />}
             </div>
             </div>
           </>

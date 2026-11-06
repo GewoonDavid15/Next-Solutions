@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isBotApiConfigured, isDashboardOwner, signedFetch } from "@/lib/bot-api";
+import { botRequest, isBotApiConfigured, isDashboardOwner, signedFetch } from "@/lib/bot-api";
 import { getSession } from "@/lib/session";
 
 /** Downloads a log file or back-up from the bot. Owner only, like the rest of the dashboard. */
@@ -11,9 +11,15 @@ export async function GET(request: NextRequest) {
   const kind = request.nextUrl.searchParams.get("soort");
   const day = request.nextUrl.searchParams.get("dag") ?? "";
   const id = request.nextUrl.searchParams.get("id") ?? "";
-  const valid = kind === "bon" ? /^[\w-]{1,40}$/.test(id) : /^\d{4}-\d{2}-\d{2}$/.test(day) && (kind === "log" || kind === "backup");
+  // Uploads from clients live in Discord: send the visitor straight to a fresh link
+  if (kind === "upload" && /^[a-f0-9]{8}$/.test(id)) {
+    const { status, data } = await botRequest("GET", `/beheer/social/upload?id=${id}`).catch(() => ({ status: 502, data: {} }));
+    const url = (data as { url?: string }).url;
+    return status === 200 && url ? NextResponse.redirect(url) : NextResponse.json({ fout: "Bestand niet gevonden." }, { status: 404 });
+  }
+  const valid = kind === "bon" || kind === "rapport" ? /^[\w-]{1,40}$/.test(id) : /^\d{4}-\d{2}-\d{2}$/.test(day) && (kind === "log" || kind === "backup");
   if (!valid) return NextResponse.json({ fout: "Ongeldig verzoek." }, { status: 400 });
-  const path = kind === "bon" ? `/beheer/bon?id=${id}` : `/beheer/${kind}/download?dag=${day}`;
+  const path = kind === "bon" ? `/beheer/bon?id=${id}` : kind === "rapport" ? `/beheer/social/rapport-pdf?id=${id}` : `/beheer/${kind}/download?dag=${day}`;
 
   try {
     const res = await signedFetch("GET", path, undefined, 60_000);
@@ -23,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
     return new Response(res.body, {
       headers: {
-        "Content-Type": kind === "log" ? "text/plain; charset=utf-8" : kind === "bon" ? "application/pdf" : "application/json; charset=utf-8",
+        "Content-Type": kind === "log" ? "text/plain; charset=utf-8" : kind === "bon" || kind === "rapport" ? "application/pdf" : "application/json; charset=utf-8",
         "Content-Disposition": res.headers.get("content-disposition") ?? `attachment; filename="${kind}-${day}"`,
         "Cache-Control": "no-store",
       },
