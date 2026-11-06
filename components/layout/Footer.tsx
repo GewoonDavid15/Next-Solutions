@@ -4,6 +4,7 @@ import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { Logo } from "@/components/ui/Logo";
 import { GithubIcon, InstagramIcon, XIcon, YoutubeIcon } from "@/components/ui/SocialIcons";
 import { getI18n } from "@/lib/i18n/server";
+import { servicePages } from "@/lib/dienst-paginas";
 import { moreNav, navLinks, site } from "@/lib/site";
 
 const socials = [
@@ -44,8 +45,8 @@ export async function Footer() {
           </FooterColumn>
 
           <FooterColumn title={t.footer.services} className="lg:col-span-3">
-            {content.services.slice(0, 6).map((s) => (
-              <FooterLink key={s.title} href={lp("/diensten")}>
+            {content.services.slice(0, 7).map((s, i) => (
+              <FooterLink key={s.title} href={lp(`/diensten/${servicePages[i]?.slug ?? ""}`)}>
                 {s.title}
               </FooterLink>
             ))}

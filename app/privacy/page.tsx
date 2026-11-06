@@ -34,6 +34,14 @@ const sections: LegalSection[] = [
       "Offertes: wat we je aanbieden, de prijs, of je akkoord gaf en of je hebt betaald. Je ziet je offertes ook in het klantportaal.",
       "Giveaways: dat je meedoet aan een giveaway en of je hebt gewonnen.",
       "Verificatie: dat en wanneer je de captcha in onze Discord hebt gehaald. Het antwoord dat je kiest, bewaren we niet.",
+      "Profiel: wat je zelf invult (bio, korte tekst, bedrijf, website, socials, profielkleur) en je profielnaam. Daarnaast tonen we je Discord-naam, avatar, banner, avatar-decoratie, naamplaatje, servertag en rollen, en of je Nitro hebt (dat zien we alleen bij het inloggen). Je profiel is alleen openbaar als je dat zelf aanzet.",
+      "Badges, niveau en activiteit: berekend uit je projecten, offertes, reviews en invites, en het aantal berichten en minuten in voice in onze Discord (voor het levelsysteem). De inhoud van je berichten slaan we daarvoor niet op.",
+      "Meldingen in het klantportaal: korte meldingen over je tickets, projecten, offertes, bestanden en afspraken.",
+      "Afspraken: het tijdstip, het onderwerp en je toelichting als je een call met ons plant.",
+      "Social media: de contentkalender, je goedkeuringen en feedback, maandrapporten met de cijfers van je accounts, je abonnement en betalingen, en bestanden of links die je aanlevert. Aangeleverde bestanden staan in een afgeschermd kanaal in onze Discord dat alleen ons team kan zien.",
+      "Suggesties in onze Discord: je idee, je naam en wie erop stemde.",
+      "Moderatie: waarschuwingen, time-outs en wat onze automatische moderatie tegenhield (inclusief het betreffende bericht), om de community veilig te houden.",
+      "Websitebezoek: geanonimiseerde tellingen per dag (zoals het aantal bezoeken aan een pagina en het aantal aanvragen), zonder cookies en zonder je IP-adres of andere gegevens die naar jou te herleiden zijn.",
     ],
   },
   {
@@ -41,7 +49,11 @@ const sections: LegalSection[] = [
     list: [
       "Het opstellen en versturen van een offerte naar aanleiding van je aanvraag.",
       "Het uitvoeren van de opdracht en communiceren over de voortgang.",
-      "Het tonen van jouw projecten, tickets, transcripts, bestanden en sollicitaties in het klantportaal nadat je bent ingelogd.",
+      "Het tonen van jouw projecten, tickets, transcripts, bestanden, sollicitaties, offertes, afspraken en social media-gegevens in het klantportaal nadat je bent ingelogd.",
+      "Het beheren van je social media, het opstellen van maandrapporten en het herinneren aan betalingen van je abonnement.",
+      "Het tonen van je profiel, badges en niveau, en als je dat aanzet, je openbare profielpagina.",
+      "Het veilig houden van onze Discord-community (verificatie, moderatie, bescherming tegen raids).",
+      "Begrijpen welke pagina's goed werken, met geanonimiseerde tellingen zonder cookies.",
       "Het versturen van meldingen via Discord, en per e-mail als je daarvoor hebt gekozen.",
       "Het beoordelen van sollicitaties en het verbeteren van onze service op basis van reviews.",
       "Het voldoen aan onze administratieve en fiscale verplichtingen.",
@@ -50,7 +62,7 @@ const sections: LegalSection[] = [
   {
     heading: "Wat we niet doen",
     paragraphs: [
-      "We verkopen je gegevens niet en verhuren ze niet aan derden. We gebruiken geen trackingcookies en geen advertentienetwerken. De website plaatst alleen een functionele cookie wanneer je inlogt op het klantportaal; die bewaart je sessie en verdwijnt wanneer je uitlogt of na zeven dagen.",
+      "We verkopen je gegevens niet en verhuren ze niet aan derden. We gebruiken geen trackingcookies en geen advertentienetwerken, en daarom ook geen cookiebanner. De website gebruikt alleen functionele cookies: tijdens het inloggen twee tijdelijke cookies ter beveiliging (maximaal tien minuten), en daarna een sessiecookie plus een cookie zonder inhoud die aangeeft dat je bent ingelogd. Die verdwijnen wanneer je uitlogt of na zeven dagen. Voor bezoekersstatistieken gebruiken we Vercel Web Analytics en een eigen telling; allebei zonder cookies en zonder gegevens die naar jou te herleiden zijn.",
     ],
   },
   {
@@ -66,16 +78,27 @@ const sections: LegalSection[] = [
     ],
   },
   {
+    heading: "Wie je gegevens nog meer verwerken",
+    list: [
+      "Vercel (hosting van de website en geanonimiseerde bezoekersstatistieken).",
+      "Craftnode (hosting van onze Discord-bot, waar de gegevens van het klantportaal staan).",
+      "Discord (tickets, berichten, aangeleverde bestanden en meldingen via DM).",
+      "Resend (alleen als je e-mailmeldingen aanzet).",
+    ],
+    paragraphs: ["Zij verwerken je gegevens alleen om hun dienst aan ons te leveren."],
+  },
+  {
     heading: "Hoe lang we ze bewaren",
     paragraphs: [
       "Offerteaanvragen die niet tot een opdracht leiden, verwijderen we na twaalf maanden. Gegevens van klanten bewaren we zolang je klant bent, en daarna alleen zo lang als de wet dat van ons vraagt, bijvoorbeeld voor de administratie van betalingen. Je sessie in het klantportaal vervalt automatisch na zeven dagen.",
       "Van tickets bewaren we de laatste duizend transcripts; oudere worden automatisch verwijderd. Je e-mailadres verwijderen we zodra je je afmeldt. Bestanden, reviews en sollicitaties verwijderen we op je verzoek.",
+      "Afgelopen of geannuleerde afspraken verwijderen we na negentig dagen. Van meldingen bewaren we de laatste zestig per persoon. Waarschuwingspunten tellen dertig dagen mee; de waarschuwing zelf bewaren we zolang je lid bent van onze Discord. Je profiel, levels, social media-gegevens en aangeleverde bestanden bewaren we tot je vraagt om ze te verwijderen of je geen klant of lid meer bent. Gegevens over betalingen bewaren we zo lang als de wet vraagt.",
     ],
   },
   {
     heading: "Je rechten",
     paragraphs: [
-      `Je mag altijd opvragen welke gegevens we van je hebben, ze laten corrigeren of laten verwijderen. Stuur daarvoor een bericht naar ${site.email} en we reageren binnen dertig dagen. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens.`,
+      `Je mag altijd opvragen welke gegevens we van je hebben, ze laten corrigeren of laten verwijderen. In het klantportaal kun je onder Instellingen → Mijn gegevens zelf een kopie downloaden en een verwijderverzoek indienen. Je kunt ook een bericht sturen naar ${site.email}; we reageren binnen dertig dagen. Ben je het niet eens met hoe we met je gegevens omgaan, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens.`,
     ],
   },
   {
@@ -110,6 +133,14 @@ const sectionsEn: LegalSection[] = [
       "Quotes: what we offer you, the price, whether you approved it and whether you paid. You can also see your quotes in the client portal.",
       "Giveaways: that you entered a giveaway and whether you won.",
       "Verification: that and when you passed the captcha in our Discord. We don't store the answer you chose.",
+      "Profile: what you fill in yourself (bio, short line, company, website, socials, profile colour) and your profile name. We also show your Discord name, avatar, banner, avatar decoration, nameplate, server tag and roles, and whether you have Nitro (we only see that when you log in). Your profile is only public if you turn that on yourself.",
+      "Badges, level and activity: calculated from your projects, quotes, reviews and invites, and the number of messages and minutes in voice in our Discord (for the level system). We don't store the content of your messages for this.",
+      "Notifications in the client portal: short notifications about your tickets, projects, quotes, files and appointments.",
+      "Appointments: the time, topic and your note when you schedule a call with us.",
+      "Social media: the content calendar, your approvals and feedback, monthly reports with your accounts' numbers, your subscription and payments, and files or links you deliver. Delivered files are kept in a restricted channel in our Discord that only our team can see.",
+      "Suggestions in our Discord: your idea, your name and who voted on it.",
+      "Moderation: warnings, time-outs and what our automatic moderation blocked (including the message itself), to keep the community safe.",
+      "Website visits: anonymised daily counts (such as the number of visits to a page and the number of requests), without cookies and without your IP address or anything else that identifies you.",
     ],
   },
   {
@@ -117,7 +148,11 @@ const sectionsEn: LegalSection[] = [
     list: [
       "Drawing up and sending a quote in response to your request.",
       "Carrying out the assignment and communicating about its progress.",
-      "Showing your projects, tickets, transcripts, files and applications in the client portal after you log in.",
+      "Showing your projects, tickets, transcripts, files, applications, quotes, appointments and social media data in the client portal after you log in.",
+      "Managing your social media, writing monthly reports and reminding you of subscription payments.",
+      "Showing your profile, badges and level, and if you turn it on, your public profile page.",
+      "Keeping our Discord community safe (verification, moderation, protection against raids).",
+      "Understanding which pages work well, with anonymised counts without cookies.",
       "Sending notifications through Discord, and by email if you chose that.",
       "Assessing applications and improving our service based on reviews.",
       "Meeting our administrative and tax obligations.",
@@ -126,7 +161,7 @@ const sectionsEn: LegalSection[] = [
   {
     heading: "What we don't do",
     paragraphs: [
-      "We don't sell your data and don't rent it out to third parties. We don't use tracking cookies or advertising networks. The website only sets a functional cookie when you log in to the client portal; it keeps your session and disappears when you log out or after seven days. Choosing a language does not set a cookie: the language is part of the address (/en).",
+      "We don't sell your data and don't rent it out to third parties. We don't use tracking cookies or advertising networks, so there is no cookie banner either. The website only uses functional cookies: two temporary security cookies while logging in (ten minutes at most), and after that a session cookie plus an empty cookie that tells the site you are logged in. They disappear when you log out or after seven days. For visitor statistics we use Vercel Web Analytics and our own count; both without cookies and without anything that identifies you. Choosing a language does not set a cookie: the language is part of the address (/en).",
     ],
   },
   {
@@ -142,16 +177,27 @@ const sectionsEn: LegalSection[] = [
     ],
   },
   {
+    heading: "Who else processes your data",
+    list: [
+      "Vercel (hosting of the website and anonymised visitor statistics).",
+      "Craftnode (hosting of our Discord bot, where the client portal data is stored).",
+      "Discord (tickets, messages, delivered files and notifications by DM).",
+      "Resend (only if you turn on email notifications).",
+    ],
+    paragraphs: ["They only process your data to deliver their service to us."],
+  },
+  {
     heading: "How long we keep it",
     paragraphs: [
       "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for as long as you are a client, and after that only as long as the law requires, for example for the records of payments. Your client portal session expires automatically after seven days.",
       "We keep the last thousand ticket transcripts; older ones are deleted automatically. We delete your email address as soon as you unsubscribe. Files, reviews and applications are deleted at your request.",
+      "Past or cancelled appointments are deleted after ninety days. We keep the last sixty notifications per person. Warning points count for thirty days; the warning itself is kept for as long as you are a member of our Discord. Your profile, levels, social media data and delivered files are kept until you ask us to delete them or you are no longer a client or member. Payment records are kept for as long as the law requires.",
     ],
   },
   {
     heading: "Your rights",
     paragraphs: [
-      `You can always ask which data we hold about you, and have it corrected or deleted. Send a message to ${site.email} and we will reply within thirty days. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).`,
+      `You can always ask which data we hold about you, and have it corrected or deleted. In the client portal, under Settings → My data, you can download a copy yourself and submit a deletion request. You can also send a message to ${site.email}; we reply within thirty days. If you disagree with how we handle your data, you can file a complaint with the Dutch Data Protection Authority (Autoriteit Persoonsgegevens).`,
     ],
   },
   {
@@ -171,7 +217,7 @@ export default async function PrivacyPage() {
         eyebrow="Privacy"
         title={<>Privacy <span className="text-gradient">policy</span></>}
         description="What we do with your data, in plain language."
-        updated="5 November 2026"
+        updated="6 November 2026"
         sections={sectionsEn}
       />
     );
@@ -181,7 +227,7 @@ export default async function PrivacyPage() {
       eyebrow="Privacy"
       title={<>Privacy<span className="text-gradient">verklaring</span></>}
       description="Wat we met je gegevens doen, in gewone taal."
-      updated="5 november 2026"
+      updated="6 november 2026"
       sections={sections}
     />
   );

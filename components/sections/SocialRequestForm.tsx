@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
+import { trackEvent } from "@/components/layout/Tracker";
 import { cn } from "@/lib/utils";
 
 const PLATFORMS = ["Instagram", "TikTok", "YouTube", "LinkedIn", "X", "Facebook"];
@@ -48,7 +49,7 @@ export function SocialRequestForm() {
       body: JSON.stringify({ ...form, platforms, goal: GOALS.nl[goalIndex], locale }),
     }).catch(() => null);
     const json = (await res?.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
-    if (res?.ok && json?.ok) setState("done"); else { setError(json?.error ?? tx.failed); setState("idle"); }
+    if (res?.ok && json?.ok) { trackEvent("socialformulier"); setState("done"); } else { setError(json?.error ?? tx.failed); setState("idle"); }
   }
 
   if (state === "done") {

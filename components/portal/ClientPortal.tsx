@@ -11,6 +11,7 @@ import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { EmailSettings } from "@/components/portal/EmailSettings";
 import { NewTicketForm } from "@/components/portal/NewTicketForm";
 import { AppointmentsPanel } from "@/components/portal/AppointmentsPanel";
+import { MyData } from "@/components/portal/MyData";
 import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
 import { OfferCard } from "@/components/portal/OfferCard";
 import { ProfileEditor } from "@/components/portal/ProfileEditor";
@@ -411,6 +412,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
             <EmailSettings initial={data.email} />
           </div>
         )}
+              <MyData />
               <form action={locale === "en" ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">
                 <Button type="submit" variant="secondary"><LogOut /> {tx.logout}</Button>
               </form>

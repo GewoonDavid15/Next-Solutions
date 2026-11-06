@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { emptyQuote, getQuoteOptions, labelFor, validateStep, type QuoteRequest } from "@/lib/contact";
 import { fmt } from "@/lib/i18n/config";
+import { trackEvent } from "@/components/layout/Tracker";
 import { cn } from "@/lib/utils";
 
 const texts = {
@@ -124,6 +125,7 @@ export function QuoteForm({ initialDepartment = "", initialService = "", estimat
       });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error ?? tx.checkData);
+      trackEvent("offerteformulier");
       setStatus("sent");
     } catch (err) {
       setServerError(err instanceof Error ? err.message : tx.failed);

@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import type { Calculator } from "@/lib/bot-api";
+import { trackEvent } from "@/components/layout/Tracker";
 import { cn } from "@/lib/utils";
 
 const texts = {
@@ -113,7 +114,7 @@ export function PriceCalculator({ calculator }: { calculator: Calculator }) {
                 </ul>
               </div>
               <div>
-                <Button asChild size="lg" className="w-full">
+                <Button asChild size="lg" className="w-full" onClick={() => trackEvent("calculator")}>
                   <Link href={href}>{tx.cta} <ArrowRight /></Link>
                 </Button>
                 <p className="mt-3 text-xs text-zinc-500">{tx.note}</p>

@@ -6,6 +6,8 @@ import { BackToTop } from "@/components/layout/BackToTop";
 import { Navbar } from "@/components/layout/Navbar";
 import { getLocale, getMessages } from "@/lib/i18n/server";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { Tracker } from "@/components/layout/Tracker";
+import { Analytics } from "@vercel/analytics/next";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -41,7 +43,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main id="main">{children}</main>
           <Footer />
           <BackToTop />
+          <Tracker />
         </I18nProvider>
+        <Analytics />
       </body>
     </html>
   );

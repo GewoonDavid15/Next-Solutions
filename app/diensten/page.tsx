@@ -8,14 +8,15 @@ import { Card } from "@/components/ui/Card";
 import { FaqAccordion } from "@/components/ui/Accordion";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { servicePages } from "@/lib/dienst-paginas";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata() {
   const { locale } = await getI18n();
   return locale === "en"
-    ? pageMetadata("/diensten", "Services", "Discord bots, websites, FiveM scripts, Minecraft servers, branding and UI/UX design.")
-    : pageMetadata("/diensten", "Diensten", "Discord bots, websites, FiveM scripts, Minecraft servers, branding en UI/UX design.");
+    ? pageMetadata("/diensten", "Services", "Discord bots, websites, social media management, content, FiveM scripts, Minecraft servers, branding and UI/UX design.")
+    : pageMetadata("/diensten", "Diensten", "Discord bots, websites, social media management, content, FiveM scripts, Minecraft servers, branding en UI/UX design.");
 }
 
 export default async function DienstenPage() {
@@ -57,7 +58,7 @@ export default async function DienstenPage() {
                 description={dept.description}
               />
               <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map(({ title, description, icon: ServiceIcon, features, department }) => (
+                {items.map(({ title, description, icon: ServiceIcon, features }) => (
                   <StaggerItem key={title}>
                     <Card interactive className="group flex h-full flex-col">
                       <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-500/70 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -74,8 +75,8 @@ export default async function DienstenPage() {
                         ))}
                       </ul>
                       <div className="mt-auto pt-6">
-                        <Link href={lp(`/contact?afdeling=${department}`)} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-300 transition-colors hover:text-white">
-                          {en ? "Price on request" : "Prijs op aanvraag"} <ArrowRight className="size-4" />
+                        <Link href={lp(`/diensten/${servicePages[content.services.findIndex((s) => s.title === title)]?.slug ?? ""}`)} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-300 transition-colors hover:text-white">
+                          {en ? `More about ${title}` : `Meer over ${title}`} <ArrowRight className="size-4" />
                         </Link>
                       </div>
                     </Card>

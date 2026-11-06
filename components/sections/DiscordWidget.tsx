@@ -153,7 +153,7 @@ export function JoinButton({ href }: { href: string }) {
       className="relative inline-flex items-center gap-3 rounded-2xl bg-[#5865F2] px-8 py-4 font-display text-lg font-semibold text-white shadow-[0_0_40px_-6px_rgba(88,101,242,0.9)]"
     >
       <span aria-hidden className="absolute inset-0 animate-ping-slow rounded-2xl bg-[#5865F2]" />
-      <span aria-hidden className="absolute inset-0 animate-ping-slow rounded-2xl bg-brand-600 [animation-delay:1s]" />
+      <span aria-hidden className="absolute inset-0 animate-ping-slow rounded-2xl bg-[#4752C4] [animation-delay:1s]" />
       <span className="relative flex items-center gap-3">
         <DiscordIcon className="size-6" /> {locale === "en" ? "Join the Server" : "Join de Server"}
       </span>
