@@ -1,4 +1,4 @@
-import { AlertCircle, Bot, UserPlus, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
+import { AlertCircle, Bot, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LogOut, MessageSquare, Plus, Ticket } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
@@ -28,6 +28,7 @@ const texts = {
     bugs: "Bugmeldingen", noBugs: "Je hebt nog geen bugs gemeld. Iets gevonden? Meld het via het bugkanaal in onze Discord.",
     reportedOn: "Gemeld op {date}",
     phases: "Projectfases", lastUpdate: "Laatste update", earlier: "Eerdere updates",
+    offers: "Offertes", offerFrom: "{date}", offersHint: "Akkoord geven en betalen doe je in je ticket in onze Discord.",
     invites: "Jouw invites", invitesCount: "mensen uitgenodigd", rank: "#{n} op het leaderboard",
     invitesDetail: "{echt} actief • {weg} vertrokken • {nep} nep", bonus: "{n} bonus",
     nextReward: "Nog {n} voor {rol}", nextRewardNoName: "Nog {n} voor de volgende beloning",
@@ -49,6 +50,7 @@ const texts = {
     bugs: "Bug reports", noBugs: "You haven't reported any bugs yet. Found something? Report it in the bug channel in our Discord.",
     reportedOn: "Reported on {date}",
     phases: "Project phases", lastUpdate: "Last update", earlier: "Earlier updates",
+    offers: "Quotes", offerFrom: "{date}", offersHint: "You approve and pay in your ticket in our Discord. Status names come from our bot and are in Dutch.",
     invites: "Your invites", invitesCount: "people invited", rank: "#{n} on the leaderboard",
     invitesDetail: "{echt} active • {weg} left • {nep} fake", bonus: "{n} bonus",
     nextReward: "{n} more for {rol}", nextRewardNoName: "{n} more for the next reward",
@@ -274,6 +276,8 @@ export function ClientPortal({ user, data, isOwner, departments, locale = "nl" }
           </div>
         </div>
 
+        {data?.offertes && data.offertes.length > 0 && <OffersCard offers={data.offertes} tx={tx} date={date} />}
+
         {data?.invites && <InvitesCard invites={data.invites} tx={tx} />}
 
         {data?.email?.beschikbaar && (
@@ -344,6 +348,30 @@ function ProjectCard({ project: p, tx, date }: { project: ClientProject; tx: Tex
           </ul>
         </details>
       )}
+    </div>
+  );
+}
+
+function OffersCard({ offers, tx, date }: { offers: NonNullable<ClientData["offertes"]>; tx: Texts; date: (ms: number) => string }) {
+  return (
+    <div className="mt-12">
+      <h2 className="flex items-center gap-2 text-xl font-semibold"><Receipt className="size-5 text-brand-300" /> {tx.offers}</h2>
+      <ul className="mt-4 grid gap-3 md:grid-cols-2">
+        {offers.map((o) => (
+          <li key={o.nummer} className="glass flex items-center justify-between gap-4 rounded-3xl p-5">
+            <div className="min-w-0">
+              <p className="truncate font-medium text-white">{o.titel}</p>
+              <p className="mt-0.5 text-sm text-zinc-400">
+                <span className="font-mono text-xs text-zinc-500">{o.nummer}</span> • {o.prijs} • {fmt(tx.offerFrom, { date: date(o.t) })}
+              </p>
+            </div>
+            <span className={cn("shrink-0 rounded-full border px-2.5 py-1 text-xs", o.betaald ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : "border-brand-500/30 bg-brand-600/10 text-brand-200")}>
+              {o.statusEmoji} {o.status}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-sm text-zinc-500">{tx.offersHint}</p>
     </div>
   );
 }
