@@ -1,7 +1,7 @@
 import { ClientPortal } from "@/components/portal/ClientPortal";
 import { Dashboard } from "@/components/portal/Dashboard";
 import { LoginCard } from "@/components/portal/LoginCard";
-import { getClientData, getTicketDepartments, isBotApiConfigured, isDashboardOwner } from "@/lib/bot-api";
+import { getClientData, getClientProfile, getTicketDepartments, isBotApiConfigured, isDashboardOwner } from "@/lib/bot-api";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { getPortalData } from "@/lib/portal";
 import { avatarUrl, getSession, isOAuthConfigured } from "@/lib/session";
@@ -22,8 +22,8 @@ export default async function KlantportaalPage({ searchParams }: { searchParams:
 
   // Real clients see their live data from the Discord bot
   if (!session.demo && isBotApiConfigured()) {
-    const [data, departments] = await Promise.all([getClientData(session.id), getTicketDepartments()]);
-    return <ClientPortal user={{ ...user, id: session.id }} data={data} departments={departments} isOwner={isDashboardOwner(session)} locale={locale} />;
+    const [data, departments, profile] = await Promise.all([getClientData(session.id), getTicketDepartments(), getClientProfile(session.id)]);
+    return <ClientPortal user={{ ...user, id: session.id }} data={data} profile={profile} departments={departments} isOwner={isDashboardOwner(session)} locale={locale} />;
   }
 
   // Demo login (or bot not connected yet): example data

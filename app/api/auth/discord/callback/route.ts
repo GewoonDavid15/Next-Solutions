@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { botRequest, isBotApiConfigured } from "@/lib/bot-api";
 import {
+  HINT_COOKIE,
   RETURN_COOKIE,
   SESSION_COOKIE,
   STATE_COOKIE,
@@ -46,7 +48,12 @@ export async function GET(request: NextRequest) {
       headers: { Authorization: `Bearer ${access_token}` },
     });
     if (!userRes.ok) return fail("user_fetch");
-    const user = (await userRes.json()) as { id: string; username: string; global_name: string | null; avatar: string | null };
+    const user = (await userRes.json()) as { id: string; username: string; global_name: string | null; avatar: string | null; premium_type?: number };
+
+    // Nitro is only visible through the user's own login: pass it on to the profile in the bot (best effort)
+    if (isBotApiConfigured()) {
+      await botRequest("POST", "/klant/profiel/sync", JSON.stringify({ gebruiker: user.id, nitro: user.premium_type ?? 0, gebruikersnaam: user.username })).catch(() => null);
+    }
 
     const res = NextResponse.redirect(new URL(safeReturnPath(request.cookies.get(RETURN_COOKIE)?.value), origin));
     res.cookies.delete(STATE_COOKIE);
@@ -56,6 +63,7 @@ export async function GET(request: NextRequest) {
       encodeSession({ id: user.id, username: user.username, globalName: user.global_name, avatar: user.avatar }),
       sessionCookieOptions,
     );
+    res.cookies.set(HINT_COOKIE, "1", { ...sessionCookieOptions, httpOnly: false });
     return res;
   } catch {
     return fail("network");
