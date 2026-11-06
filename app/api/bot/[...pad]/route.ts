@@ -1,12 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured, isDashboardOwner } from "@/lib/bot-api";
-import { getSession } from "@/lib/session";
+import { avatarUrl, getSession } from "@/lib/session";
 
 /** Endpoints of the bot that the dashboard may reach, per HTTP method. */
 const ALLOWED: Record<string, string[]> = {
-  GET: ["overzicht", "logs", "server", "instellingen", "modules", "modules/code", "geschiedenis", "wijzigingen"],
+  GET: [
+    "overzicht", "logs", "server", "instellingen", "modules", "modules/code", "geschiedenis", "wijzigingen",
+    "beheer/tickets", "beheer/ticket", "beheer/transcript", "beheer/offertes", "beheer/giveaways", "beheer/verificatie",
+    "beheer/rollen", "beheer/leden", "beheer/lid", "beheer/logbestanden", "beheer/log", "beheer/backups", "beheer/stats",
+  ],
   PUT: ["instellingen", "modules/code"],
-  POST: ["instellingen/reset", "modules/status", "acties/herstart", "wijzigingen/terugdraaien"],
+  POST: [
+    "instellingen/reset", "modules/status", "acties/herstart", "wijzigingen/terugdraaien",
+    "beheer/ticket/reageer", "beheer/ticket/sluit", "beheer/offerte/betaald", "beheer/offerte/intrekken", "beheer/lead",
+    "beheer/giveaway/start", "beheer/giveaway/einde", "beheer/giveaway/reroll", "beheer/lid/rol", "beheer/backups/maak",
+  ],
   DELETE: ["modules/code"],
 };
 
@@ -37,8 +45,19 @@ async function forward(request: NextRequest, { params }: Context) {
     return NextResponse.json({ fout: "Onbekend endpoint." }, { status: 404 });
   }
 
-  const body = request.method === "GET" ? undefined : await request.text();
+  let body = request.method === "GET" ? undefined : await request.text();
   if (body && body.length > MAX_BODY) return NextResponse.json({ fout: "Verzoek te groot (max. 1 MB)." }, { status: 413 });
+
+  // Management actions are signed with the name of whoever is logged in, so Discord shows who did it.
+  if (endpoint.startsWith("beheer/") && request.method === "POST" && session) {
+    let parsed: Record<string, unknown> = {};
+    try {
+      parsed = body ? (JSON.parse(body) as Record<string, unknown>) : {};
+    } catch {
+      return NextResponse.json({ fout: "Ongeldige JSON." }, { status: 400 });
+    }
+    body = JSON.stringify({ ...parsed, naam: session.globalName ?? session.username, userId: session.id, avatar: avatarUrl(session) });
+  }
 
   try {
     const { status, data } = await botRequest(request.method, `/${endpoint}${request.nextUrl.search}`, body);

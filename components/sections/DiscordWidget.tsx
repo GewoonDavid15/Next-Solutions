@@ -74,7 +74,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
             {en ? "Online now" : "Nu online"}
           </p>
           <p className="mt-2 font-display text-4xl font-semibold text-white">
-            <AnimatedCounter value={data.online} duration={1.2} />
+            {data.online !== null ? <AnimatedCounter value={data.online} duration={1.2} /> : "—"}
           </p>
         </div>
         <div className="p-6 text-center">
@@ -87,7 +87,8 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
         </div>
       </div>
 
-      <div className="grid gap-6 p-6 sm:p-8 md:grid-cols-2">
+      <div className={cn("grid gap-6 p-6 sm:p-8", data.channels.length > 0 && "md:grid-cols-2")}>
+        {data.channels.length > 0 && (
         <div>
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">{en ? "Channels" : "Kanalen"}</h3>
           <ul className="space-y-1">
@@ -98,6 +99,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
             ))}
           </ul>
         </div>
+        )}
         <div>
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">{en ? "Online members" : "Online leden"}</h3>
           {data.members.length > 0 ? (
@@ -119,7 +121,9 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
           ) : (
             <p className="flex items-center gap-2 rounded-xl border border-dashed border-white/10 p-4 text-sm text-zinc-500">
               <Wifi className="size-4" />
-              {data.live ? (en ? "Nobody visible in the widget." : "Niemand zichtbaar in de widget.") : en ? "Set DISCORD_GUILD_ID for live members." : "Stel DISCORD_GUILD_ID in voor live leden."}
+              {data.members.length === 0 && data.channels.length > 0
+                ? en ? "Nobody visible right now." : "Nu even niemand zichtbaar."
+                : en ? "Join the server to see who is online and to chat with the team." : "Join de server om te zien wie er online is en om met het team te praten."}
             </p>
           )}
         </div>
@@ -128,7 +132,7 @@ export function DiscordWidget({ initial }: { initial: CommunityStats }) {
       <div className="flex flex-col items-center gap-3 border-t border-white/5 p-6 sm:p-8">
         <JoinButton href={data.invite} />
         <p className="text-xs text-zinc-500">
-          {data.live ? "Live via Discord API" : "Demo data"} · {en ? "updated" : "bijgewerkt"}{" "}
+          {data.live ? (en ? "Live from Discord" : "Live uit Discord") : en ? "Live numbers temporarily unavailable" : "Live cijfers tijdelijk niet beschikbaar"} · {en ? "updated" : "bijgewerkt"}{" "}
           {new Date(data.updatedAt).toLocaleTimeString(en ? "en-GB" : "nl-NL", { hour: "2-digit", minute: "2-digit" })}
         </p>
       </div>

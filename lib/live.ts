@@ -78,6 +78,15 @@ export interface PublicGiveaway {
 }
 
 export interface ClientOffer {
+  /** Missing when the bot runs an older version */
+  id?: string;
+  /** open | akkoord | betaald | ingetrokken | verlopen */
+  code?: string;
+  levertijd?: string | null;
+  onderdelen?: string[];
+  geldigTot?: number;
+  /** Only filled in once the client has accepted */
+  betaalinstructie?: string | null;
   nummer: string;
   titel: string;
   prijs: string;
