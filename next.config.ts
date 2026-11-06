@@ -21,6 +21,20 @@ const nextConfig: NextConfig = {
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         ],
       },
+      {
+        // The Android app (sideloaded APK)
+        source: "/downloads/:file*.apk",
+        headers: [
+          { key: "Content-Type", value: "application/vnd.android.package-archive" },
+          { key: "Content-Disposition", value: 'attachment; filename="next-solutions.apk"' },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
+        // Android checks this to trust the app (no address bar in the app)
+        source: "/.well-known/assetlinks.json",
+        headers: [{ key: "Content-Type", value: "application/json" }],
+      },
     ];
   },
 };
