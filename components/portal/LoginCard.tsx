@@ -8,8 +8,15 @@ import type { Locale } from "@/lib/i18n/config";
 const texts = {
   nl: {
     errors: {
-      not_configured: "Discord OAuth2 is nog niet geconfigureerd. Gebruik de demo-login.",
+      not_configured: "Inloggen met Discord is nog niet ingesteld.",
+      denied: "Je hebt het inloggen geannuleerd. Klik hieronder om het opnieuw te proberen.",
       invalid_state: "De login-sessie is verlopen of ongeldig. Probeer het opnieuw.",
+      cookie_missing: "Je browser blokkeerde de login-cookie. Sta cookies toe voor deze site en probeer het opnieuw.",
+      expired_code: "De login is verlopen. Probeer het opnieuw.",
+      rate_limited: "Even te veel pogingen. Wacht een minuut en probeer het opnieuw.",
+      client_config: "Inloggen lukt nu niet door een instelling aan onze kant (Client ID of Client Secret). We lossen het zo snel mogelijk op.",
+      redirect_mismatch: "Inloggen lukt nu niet door een instelling aan onze kant (Redirect URL). We lossen het zo snel mogelijk op.",
+      discord_error: "Discord weigerde de login. Probeer het later opnieuw.",
       token_exchange: "Discord kon de login niet bevestigen. Probeer het opnieuw.",
       user_fetch: "Je Discord-profiel kon niet worden opgehaald.",
       network: "Discord is tijdelijk niet bereikbaar.",
@@ -19,12 +26,19 @@ const texts = {
     login: "Inloggen met Discord",
     notConfigured: "Stel DISCORD_CLIENT_ID en DISCORD_CLIENT_SECRET in",
     demo: "Bekijk demo dashboard",
-    scope: "We vragen alleen je publieke profiel (scope: identify)",
+    scope: "We vragen alleen je publieke profiel (naam en avatar). Geen e-mail, geen servers, geen berichten.",
   },
   en: {
     errors: {
-      not_configured: "Discord OAuth2 has not been configured yet. Use the demo login.",
+      not_configured: "Logging in with Discord has not been set up yet.",
+      denied: "You cancelled the login. Click below to try again.",
       invalid_state: "The login session has expired or is invalid. Please try again.",
+      cookie_missing: "Your browser blocked the login cookie. Allow cookies for this site and try again.",
+      expired_code: "The login expired. Please try again.",
+      rate_limited: "Too many attempts. Wait a minute and try again.",
+      client_config: "Logging in doesn't work right now because of a setting on our side (Client ID or Client Secret). We'll fix it as soon as possible.",
+      redirect_mismatch: "Logging in doesn't work right now because of a setting on our side (Redirect URL). We'll fix it as soon as possible.",
+      discord_error: "Discord refused the login. Please try again later.",
       token_exchange: "Discord could not confirm the login. Please try again.",
       user_fetch: "Your Discord profile could not be retrieved.",
       network: "Discord is temporarily unreachable.",
@@ -34,7 +48,7 @@ const texts = {
     login: "Log in with Discord",
     notConfigured: "Set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET",
     demo: "View demo dashboard",
-    scope: "We only ask for your public profile (scope: identify)",
+    scope: "We only ask for your public profile (name and avatar). No email, no servers, no messages.",
   },
 };
 
@@ -76,11 +90,13 @@ export function LoginCard({ error, oauthEnabled, locale = "nl" }: { error?: stri
                 <DiscordIcon className="size-5" /> {tx.login}
               </Button>
             )}
-            <form action={en ? "/api/auth/demo?taal=en" : "/api/auth/demo"} method="post">
-              <Button type="submit" variant="secondary" size="lg" className="w-full">
-                {tx.demo}
-              </Button>
-            </form>
+            {!oauthEnabled && (
+              <form action={en ? "/api/auth/demo?taal=en" : "/api/auth/demo"} method="post">
+                <Button type="submit" variant="secondary" size="lg" className="w-full">
+                  {tx.demo}
+                </Button>
+              </form>
+            )}
           </div>
 
           <p className="mt-8 flex items-center justify-center gap-2 text-xs text-zinc-500">
