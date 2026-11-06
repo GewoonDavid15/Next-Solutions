@@ -15,10 +15,11 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const { content } = await getI18n();
+  const [{ content }, live] = await Promise.all([getI18n(), getPublicData()]);
+  const reviews = live?.reviews;
   return (
     <>
-      <OrganizationSchema />
+      <OrganizationSchema rating={reviews?.gemiddelde != null ? { average: reviews.gemiddelde, count: reviews.aantal } : null} />
       <Hero />
       <Suspense fallback={<LiveStats services={content.services.length} uptime={null} />}>
         <LiveStatsWithUptime services={content.services.length} />

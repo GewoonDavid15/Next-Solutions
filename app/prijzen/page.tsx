@@ -3,6 +3,8 @@ import Link from "next/link";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { FaqSchema } from "@/components/StructuredData";
+import { PriceCalculator } from "@/components/sections/PriceCalculator";
+import { getCalculator } from "@/lib/bot-api";
 import { CallToAction } from "@/components/sections/CallToAction";
 import { FaqAccordion } from "@/components/ui/Accordion";
 import { Badge } from "@/components/ui/Badge";
@@ -56,7 +58,7 @@ const texts = {
 };
 
 export default async function PrijzenPage() {
-  const { locale, content } = await getI18n();
+  const [{ locale, content }, calculator] = await Promise.all([getI18n(), getCalculator()]);
   const tx = texts[locale];
   const { packages, gamePackages, mediaPackages, pricingFaq } = getPricing(locale);
   const departments = content.departments;
@@ -75,6 +77,8 @@ export default async function PrijzenPage() {
       >
         <p className="text-sm text-zinc-500">{tx.note}</p>
       </PageHeader>
+
+      {calculator && <PriceCalculator calculator={calculator} />}
 
       {groups.map(({ id, items }) => {
         const dept = departments.find((d) => d.id === id)!;

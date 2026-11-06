@@ -18,7 +18,7 @@ const LIMIT = 5;
 const WINDOW_MS = 60 * 60 * 1000;
 
 export async function POST(request: Request) {
-  let body: Partial<QuoteRequest> & { locale?: string };
+  let body: Partial<QuoteRequest> & { locale?: string; indicatie?: string };
   try {
     body = await request.json();
   } catch {
@@ -74,6 +74,7 @@ export async function POST(request: Request) {
         discord: data.discord,
         discordId: session && !session.demo ? session.id : null,
         taal: locale,
+        indicatie: typeof body.indicatie === "string" ? body.indicatie.slice(0, 80) : null,
       }),
     ).catch(() => null);
     if (lead?.status === 200) return NextResponse.json({ ok: true });

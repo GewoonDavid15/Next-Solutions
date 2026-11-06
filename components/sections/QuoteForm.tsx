@@ -84,14 +84,17 @@ const deptIcons = { software: Code2, game: Gamepad2, media: Sparkles } as const;
 
 type Errors = Partial<Record<keyof QuoteRequest, string>>;
 
-export function QuoteForm({ initialDepartment = "" }: { initialDepartment?: string } = {}) {
+export function QuoteForm({ initialDepartment = "", initialService = "", estimate = "", rush = false }: { initialDepartment?: string; initialService?: string; estimate?: string; rush?: boolean } = {}) {
   const { locale } = useI18n();
   const tx = texts[locale];
   const steps = tx.steps;
   const { departmentOptions, serviceOptions, budgetOptions, timelineOptions } = getQuoteOptions(locale);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [data, setData] = useState<QuoteRequest>({ ...emptyQuote, department: initialDepartment });
+  const [data, setData] = useState<QuoteRequest>(() => {
+    const service = serviceOptions[initialDepartment]?.some((o) => o.value === initialService) ? initialService : "";
+    return { ...emptyQuote, department: initialDepartment, service, timeline: rush ? "asap" : emptyQuote.timeline };
+  });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [serverError, setServerError] = useState("");
@@ -117,7 +120,7 @@ export function QuoteForm({ initialDepartment = "" }: { initialDepartment?: stri
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, locale }),
+        body: JSON.stringify({ ...data, locale, indicatie: estimate || undefined }),
       });
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error(json.error ?? tx.checkData);

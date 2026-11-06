@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CheckCircle2, ExternalLink, FileSignature, Inbox, Mail, Ticket, Trash2, Undo2 } from "lucide-react";
+import { Ban, CheckCircle2, ExternalLink, FileSignature, Inbox, Mail, Receipt, Ticket, Trash2, Undo2 } from "lucide-react";
 import { useState } from "react";
 import { Loading, Notice, Panel } from "@/components/dashboard/ui";
 import { Button } from "@/components/ui/Button";
@@ -170,6 +170,11 @@ export function OffersTab() {
                           <Button size="sm" disabled={busy !== null} onClick={() => act(o.id, "beheer/offerte/betaald", { id: o.id }, `${o.nummer} staat op betaald. De klant krijgt bericht in het ticket.`)}>
                             <CheckCircle2 /> Betaald
                           </Button>
+                        )}
+                        {o.status === "betaald" && (
+                          <a href={`/api/bot-download?soort=bon&id=${o.id}`} className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
+                            <Receipt className="size-4" /> Betaalbewijs
+                          </a>
                         )}
                         {(o.status === "open" || o.status === "akkoord") && (
                           <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => confirm(`${o.nummer} intrekken?`) && act(o.id, "beheer/offerte/intrekken", { id: o.id }, `${o.nummer} is ingetrokken.`)}>
