@@ -104,6 +104,8 @@ function Detail({ id, roles, onClose }: { id: string; roles: ManagedRole[]; onCl
         </Notice>
       )}
 
+      {!data.bot && !data.beheerder && <Warnings id={data.id} />}
+
       {!data.bot && !data.beheerder && (
         <Section title="Moderatie">
           {modMessage && <div className="mb-2"><Notice kind="success">{modMessage}</Notice></div>}
@@ -175,6 +177,36 @@ function Detail({ id, roles, onClose }: { id: string; roles: ManagedRole[]; onCl
         </Section>
       )}
     </div>
+  );
+}
+
+function Warnings({ id }: { id: string }) {
+  const { data, reload } = useBotData<{ waarschuwingen: { id: string; reden: string; punten: number; door: string; t: number; ingetrokken?: boolean }[]; punten: number }>(`beheer/waarschuwingen?id=${id}`);
+  const [reason, setReason] = useState("");
+  const [points, setPoints] = useState(1);
+  const [msg, setMsg] = useState("");
+  async function warn() {
+    try {
+      const r = await botApi<{ totaal: number; straf: string | null }>("POST", "beheer/waarschuw", { id, reden: reason, punten: points });
+      setMsg(`Waarschuwing gegeven. Nu ${r.totaal} punt(en)${r.straf ? ` • automatisch: ${r.straf}` : ""}.`);
+      setReason("");
+      reload();
+    } catch (err) { setMsg((err as Error).message); }
+  }
+  return (
+    <Section title={`Waarschuwingen${data ? ` • ${data.punten} actieve punten` : ""}`}>
+      <div className="flex flex-wrap gap-2">
+        <input value={reason} onChange={(e) => setReason(e.target.value)} maxLength={400} placeholder="Reden" className={cn(inputClass, "min-w-[160px] flex-1")} />
+        <select value={points} onChange={(e) => setPoints(Number(e.target.value))} className={cn(inputClass, "w-auto")}>{[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} pt</option>)}</select>
+        <Button size="sm" variant="secondary" disabled={reason.trim().length < 3} onClick={warn}>Waarschuwen</Button>
+      </div>
+      {msg && <p className="mt-2 text-xs text-zinc-400">{msg}</p>}
+      {data && data.waarschuwingen.length > 0 && (
+        <ul className="mt-2 space-y-1 text-sm">
+          {data.waarschuwingen.slice(0, 8).map((w) => <li key={w.id} className={cn("text-zinc-300", w.ingetrokken && "line-through opacity-50")}>⚠️ {w.punten} pt • {w.reden} <span className="text-xs text-zinc-500">({w.door}, {timeAgo(w.t)})</span></li>)}
+        </ul>
+      )}
+    </Section>
   );
 }
 

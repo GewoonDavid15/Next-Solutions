@@ -68,6 +68,8 @@ export interface PublicData {
   invites?: PublicInvites | null;
   /** Running giveaways (missing when the bot runs an older version) */
   giveaways?: PublicGiveaway[];
+  /** Most active members (levels), missing on older bot versions */
+  levels?: { id: string; naam: string; avatar: string | null; xp: number; level: number }[];
 }
 
 export interface PublicGiveaway {

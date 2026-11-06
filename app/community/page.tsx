@@ -3,6 +3,7 @@ import { FadeUp } from "@/components/motion/FadeUp";
 import { Stagger, StaggerItem } from "@/components/motion/Stagger";
 import { GiveawaysCard } from "@/components/live/GiveawaysCard";
 import { InviteLeaderboard } from "@/components/live/InviteLeaderboard";
+import { LevelLeaderboard } from "@/components/live/LevelLeaderboard";
 import { DiscordWidget } from "@/components/sections/DiscordWidget";
 import { Card } from "@/components/ui/Card";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -81,6 +82,11 @@ export default async function CommunityPage() {
         {live?.giveaways && live.giveaways.length > 0 && (
           <FadeUp className="container mt-10">
             <GiveawaysCard giveaways={live.giveaways} locale={locale} discordInvite={site.discordInvite} />
+          </FadeUp>
+        )}
+        {live?.levels && live.levels.length > 0 && (
+          <FadeUp className="container mt-10">
+            <LevelLeaderboard levels={live.levels} locale={locale} />
           </FadeUp>
         )}
         {live?.invites && (

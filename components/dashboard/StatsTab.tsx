@@ -1,6 +1,8 @@
 "use client";
 
-import { BarChart3, FileSignature, ShieldCheck, Star, Ticket, Users } from "lucide-react";
+import { BarChart3, FileSignature, Mail, ShieldCheck, Star, Ticket, Users } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { botApi } from "@/lib/dashboard";
 import { useState } from "react";
 import { BarChart } from "@/components/dashboard/BarChart";
 import { Loading, Notice, Panel } from "@/components/dashboard/ui";
@@ -11,6 +13,8 @@ const RANGES = [7, 30, 90] as const;
 
 export function StatsTab() {
   const [range, setRange] = useState<(typeof RANGES)[number]>(30);
+  const week = useBotData<{ cijfers: Record<string, number | null | { naam: string; level: number }[]> }>("beheer/weekrapport");
+  const [sent, setSent] = useState("");
   const { data, error, loading } = useBotData<{ dagen: DayStats[] }>(`beheer/stats?dagen=${range}`, 5 * 60_000);
   const rows = data?.dagen ?? [];
   const sum = (k: keyof DayStats) => rows.reduce((s, r) => s + (Number(r[k]) || 0), 0);
@@ -38,6 +42,24 @@ export function StatsTab() {
           ))}
         </div>
       </div>
+      {week.data && (
+        <Panel title="Afgelopen 7 dagen" icon={Mail} actions={
+          <Button size="sm" variant="secondary" onClick={() => botApi("POST", "beheer/weekrapport/stuur").then(() => setSent("Verstuurd als DM.")).catch((e) => setSent((e as Error).message))}>
+            <Mail /> Stuur als DM
+          </Button>
+        }>
+          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            {([
+              ["Nieuwe leden", week.data.cijfers.nieuweLeden], ["Tickets gesloten", week.data.cijfers.ticketsGesloten], ["Offertes betaald", week.data.cijfers.offertesBetaald],
+              ["Omzet", `€ ${Number(week.data.cijfers.omzet ?? 0).toLocaleString("nl-NL")}`], ["Abonnementen", week.data.cijfers.abonnementen], ["Per maand (MRR)", `€ ${Number(week.data.cijfers.mrr ?? 0).toLocaleString("nl-NL")}`],
+              ["Tevreden klanten", week.data.cijfers.tevreden === null ? "–" : `${week.data.cijfers.tevreden}%`], ["Uren", week.data.cijfers.uren],
+            ] as [string, unknown][]).map(([l, v]) => (
+              <div key={l} className="rounded-2xl border border-white/10 p-3"><p className="text-xs text-zinc-500">{l}</p><p className="mt-0.5 text-lg font-semibold">{String(v ?? "–")}</p></div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-zinc-500">Elke maandagochtend krijg je dit overzicht als DM. Tevredenheid = het deel van de reviews met 4 of 5 sterren.{sent && ` • ${sent}`}</p>
+        </Panel>
+      )}
       {error && <Notice>{error}</Notice>}
       {loading && !data && <Loading />}
       {data && (

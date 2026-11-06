@@ -35,6 +35,8 @@ export interface Profile {
   kleur: string | null;
   badges: Badge[];
   niveau: { level: number; titel: string; xp: number; huidig: number; volgende: number; procent: number };
+  /** Activity level in the Discord server (messages and voice) */
+  activiteit?: { level: number; xp: number; procent: number; plek: number | null; berichten: number; voiceMin: number } | null;
   stats: { projecten: number; opgeleverd: number; offertesBetaald: number; reviews: number; invites: number; tickets?: number };
   reviews: { id: number; sterren: number; tekst: string | null; context: string; t: number }[];
   opgeleverd: { naam: string; t: number | null }[];
