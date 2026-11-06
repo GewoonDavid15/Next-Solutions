@@ -25,7 +25,7 @@ const texts = {
   nl: {
     eyebrow: "De maker",
     role: "Oprichter van Next Solutions",
-    intro: "Ik ben Nexify. Ik bouw Discord bots, websites, game-scripts en designs voor communities, en ik heb Next Solutions opgezet om dat goed, snel en eerlijk te doen.",
+    intro: "Ik ben Nexify. Ik bouw Discord bots, websites en game-scripts en run social media voor merken en communities, en ik heb Next Solutions opgezet om dat goed, snel en eerlijk te doen.",
     talk: "Praat met me op Discord",
     quote: "Offerte aanvragen",
     builtEyebrow: "Wat ik bouw",
@@ -34,7 +34,7 @@ const texts = {
     disciplines: [
       { icon: Code2, title: "Software", text: "Discord bots met dashboards, websites en web-apps, automatisering en koppelingen tussen systemen." },
       { icon: Gamepad2, title: "Game Development", text: "FiveM-scripts, Minecraft-servers en plugins, en systemen die je community langer laten spelen." },
-      { icon: Palette, title: "Media", text: "Logo's, huisstijlen, banners en alles wat je server of merk een eigen gezicht geeft." },
+      { icon: Palette, title: "Media & Social", text: "Social media beheren, Reels, TikToks en Shorts maken en een strategie die je laat groeien. Plus logo's en huisstijlen." },
     ],
     proofEyebrow: "Zelf gebouwd",
     proofTitle: "Wat je hier ziet, heb ik gemaakt",
@@ -56,7 +56,7 @@ const texts = {
   en: {
     eyebrow: "The maker",
     role: "Founder of Next Solutions",
-    intro: "I'm Nexify. I build Discord bots, websites, game scripts and designs for communities, and I started Next Solutions to do that well, fast and honestly.",
+    intro: "I'm Nexify. I build Discord bots, websites and game scripts and run social media for brands and communities, and I started Next Solutions to do that well, fast and honestly.",
     talk: "Talk to me on Discord",
     quote: "Request a quote",
     builtEyebrow: "What I build",
@@ -65,7 +65,7 @@ const texts = {
     disciplines: [
       { icon: Code2, title: "Software", text: "Discord bots with dashboards, websites and web apps, automation and integrations between systems." },
       { icon: Gamepad2, title: "Game Development", text: "FiveM scripts, Minecraft servers and plugins, and systems that keep your community playing longer." },
-      { icon: Palette, title: "Media", text: "Logos, brand identities, banners and everything that gives your server or brand its own face." },
+      { icon: Palette, title: "Media & Social", text: "Managing social media, creating Reels, TikToks and Shorts and a strategy that helps you grow. Plus logos and brand identities." },
     ],
     proofEyebrow: "Built myself",
     proofTitle: "What you see here, I made",
@@ -86,7 +86,7 @@ const texts = {
   },
 };
 
-const TOOLKIT = ["discord.js", "Node.js", "TypeScript", "Next.js", "React", "Tailwind CSS", "Lua (FiveM)", "Java (Minecraft)", "REST & webhooks"];
+const TOOLKIT = ["discord.js", "Node.js", "TypeScript", "Next.js", "React", "Tailwind CSS", "Lua (FiveM)", "Java (Minecraft)", "REST & webhooks", "Instagram", "TikTok", "YouTube", "LinkedIn"];
 
 export default async function NexifyPage() {
   const [{ locale, lp }, live] = await Promise.all([getI18n(), getPublicData()]);

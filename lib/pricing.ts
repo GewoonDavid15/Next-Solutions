@@ -100,6 +100,43 @@ export const gamePackages: Package[] = [
 
 export const mediaPackages: Package[] = [
   {
+    id: "social-start",
+    name: "Social Start",
+    department: "media",
+    tagline: "Eén platform professioneel op orde, zonder er zelf naar om te kijken.",
+    features: [
+      "1 platform naar keuze",
+      "Contentkalender per maand",
+      "Posts maken, inplannen en posten",
+      "Maandrapport met de resultaten",
+    ],
+    notIncluded: ["Reageren op comments en DM's", "Video's (Reels, TikToks, Shorts)"],
+    delivery: "Start binnen 1 week",
+  },
+  {
+    id: "social-groei",
+    name: "Social Groei",
+    department: "media",
+    tagline: "Voor merken en communities die echt willen groeien.",
+    features: [
+      "Meerdere platformen (Instagram, TikTok, YouTube, LinkedIn, X, Facebook)",
+      "Strategie en contentplan",
+      "Posts en video's: Reels, TikToks en Shorts",
+      "Community management: comments en DM's",
+      "Maandrapport met advies voor de volgende maand",
+    ],
+    popular: true,
+    delivery: "Start binnen 1 tot 2 weken",
+  },
+  {
+    id: "content",
+    name: "Content op maat",
+    department: "media",
+    tagline: "Losse content wanneer jij het nodig hebt.",
+    features: ["Reels, TikToks en Shorts monteren", "Carrousels en posts ontwerpen", "Ondertiteling en thumbnails", "Per opdracht, zonder abonnement"],
+    delivery: "Per opdracht",
+  },
+  {
     id: "logo",
     name: "Logo",
     department: "media",
@@ -216,6 +253,24 @@ const packagesEn: Record<string, PackageText> = {
     tagline: "We keep your server running, you focus on your community.",
     features: ["Managed hosting with DDoS protection", "Daily backups", "Updates and monitoring", "Support via Discord", "Cancel monthly"],
     delivery: "Live within 48 hours",
+  },
+  "social-start": {
+    tagline: "One platform professionally sorted, without having to think about it.",
+    features: ["1 platform of your choice", "Monthly content calendar", "Creating, scheduling and posting", "Monthly results report"],
+    notIncluded: ["Replying to comments and DMs", "Videos (Reels, TikToks, Shorts)"],
+    delivery: "Starts within 1 week",
+  },
+  "social-groei": {
+    name: "Social Growth",
+    tagline: "For brands and communities that really want to grow.",
+    features: ["Several platforms (Instagram, TikTok, YouTube, LinkedIn, X, Facebook)", "Strategy and content plan", "Posts and videos: Reels, TikToks and Shorts", "Community management: comments and DMs", "Monthly report with advice for next month"],
+    delivery: "Starts within 1 to 2 weeks",
+  },
+  content: {
+    name: "Custom content",
+    tagline: "Standalone content whenever you need it.",
+    features: ["Editing Reels, TikToks and Shorts", "Designing carousels and posts", "Subtitles and thumbnails", "Per job, no subscription"],
+    delivery: "Per job",
   },
   logo: {
     tagline: "A recognisable mark, without the fuss.",

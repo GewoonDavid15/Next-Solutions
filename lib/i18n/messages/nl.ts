@@ -11,7 +11,7 @@ export const nl = {
   skipLink: "Naar inhoud",
   nav: {
     aria: "Hoofdnavigatie",
-    links: { "/": "Home", "/diensten": "Diensten", "/prijzen": "Pakketten", "/over-ons": "Over ons", "/nieuws": "Nieuws", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact", "/nexify": "Nexify", "/kennisbank": "Kennisbank", "/team": "Team", "/reviews": "Reviews", "/vacatures": "Vacatures", "/status": "Status" } as Record<string, string>,
+    links: { "/": "Home", "/diensten": "Diensten", "/prijzen": "Pakketten", "/over-ons": "Over ons", "/nieuws": "Nieuws", "/portfolio": "Portfolio", "/community": "Community", "/klantportaal": "Klantportaal", "/contact": "Contact", "/social-media": "Social media", "/nexify": "Nexify", "/kennisbank": "Kennisbank", "/team": "Team", "/reviews": "Reviews", "/vacatures": "Vacatures", "/status": "Status" } as Record<string, string>,
     more: "Meer",
     portal: "Klantportaal",
     descriptions: { "/over-ons": "Ons verhaal en waar we voor staan", "/nexify": "De oprichter en maker", "/kennisbank": "Antwoorden op je vragen", "/team": "Wie je spreekt", "/reviews": "Wat klanten zeggen", "/nieuws": "Updates en artikelen", "/vacatures": "Werken bij Next Solutions", "/status": "Live status van onze diensten", "/portfolio": "Ons werk" } as Record<string, string>,

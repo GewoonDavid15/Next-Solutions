@@ -1,7 +1,7 @@
 export const departmentOptions = [
   { value: "software", label: "Software" },
   { value: "game", label: "Game Development" },
-  { value: "media", label: "Media" },
+  { value: "media", label: "Media & Social" },
 ];
 
 export const serviceOptions: Record<string, { value: string; label: string }[]> = {
@@ -16,9 +16,11 @@ export const serviceOptions: Record<string, { value: string; label: string }[]> 
     { value: "hosting", label: "Hosting & Beheer" },
   ],
   media: [
+    { value: "social", label: "Social Media Management" },
+    { value: "content", label: "Content creatie" },
+    { value: "strategie", label: "Strategie & groei" },
     { value: "branding", label: "Branding" },
     { value: "uiux", label: "UI/UX Design" },
-    { value: "content", label: "Content & Socials" },
   ],
 };
 
@@ -112,6 +114,8 @@ const optionLabelsEn: Record<string, string> = {
   "website": "Website / Web app",
   "automation": "Automation",
   "hosting": "Hosting & Management",
+  "content": "Content creation",
+  "strategie": "Strategy & growth",
   "<250": "Up to €250",
   "250-1000": "€250 – €1,000",
   "1000-5000": "€1,000 – €5,000",

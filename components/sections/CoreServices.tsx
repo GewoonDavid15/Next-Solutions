@@ -24,7 +24,7 @@ export async function CoreServices() {
         <Stagger className="grid gap-6 md:grid-cols-3">
           {content.departments.map(({ id, title, tagline, description, icon: Icon, gradient }) => (
             <StaggerItem key={id}>
-              <Link href={lp("/diensten")} className="block h-full rounded-3xl">
+              <Link href={lp(id === "media" ? "/social-media" : "/diensten")} className="block h-full rounded-3xl">
                 <Card interactive className="group h-full">
                   <div
                     aria-hidden

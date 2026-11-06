@@ -16,7 +16,7 @@ const texts = {
   nl: {
     badge: "Nu beschikbaar voor nieuwe projecten",
     heading: "Wij bouwen",
-    words: ["Discord Bots.", "Websites.", "FiveM Scripts.", "Minecraft Servers.", "Merken."],
+    words: ["Discord Bots.", "Websites.", "Social Media.", "FiveM Scripts.", "Content.", "Merken."],
     intro: ["Next Solutions is jouw partner in ", ", ", " en ", ". Van idee tot lancering — strak ontworpen, razendsnel gebouwd."],
     start: "Start je project",
     discord: "Join onze Discord",
@@ -25,7 +25,7 @@ const texts = {
   en: {
     badge: "Now available for new projects",
     heading: "We build",
-    words: ["Discord Bots.", "Websites.", "FiveM Scripts.", "Minecraft Servers.", "Brands."],
+    words: ["Discord Bots.", "Websites.", "Social Media.", "FiveM Scripts.", "Content.", "Brands."],
     intro: ["Next Solutions is your partner in ", ", ", " and ", ". From idea to launch — sharply designed, built at lightning speed."],
     start: "Start your project",
     discord: "Join our Discord",
