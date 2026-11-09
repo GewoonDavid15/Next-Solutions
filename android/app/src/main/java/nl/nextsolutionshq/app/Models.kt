@@ -16,6 +16,7 @@ data class Offer(
     val id: String?, val code: String, val number: String, val title: String, val price: String, val status: String,
     val statusEmoji: String, val t: Long, val paid: Boolean, val deliveryTime: String?, val items: List<String>,
     val validUntil: Long?, val paymentInstruction: String?,
+    val signedBy: String? = null, val signedAt: Long? = null,
 )
 /** Where a notification leads in the app, e.g. ticket + channel id. */
 data class Target(val kind: String, val id: String?) {
@@ -45,7 +46,12 @@ data class PortalData(
     val social: Social? = null,
     val owner: Boolean = false,
     val canReview: Boolean = false,
+    val surveys: List<Survey> = emptyList(),
+    val termsVersion: String = "",
 )
+
+data class Survey(val id: String, val project: String)
+data class AdminProject(val id: String, val name: String, val client: String?, val phase: Int?, val phaseName: String?, val percentage: Int?, val note: String, val hasStatus: Boolean)
 
 data class Transcript(val id: String, val name: String, val department: String, val emoji: String, val opened: Long, val closed: Long, val messages: Int)
 
@@ -66,7 +72,8 @@ data class AdminOffer(val id: String, val number: String, val title: String, val
 data class AdminStats(val visits: Int, val requests: Int, val offers: Int, val paid: Int)
 
 data class ChatAuthor(val id: String, val name: String, val avatar: String?, val bot: Boolean)
-data class ChatMessage(val id: String, val t: Long, val author: ChatAuthor, val via: String?, val text: String, val attachments: List<String>)
+data class Attachment(val name: String, val url: String?, val image: Boolean)
+data class ChatMessage(val id: String, val t: Long, val author: ChatAuthor, val via: String?, val text: String, val attachments: List<Attachment>)
 data class TicketThread(val id: String, val name: String, val messages: List<ChatMessage>)
 
 data class Appointment(val id: String, val start: Long, val end: Long, val subject: String, val note: String, val status: String)
@@ -99,6 +106,7 @@ object Parse {
         status = o.str("status"), statusEmoji = o.str("statusEmoji"), t = o.optLong("t"), paid = o.optBoolean("betaald"),
         deliveryTime = o.strOrNull("levertijd"), items = o.optJSONArray("onderdelen").strings(),
         validUntil = o.longOrNull("geldigTot"), paymentInstruction = o.strOrNull("betaalinstructie"),
+        signedBy = o.optJSONObject("ondertekening")?.strOrNull("naam"), signedAt = o.optJSONObject("ondertekening")?.longOrNull("t"),
     )
 
     fun notification(o: JSONObject) = Notification(
@@ -136,6 +144,11 @@ object Parse {
         AdminOffer(it.str("id"), it.str("nummer"), it.str("titel"), it.str("prijs"), it.str("status"), it.str("statusNaam").ifBlank { it.str("status") }, it.str("statusEmoji"), it.optLong("t"))
     }
 
+    fun adminProjects(o: JSONObject) = o.optJSONArray("projecten").map {
+        AdminProject(it.str("id"), it.str("naam"), it.strOrNull("klant"), if (it.isNull("faseNr")) null else it.optInt("faseNr"), it.strOrNull("fase"),
+            if (it.isNull("percentage")) null else it.optInt("percentage"), it.str("notitie"), it.optBoolean("heeftStatus", !it.isNull("percentage")))
+    }
+
     fun adminStats(o: JSONObject): AdminStats {
         val t = o.optJSONObject("totaal") ?: JSONObject()
         return AdminStats(t.optInt("bezoeken"), t.optInt("aanvragen"), t.optInt("offertes"), t.optInt("betaald"))
@@ -169,6 +182,8 @@ object Parse {
             social = social(o.optJSONObject("social")),
             owner = o.optBoolean("eigenaar"),
             canReview = o.optBoolean("kanReviewen"),
+            surveys = o.optJSONArray("tevredenheid").map { Survey(it.str("id"), it.str("project")) },
+            termsVersion = o.str("voorwaardenVersie"),
         )
     }
 
@@ -180,7 +195,7 @@ object Parse {
                 id = b.str("id"), t = b.optLong("t"),
                 author = ChatAuthor(a.str("id"), a.str("naam").ifBlank { "Onbekend" }, a.strOrNull("avatar"), a.optBoolean("bot")),
                 via = b.strOrNull("via"), text = b.str("tekst"),
-                attachments = b.optJSONArray("bijlagen").map { it.str("naam") },
+                attachments = b.optJSONArray("bijlagen").map { Attachment(it.str("naam"), it.strOrNull("url")?.takeIf { u -> u.startsWith("https://") }, it.optBoolean("afbeelding")) },
             )
         },
     )

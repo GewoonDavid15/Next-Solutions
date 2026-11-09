@@ -23,7 +23,7 @@ export function BackToTop() {
           whileHover={{ y: -3 }}
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           aria-label={locale === "en" ? "Back to top" : "Terug naar boven"}
-          className="glass fixed bottom-6 right-6 z-50 grid size-12 place-items-center rounded-2xl text-white transition-colors hover:border-brand-500/50 hover:shadow-glow"
+          className="glass fixed bottom-20 right-6 z-50 grid size-12 place-items-center rounded-2xl text-white transition-colors hover:border-brand-500/50 hover:shadow-glow"
         >
           <ArrowUp className="size-5" />
         </motion.button>

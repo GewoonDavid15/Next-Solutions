@@ -1,0 +1,78 @@
+# Builds the Android app when something in android/ changes on main, signs it with the release key
+# (GitHub secrets) and publishes it on the website when the version number went up.
+name: Android-app bouwen
+
+on:
+  push:
+    branches: [main]
+    paths: ["android/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-app
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Ondertekensleutel klaarzetten
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::De secrets ANDROID_KEYSTORE_BASE64 en ANDROID_KEYSTORE_PASSWORD ontbreken (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > android/release.keystore
+          printf "storeFile=release.keystore\nstorePassword=%s\nkeyAlias=nextsolutions\nkeyPassword=%s\n" "$KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD" > android/signing.properties
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+
+      - name: Testen en bouwen
+        working-directory: android
+        run: gradle --no-daemon testReleaseUnitTest assembleRelease
+
+      - name: Controleren dat de handtekening klopt
+        run: |
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$APKSIGNER" verify --print-certs android/app/build/outputs/apk/release/app-release.apk | tee signer.txt
+          grep -qi "229a8b9a5491948d98cdc1deaf78b025f232590bc570ef807a9a295d6dd49896" signer.txt || { echo "::error::De APK is niet met de juiste sleutel ondertekend."; exit 1; }
+
+      - name: Publiceren als het versienummer omhoog is gegaan
+        run: |
+          CODE=$(grep -oP "versionCode \K\d+" android/app/build.gradle)
+          NAME=$(grep -oP "versionName '\K[^']+" android/app/build.gradle)
+          LIVE=$(grep -oP '"versionCode":\s*\K\d+' public/downloads/app-versie.json || echo 0)
+          if [ "$CODE" -le "$LIVE" ]; then
+            echo "Versie $CODE staat al online (live: $LIVE). Verhoog versionCode in android/app/build.gradle om te publiceren."
+            exit 0
+          fi
+          cp android/app/build/outputs/apk/release/app-release.apk public/downloads/next-solutions.apk
+          NOTES=$(git log -1 --pretty=%s | sed 's/"/\\"/g')
+          printf '{\n  "versionCode": %s,\n  "versionName": "%s",\n  "url": "https://nextsolutionshq.nl/downloads/next-solutions.apk",\n  "notities": "%s"\n}\n' "$CODE" "$NAME" "$NOTES" > public/downloads/app-versie.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/downloads/next-solutions.apk public/downloads/app-versie.json
+          git commit -m "Android-app $NAME automatisch gebouwd"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: next-solutions-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 14

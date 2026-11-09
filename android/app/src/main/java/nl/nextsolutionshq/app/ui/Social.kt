@@ -9,6 +9,12 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -145,6 +151,9 @@ fun SocialScreen(vm: AppViewModel) {
 
 @Composable
 private fun PostCard(p: SocialPost, onApprove: (() -> Unit)?, onChange: (() -> Unit)?) {
+    val context = LocalContext.current
+    var viewer by remember { mutableStateOf<String?>(null) }
+    viewer?.let { ImageViewer(it) { viewer = null } }
     Panel {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -154,7 +163,20 @@ private fun PostCard(p: SocialPost, onApprove: (() -> Unit)?, onChange: (() -> U
             Text(p.title, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             Text(dayLabel(p.date) + " • " + time(p.date), color = Faint, fontSize = 12.sp)
             if (p.caption.isNotBlank()) Text(p.caption, color = Muted, fontSize = 14.sp, maxLines = if (onApprove != null) 12 else 3)
-            if (p.media.isNotEmpty()) Text("🖼️ " + t("${p.media.size} bestand(en)", "${p.media.size} file(s)"), color = Muted, fontSize = 13.sp)
+            if (p.media.isNotEmpty()) {
+                // Preview of the post: photos inline, other links (videos, Drive) as a tappable line
+                val images = p.media.filter { Regex("\\.(png|jpe?g|gif|webp)(\\?.*)?$", RegexOption.IGNORE_CASE).containsMatchIn(it) }
+                if (images.isNotEmpty()) Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    images.forEach { url ->
+                        AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop,
+                            modifier = Modifier.size(if (images.size == 1) 260.dp else 160.dp).clip(RoundedCornerShape(14.dp)).background(Surface2).clickable { viewer = url })
+                    }
+                }
+                p.media.filterNot { it in images }.forEach { url ->
+                    Text("▶️ " + url.removePrefix("https://").take(48), color = Lime, fontSize = 13.sp, maxLines = 1,
+                        modifier = Modifier.clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) })
+                }
+            }
             p.feedback.lastOrNull()?.takeIf { it.text.isNotBlank() }?.let { Text("💬 ${it.text}", color = Faint, fontSize = 13.sp) }
             if (onApprove != null && onChange != null) Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(onClick = onApprove, modifier = Modifier.weight(1f)) { Text(t("Goedkeuren", "Approve")) }

@@ -47,6 +47,10 @@ const sections: LegalSection[] = [
       "Pushmeldingen: als je ze aanzet, het adres dat je browser daarvoor aanmaakt (geen telefoonnummer of andere contactgegevens).",
       "Agenda-koppeling: een geheime sleutel voor jouw agenda-link. Je kunt de link zelf vernieuwen, waarna de oude niet meer werkt.",
       "Foutmeldingen: als een pagina bij jou vastloopt, de foutmelding, de pagina en het soort browser. Niet wie je bent.",
+      "Digitaal akkoord op een offerte: de naam die je invult, het tijdstip en welke versie van de algemene voorwaarden je hebt geaccepteerd.",
+      "Feedback op ontwerpen: je opmerkingen en de plek op de afbeelding waar je ze plaatste.",
+      "Tevredenheid: het cijfer en de opmerking die je geeft na de oplevering van een project.",
+      "Storingsmeldingen: je e-mailadres als je je daarvoor aanmeldt op de statuspagina.",
     ],
   },
   {
@@ -99,7 +103,7 @@ const sections: LegalSection[] = [
       "Offerteaanvragen die niet tot een opdracht leiden, verwijderen we na twaalf maanden. Gegevens van klanten bewaren we zolang je klant bent, en daarna alleen zo lang als de wet dat van ons vraagt, bijvoorbeeld voor de administratie van betalingen. Je sessie in het klantportaal vervalt automatisch na zeven dagen.",
       "Van tickets bewaren we de laatste duizend transcripts; oudere worden automatisch verwijderd. Je e-mailadres verwijderen we zodra je je afmeldt. Bestanden, reviews en sollicitaties verwijderen we op je verzoek.",
       "Afgelopen of geannuleerde afspraken verwijderen we na negentig dagen. Van meldingen bewaren we de laatste zestig per persoon. Waarschuwingspunten tellen dertig dagen mee; de waarschuwing zelf bewaren we zolang je lid bent van onze Discord. Je profiel, levels, social media-gegevens en aangeleverde bestanden bewaren we tot je vraagt om ze te verwijderen of je geen klant of lid meer bent. Gegevens over betalingen bewaren we zo lang als de wet vraagt.",
-      "Aanvragen voor een gratis checklist bewaren we twaalf maanden. Foutmeldingen van de website verwijderen we na zestig dagen. Pushmeldingen stoppen zodra je ze uitzet of je browser het abonnement intrekt.",
+      "Aanvragen voor een gratis checklist bewaren we twaalf maanden. Foutmeldingen van de website verwijderen we na zestig dagen. Pushmeldingen stoppen zodra je ze uitzet of je browser het abonnement intrekt. Je aanmelding voor storingsmeldingen verwijderen we zodra je je afmeldt (de link staat in elke mail). Een digitaal akkoord op een offerte bewaren we zo lang als de administratie van de betaling.",
     ],
   },
   {
@@ -153,6 +157,10 @@ const sectionsEn: LegalSection[] = [
       "Push notifications: if you turn them on, the address your browser creates for this (no phone number or other contact details).",
       "Calendar link: a secret key for your calendar link. You can renew the link yourself, after which the old one stops working.",
       "Error reports: if a page crashes for you, the error message, the page and the type of browser. Not who you are.",
+      "Digital acceptance of a quote: the name you enter, the time and which version of the terms and conditions you accepted.",
+      "Feedback on designs: your comments and the spot on the image where you placed them.",
+      "Satisfaction: the score and comment you give after a project is delivered.",
+      "Outage notifications: your email address if you subscribe on the status page.",
     ],
   },
   {
@@ -205,7 +213,7 @@ const sectionsEn: LegalSection[] = [
       "Quote requests that don't lead to an assignment are deleted after twelve months. Client data is kept for as long as you are a client, and after that only as long as the law requires, for example for the records of payments. Your client portal session expires automatically after seven days.",
       "We keep the last thousand ticket transcripts; older ones are deleted automatically. We delete your email address as soon as you unsubscribe. Files, reviews and applications are deleted at your request.",
       "Past or cancelled appointments are deleted after ninety days. We keep the last sixty notifications per person. Warning points count for thirty days; the warning itself is kept for as long as you are a member of our Discord. Your profile, levels, social media data and delivered files are kept until you ask us to delete them or you are no longer a client or member. Payment records are kept for as long as the law requires.",
-      "Requests for a free checklist are kept for twelve months. Website error reports are deleted after sixty days. Push notifications stop as soon as you turn them off or your browser withdraws the subscription.",
+      "Requests for a free checklist are kept for twelve months. Website error reports are deleted after sixty days. Push notifications stop as soon as you turn them off or your browser withdraws the subscription. We delete your outage-notification subscription as soon as you unsubscribe (the link is in every email). A digital acceptance of a quote is kept for as long as the payment records.",
     ],
   },
   {

@@ -23,6 +23,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
             <!-- End of the Discord login: the website sends the one-time code back to the app -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

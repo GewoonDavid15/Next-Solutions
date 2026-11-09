@@ -79,7 +79,16 @@ export interface PublicGiveaway {
   winnaars: number;
 }
 
+export interface OfferSignature {
+  naam?: string;
+  voorwaarden?: string;
+  bron: "website" | "app" | "discord";
+  t: number;
+}
+
 export interface ClientOffer {
+  /** Digital acceptance: who, when and which version of the terms (missing for older quotes) */
+  ondertekening?: OfferSignature | null;
   /** Missing when the bot runs an older version */
   id?: string;
   /** open | akkoord | betaald | ingetrokken | verlopen */

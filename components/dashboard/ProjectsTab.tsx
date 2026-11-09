@@ -1,5 +1,6 @@
 "use client";
 
+import { FeedbackPanel } from "@/components/dashboard/FeedbackPanel";
 import { FolderKanban } from "lucide-react";
 import { Loading, Notice, Panel } from "@/components/dashboard/ui";
 import { useBotData } from "@/lib/beheer";
@@ -43,6 +44,7 @@ export function ProjectsTab() {
           </div>
         )}
       </Panel>
+      <FeedbackPanel />
     </div>
   );
 }

@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Download
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -53,6 +55,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateListOf
+import kotlinx.coroutines.launch
+import nl.nextsolutionshq.app.QuickReplies
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -110,6 +116,7 @@ fun MoreScreen(vm: AppViewModel, navigate: (Route) -> Unit, askNotificationPermi
         item { MenuRow(Icons.Filled.Download, t("Bestanden", "Files"), d?.files?.size?.takeIf { it > 0 }?.let { t("$it bestanden", "$it files") }) { navigate(Route.Files) } }
         if (d?.transcripts?.isNotEmpty() == true) item { MenuRow(Icons.Filled.History, t("Gesloten tickets", "Closed tickets"), null) { navigate(Route.Transcripts) } }
         if (d?.canReview == true) item { MenuRow(Icons.Filled.Star, t("Review schrijven", "Write a review"), null) { navigate(Route.Review) } }
+        if (d?.owner == true) item { MenuRow(Icons.Filled.Bolt, t("Snelle antwoorden", "Quick replies"), t("Vaste teksten voor tickets", "Saved texts for tickets")) { navigate(Route.QuickRepliesEdit) } }
 
         item { SectionTitle(t("Instellingen", "Settings")) }
         item {
@@ -214,6 +221,17 @@ fun AppointmentsScreen(vm: AppViewModel) {
                 }
             }
         }
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        OutlinedButton(onClick = {
+            scope.launch {
+                vm.calendarLink()?.let { link ->
+                    val webcal = link.replaceFirst(Regex("^https?:"), "webcal:")
+                    val google = "https://calendar.google.com/calendar/r?cid=" + Uri.encode(webcal)
+                    context.startActivity(Intent.createChooser(Intent(Intent.ACTION_VIEW, Uri.parse(google)), t("Toevoegen aan agenda", "Add to calendar")))
+                }
+            }
+        }, modifier = Modifier.fillMaxWidth()) { Text("📅 " + t("Afspraken en contentkalender in je agenda", "Appointments and content calendar in your calendar")) }
         SectionTitle(t("Afspraak plannen", "Book an appointment"))
         if (!info.enabled || info.slots.isEmpty()) {
             Text(t("Er zijn op dit moment geen vrije momenten. Open een ticket, dan plannen we samen iets.", "There are no free slots right now. Open a ticket and we'll plan something together."), color = Muted)
@@ -299,5 +317,29 @@ fun ReviewScreen(vm: AppViewModel, done: () -> Unit) {
             onClick = { busy = true; vm.sendReview(stars, text.trim(), context.trim()) { ok -> busy = false; if (ok) done() } },
             modifier = Modifier.fillMaxWidth().height(52.dp),
         ) { Text(if (busy) t("Bezig...", "Working...") else t("Review plaatsen", "Post review")) }
+    }
+}
+
+// ═══════════════════════════════ Snelle antwoorden ═══════════════════════════════
+@Composable
+fun QuickRepliesScreen() {
+    val context = LocalContext.current
+    val list = remember { mutableStateListOf<String>().apply { addAll(QuickReplies.load(context)) } }
+    var draft by remember { mutableStateOf("") }
+    LazyColumn(Modifier.fillMaxSize().imePadding(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        item { Text(t("Deze teksten kies je met ⚡ in een ticket. Ze staan alleen op deze telefoon.", "Pick these texts with ⚡ in a ticket. They are stored on this phone only."), color = Muted) }
+        items(list.toList()) { r ->
+            Panel {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(r, modifier = Modifier.weight(1f), fontSize = 14.sp)
+                    TextButton(onClick = { list.remove(r); QuickReplies.save(context, list) }) { Text(t("Weg", "Remove"), color = Danger) }
+                }
+            }
+        }
+        item {
+            OutlinedTextField(draft, { draft = it.take(1900) }, label = { Text(t("Nieuwe tekst", "New text")) }, minLines = 2, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(8.dp))
+            Button(enabled = draft.isNotBlank() && list.size < 20, onClick = { list.add(draft.trim()); QuickReplies.save(context, list); draft = "" }) { Text(t("Toevoegen", "Add")) }
+        }
     }
 }

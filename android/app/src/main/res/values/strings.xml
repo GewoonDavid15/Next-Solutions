@@ -3,4 +3,7 @@
     <string name="app_name">Next Solutions</string>
     <string name="widget_name">Projectvoortgang</string>
     <string name="widget_description">De voortgang van je lopende project</string>
+    <string name="sc_new_ticket">Nieuw ticket</string>
+    <string name="sc_notifications">Meldingen</string>
+    <string name="sc_tickets">Tickets</string>
 </resources>

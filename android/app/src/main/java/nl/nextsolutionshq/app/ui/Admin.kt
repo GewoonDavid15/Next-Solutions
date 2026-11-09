@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.AlertDialog
@@ -78,6 +79,7 @@ fun AdminScreen(vm: AppViewModel, navigate: (Route) -> Unit) {
         val waiting = vm.adminTickets?.count { it.lastFrom == "klant" } ?: 0
         item { MenuRow(Icons.Filled.Inbox, t("Aanvragen", "Requests"), if (newLeads > 0) t("$newLeads nieuw", "$newLeads new") else t("Pijplijn bekijken", "View pipeline")) { navigate(Route.AdminLeads) } }
         item { MenuRow(Icons.Filled.SupportAgent, t("Alle tickets", "All tickets"), t("${vm.adminTickets?.size ?: 0} open", "${vm.adminTickets?.size ?: 0} open") + if (waiting > 0) t(" • $waiting wachten op antwoord", " • $waiting waiting for a reply") else "") { navigate(Route.AdminTickets) } }
+        item { MenuRow(Icons.Filled.FolderOpen, t("Projecten bijwerken", "Update projects"), t("Fase, percentage en notitie", "Phase, percentage and note")) { navigate(Route.AdminProjects) } }
         item { MenuRow(Icons.AutoMirrored.Filled.ReceiptLong, t("Alle offertes", "All quotes"), t("${vm.adminOffers?.count { it.status == "akkoord" } ?: 0} wachten op betaling", "${vm.adminOffers?.count { it.status == "akkoord" } ?: 0} awaiting payment")) { navigate(Route.AdminOffers) } }
         item {
             OutlinedButton(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://nextsolutionshq.nl/dashboard"))) }, modifier = Modifier.fillMaxWidth()) {
@@ -179,4 +181,53 @@ fun AdminOffersScreen(vm: AppViewModel) {
             dismissButton = { TextButton(onClick = { confirm = null }) { Text(t("Annuleren", "Cancel")) } },
         )
     }
+}
+
+// ═══════════════════════════════ Projecten bijwerken ═══════════════════════════════
+@Composable
+fun AdminProjectsScreen(vm: AppViewModel) {
+    LaunchedEffect(Unit) { vm.loadAdminProjects() }
+    var edit by remember { mutableStateOf<nl.nextsolutionshq.app.AdminProject?>(null) }
+    val list = vm.adminProjects
+    if (list == null) { Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Lime) }; return }
+    LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        val withStatus = list.filter { it.hasStatus }
+        if (withStatus.isEmpty()) item { EmptyState("📁", t("Geen projecten", "No projects"), t("Projecten starten automatisch na een betaling, of met /projectstatus in Discord.", "Projects start automatically after a payment, or with /projectstatus in Discord.")) }
+        items(withStatus, key = { it.id }) { p ->
+            Panel(onClick = { edit = p }) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(p.name, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                        Text("${p.percentage ?: 0}%", color = Lime, fontWeight = FontWeight.Bold)
+                    }
+                    Text(listOfNotNull(p.client, p.phaseName).joinToString(" • "), color = Muted, fontSize = 13.sp)
+                    ProgressBar(p.percentage ?: 0)
+                }
+            }
+        }
+    }
+    edit?.let { p -> ProjectEditDialog(vm, p) { edit = null } }
+}
+
+@Composable
+private fun ProjectEditDialog(vm: AppViewModel, p: nl.nextsolutionshq.app.AdminProject, onDismiss: () -> Unit) {
+    var phase by remember { mutableStateOf(p.phase ?: 1) }
+    var percent by remember { mutableStateOf((p.percentage ?: 0).toFloat()) }
+    var note by remember { mutableStateOf(p.note) }
+    var busy by remember { mutableStateOf(false) }
+    val phaseNames = listOf(1 to t("Planning", "Planning"), 2 to t("Ontwikkeling", "Development"), 3 to t("Testen", "Testing"), 4 to t("Opgeleverd", "Delivered"))
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(p.name) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                ChipRow(phaseNames.map { it.first }, phase, { n -> phaseNames.first { it.first == n }.second }) { phase = it; if (it == 4) percent = 100f }
+                Text("${percent.toInt()}%", fontWeight = FontWeight.Bold, color = Lime)
+                androidx.compose.material3.Slider(value = percent, onValueChange = { percent = (it / 5).toInt() * 5f }, valueRange = 0f..100f)
+                androidx.compose.material3.OutlinedTextField(note, { note = it.take(1000) }, label = { Text(t("Update voor de klant", "Update for the client")) }, minLines = 3, modifier = Modifier.fillMaxWidth())
+            }
+        },
+        confirmButton = { Button(enabled = !busy, onClick = { busy = true; vm.updateProject(p.id, phase, percent.toInt(), note.trim()) { ok -> busy = false; if (ok) onDismiss() } }) { Text(t("Opslaan", "Save")) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(t("Annuleren", "Cancel")) } },
+    )
 }

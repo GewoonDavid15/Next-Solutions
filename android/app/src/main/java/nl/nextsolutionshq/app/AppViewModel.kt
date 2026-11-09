@@ -51,6 +51,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     var adminLeads by mutableStateOf<List<AdminLead>?>(null); private set
     var adminOffers by mutableStateOf<List<AdminOffer>?>(null); private set
     var adminStats by mutableStateOf<AdminStats?>(null); private set
+    var adminProjects by mutableStateOf<List<AdminProject>?>(null); private set
 
     init {
         if (loggedIn) {
@@ -210,10 +211,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ── Offers, projects, reviews ──
-    fun acceptOffer(id: String) {
+    fun acceptOffer(id: String, signer: String) {
         viewModelScope.launch {
             try {
-                api.post("/api/portaal/offerte", JSONObject().put("id", id))
+                api.post("/api/portaal/offerte", JSONObject().put("id", id).put("ondertekenaar", signer).put("voorwaardenAkkoord", true).put("bron", "app"))
                 toast = t("Bedankt! Je krijgt de betaalgegevens in je ticket.", "Thank you! You'll get the payment details in your ticket.")
                 refresh()
             } catch (e: Exception) { handle(e) }
@@ -239,6 +240,26 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: Exception) { handle(e); done(false) }
         }
     }
+
+    // ── Satisfaction after delivery ──
+    fun answerSurvey(id: String, score: Int, note: String, done: (askReview: Boolean?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val res = api.post("/api/portaal/tevredenheid", JSONObject().put("id", id).put("score", score).put("opmerking", note))
+                data = data?.let { d -> d.copy(surveys = d.surveys.filterNot { it.id == id }) }
+                toast = t("Bedankt voor je antwoord!", "Thanks for your answer!")
+                done(res.optBoolean("vraagReview"))
+            } catch (e: Exception) { handle(e); done(null) }
+        }
+    }
+
+    /** Private calendar link (.ics) for appointments and the content calendar. */
+    suspend fun calendarLink(): String? = try {
+        val res = api.get("/api/portaal/agenda")
+        val key = res.optString("sleutel")
+        val id = data?.user?.id
+        if (key.isNotBlank() && id != null) "${BuildConfig.SITE_URL}/api/agenda/$id/$key.ics" else null
+    } catch (e: Exception) { handle(e); null }
 
     // ── Social media ──
     fun judgePost(id: String, approve: Boolean, feedback: String, done: (Boolean) -> Unit) {
@@ -335,6 +356,58 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 api.post("/api/bot/beheer/offerte/betaald", JSONObject().put("id", id))
                 toast = t("Offerte op betaald gezet. De klant krijgt het betaalbewijs.", "Quote marked as paid. The client gets the receipt.")
                 loadAdmin()
+            } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    fun loadAdminProjects() {
+        viewModelScope.launch {
+            try { adminProjects = Parse.adminProjects(api.get("/api/bot/beheer/projecten")) } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    fun updateProject(id: String, phase: Int?, percentage: Int?, note: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val body = JSONObject().put("id", id).put("notitie", note)
+                phase?.let { body.put("fase", it) }
+                percentage?.let { body.put("percentage", it) }
+                api.post("/api/bot/beheer/project/bijwerken", body)
+                toast = t("Project bijgewerkt. De klant krijgt een melding.", "Project updated. The client gets a notification.")
+                loadAdminProjects()
+                done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    fun createOffer(ticketId: String, title: String, price: String, items: List<String>, delivery: String, note: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val res = api.post("/api/bot/beheer/offerte/maak", JSONObject().put("kanaalId", ticketId).put("titel", title).put("prijs", price)
+                    .put("onderdelen", JSONArray(items)).put("levertijd", delivery).put("opmerking", note))
+                toast = t("Offerte ${res.optString("nummer")} staat in het ticket.", "Quote ${res.optString("nummer")} has been posted in the ticket.")
+                done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    fun claimTicket(id: String) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/bot/beheer/ticket/claim", JSONObject().put("id", id))
+                toast = t("Je hebt dit ticket geclaimd.", "You claimed this ticket.")
+            } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    fun closeTicket(id: String, done: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/bot/beheer/ticket/sluit", JSONObject().put("id", id))
+                toast = t("Het ticket wordt gesloten.", "The ticket is being closed.")
+                closeThread()
+                loadAdmin()
+                done()
             } catch (e: Exception) { handle(e) }
         }
     }

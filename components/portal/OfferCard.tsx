@@ -6,23 +6,28 @@ import { useI18n } from "@/components/i18n/I18nProvider";
 import { Button } from "@/components/ui/Button";
 import type { ClientOffer } from "@/lib/live";
 import { cn } from "@/lib/utils";
+import { voorwaardenLabel } from "@/lib/voorwaarden";
 
 const texts = {
   nl: {
     details: "Details", included: "Wat je krijgt", delivery: "Levertijd", validUntil: "Geldig tot {date}",
-    accept: "Akkoord geven", confirm: "Weet je het zeker? Je gaat akkoord met deze offerte.", yes: "Ja, akkoord", no: "Annuleren",
+    accept: "Akkoord geven", confirm: "Onderteken de offerte digitaal.", yes: "Ondertekenen en akkoord", no: "Annuleren",
+    name: "Je volledige naam", terms: "Ik ga akkoord met deze offerte en de {link} (versie {version}).", termsLink: "algemene voorwaarden", signed: "Digitaal ondertekend door {name} op {date}",
     accepted: "Bedankt! Je hebt akkoord gegeven. Hieronder staat hoe je betaalt.", pay: "Betalen", receipt: "Betaalbewijs (PDF)", failed: "Er ging iets mis. Probeer het opnieuw of geef akkoord in je ticket.",
   },
   en: {
     details: "Details", included: "What you get", delivery: "Delivery time", validUntil: "Valid until {date}",
-    accept: "Accept quote", confirm: "Are you sure? You are accepting this quote.", yes: "Yes, accept", no: "Cancel",
+    accept: "Accept quote", confirm: "Sign the quote digitally.", yes: "Sign and accept", no: "Cancel",
+    name: "Your full name", terms: "I accept this quote and the {link} (version {version}).", termsLink: "terms and conditions", signed: "Digitally signed by {name} on {date}",
     accepted: "Thank you! You accepted the quote. See below how to pay.", pay: "Payment", receipt: "Payment receipt (PDF)", failed: "Something went wrong. Please try again or accept in your ticket.",
   },
 };
 
 /** One quote in the client portal: details, accept button and payment instructions. */
 export function OfferCard({ offer, dateLabel }: { offer: ClientOffer; dateLabel: string }) {
-  const { locale } = useI18n();
+  const { locale, lp } = useI18n();
+  const [signer, setSigner] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const tx = texts[locale];
   const [code, setCode] = useState(offer.code);
   const [open, setOpen] = useState(offer.code === "open" || offer.code === "akkoord");
@@ -33,7 +38,7 @@ export function OfferCard({ offer, dateLabel }: { offer: ClientOffer; dateLabel:
 
   async function accept() {
     setBusy(true);
-    const res = await fetch("/api/portaal/offerte", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: offer.id }) }).catch(() => null);
+    const res = await fetch("/api/portaal/offerte", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: offer.id, ondertekenaar: signer.trim(), voorwaardenAkkoord: agreed }) }).catch(() => null);
     const data = (await res?.json().catch(() => null)) as { fout?: string } | null;
     if (res?.ok) {
       setCode("akkoord");
@@ -85,15 +90,32 @@ export function OfferCard({ offer, dateLabel }: { offer: ClientOffer; dateLabel:
       {code === "open" && offer.id && (
         <div className="mt-4 flex flex-wrap items-center gap-2">
           {confirming ? (
-            <>
-              <span className="text-sm text-zinc-300">{tx.confirm}</span>
-              <Button size="sm" onClick={accept} disabled={busy}>{busy ? <Loader2 className="animate-spin" /> : <CheckCircle2 />} {tx.yes}</Button>
-              <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>{tx.no}</Button>
-            </>
+            <div className="w-full space-y-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <p className="text-sm font-medium text-white">{tx.confirm}</p>
+              <label className="block">
+                <span className="text-xs text-zinc-400">{tx.name}</span>
+                <input value={signer} onChange={(e) => setSigner(e.target.value)} maxLength={80} autoComplete="name" className="mt-1 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-white focus:border-brand-500/60 focus:outline-none" />
+              </label>
+              <label className="flex items-start gap-2 text-sm text-zinc-300">
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 accent-brand-500" />
+                <span>
+                  {tx.terms.split("{link}")[0]}
+                  <a href={lp("/voorwaarden")} target="_blank" rel="noreferrer" className="text-brand-300 underline">{tx.termsLink}</a>
+                  {tx.terms.split("{link}")[1].replace("{version}", voorwaardenLabel(locale))}
+                </span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={accept} disabled={busy || signer.trim().length < 2 || !agreed}>{busy ? <Loader2 className="animate-spin" /> : <CheckCircle2 />} {tx.yes}</Button>
+                <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>{tx.no}</Button>
+              </div>
+            </div>
           ) : (
             <Button size="sm" onClick={() => setConfirming(true)}><CheckCircle2 /> {tx.accept}</Button>
           )}
         </div>
+      )}
+      {offer.ondertekening?.naam && (
+        <p className="mt-3 text-xs text-zinc-500">✍️ {tx.signed.replace("{name}", offer.ondertekening.naam).replace("{date}", date(offer.ondertekening.t))}</p>
       )}
       {code === "akkoord" && offer.betaalinstructie && (
         <div className="mt-4 rounded-2xl border border-amber-400/25 bg-amber-400/[0.06] p-3 text-sm">
