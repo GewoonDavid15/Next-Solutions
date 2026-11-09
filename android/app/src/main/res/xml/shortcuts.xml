@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Long-press the app icon: straight to a new ticket, notifications or tickets -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="nieuw-ticket" android:enabled="true" android:icon="@drawable/ic_shortcut" android:shortcutShortLabel="@string/sc_new_ticket">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="nl.nextsolutionshq.app" android:targetClass="nl.nextsolutionshq.app.MainActivity">
+            <extra android:name="tab" android:value="nieuw-ticket" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="meldingen" android:enabled="true" android:icon="@drawable/ic_shortcut" android:shortcutShortLabel="@string/sc_notifications">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="nl.nextsolutionshq.app" android:targetClass="nl.nextsolutionshq.app.MainActivity">
+            <extra android:name="tab" android:value="meldingen" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="tickets" android:enabled="true" android:icon="@drawable/ic_shortcut" android:shortcutShortLabel="@string/sc_tickets">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="nl.nextsolutionshq.app" android:targetClass="nl.nextsolutionshq.app.MainActivity">
+            <extra android:name="tab" android:value="tickets" />
+        </intent>
+    </shortcut>
+</shortcuts>

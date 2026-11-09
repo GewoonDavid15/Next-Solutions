@@ -4,6 +4,7 @@ import { CrowdCard } from "@/components/live/CrowdCard";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getPublicData } from "@/lib/bot-api";
 import { getUptimeMonitors } from "@/lib/uptime";
+import { StatusSubscribe } from "@/components/sections/StatusSubscribe";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { fmt, type Locale } from "@/lib/i18n/config";
 import { DAYS, DAYS_EN, formatDate, formatMinutes, formatUptime, type LiveService } from "@/lib/live";
@@ -213,6 +214,7 @@ export default async function StatusPage() {
               </FadeUp>
             </>
           )}
+          <StatusSubscribe />
         </div>
       </section>
     </>

@@ -77,6 +77,8 @@ sealed interface Route {
     data object AdminLeads : Route { override val title get() = t("Aanvragen", "Requests") }
     data object AdminTickets : Route { override val title get() = t("Alle tickets", "All tickets") }
     data object AdminOffers : Route { override val title get() = t("Alle offertes", "All quotes") }
+    data object AdminProjects : Route { override val title get() = t("Projecten bijwerken", "Update projects") }
+    data object QuickRepliesEdit : Route { override val title get() = t("Snelle antwoorden", "Quick replies") }
 }
 
 private data class Tab(val route: Route, val label: String, val icon: ImageVector)
@@ -91,6 +93,7 @@ fun routeForTab(tab: String?): Route = when (tab) {
     "afspraken" -> Route.Appointments
     "bestanden" -> Route.Files
     "beheer" -> Route.Admin
+    "nieuw-ticket" -> Route.NewTicket
     "instellingen", "profiel" -> Route.More
     else -> Route.Home
 }
@@ -195,7 +198,7 @@ fun NextApp(
                 Route.Offers -> OffersScreen(vm)
                 Route.More -> MoreScreen(vm, navigate) { askNotificationPermission(true) }
                 is Route.ProjectDetail -> ProjectDetailScreen(vm, current.id)
-                is Route.Chat -> ChatScreen(vm, current.id, current.admin)
+                is Route.Chat -> ChatScreen(vm, current.id, current.admin, onClosed = back)
                 Route.NewTicket -> NewTicketScreen(vm, back)
                 Route.Notifications -> NotificationsScreen(vm) { target, tab ->
                     when {
@@ -214,6 +217,8 @@ fun NextApp(
                 Route.AdminLeads -> AdminLeadsScreen(vm)
                 Route.AdminTickets -> AdminTicketsScreen(vm, navigate)
                 Route.AdminOffers -> AdminOffersScreen(vm)
+                Route.AdminProjects -> AdminProjectsScreen(vm)
+                Route.QuickRepliesEdit -> QuickRepliesScreen()
             }
         }
     }

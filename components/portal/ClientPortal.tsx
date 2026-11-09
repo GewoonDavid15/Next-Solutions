@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Bell, Bot, CalendarDays, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, Megaphone, MessageSquare, Plus, Settings, Ticket, UserRound } from "lucide-react";
+import { AlertCircle, ArrowRight, Bell, Bot, CalendarDays, UserPlus, Receipt, Briefcase, Bug, Download, FolderOpen, CalendarClock, CheckCircle2, ExternalLink, FileText, FolderKanban, LayoutDashboard, LogOut, MapPin, Megaphone, MessageSquare, Plus, Settings, Ticket, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import { MyData } from "@/components/portal/MyData";
 import { CalendarSync } from "@/components/portal/CalendarSync";
 import { PushSettings } from "@/components/portal/PushSettings";
 import { ReferralPanel } from "@/components/portal/ReferralPanel";
+import { SatisfactionPrompt } from "@/components/portal/SatisfactionPrompt";
 import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
 import { OfferCard } from "@/components/portal/OfferCard";
 import { ProfileEditor } from "@/components/portal/ProfileEditor";
@@ -229,6 +230,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
           ))}
         </Stagger>
 
+              <SatisfactionPrompt />
               {profile && <LevelCard profile={profile} tx={tx} onOpen={() => setTab("profiel")} />}
               {projects.filter((p) => p.percentage < 100).length > 0 && (
                 <div>
@@ -392,9 +394,16 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
                     </p>
                     {f.beschrijving && <p className="mt-1 truncate text-xs text-zinc-500">{f.beschrijving}</p>}
                   </div>
-                  <Button asChild size="sm" variant="secondary">
-                    <a href={`/klantportaal/bestand/${f.id}`} download aria-label={fmt(tx.download, { name: f.naam })}><Download /></a>
-                  </Button>
+                  <div className="flex shrink-0 gap-2">
+                    {f.type?.startsWith("image/") && (
+                      <Button asChild size="sm" variant="secondary">
+                        <Link href={`${lp("/klantportaal")}/feedback/${f.id}`} title={locale === "en" ? "Give feedback" : "Feedback geven"} aria-label={locale === "en" ? `Give feedback on ${f.naam}` : `Feedback geven op ${f.naam}`}><MapPin /></Link>
+                      </Button>
+                    )}
+                    <Button asChild size="sm" variant="secondary">
+                      <a href={`/klantportaal/bestand/${f.id}`} download aria-label={fmt(tx.download, { name: f.naam })}><Download /></a>
+                    </Button>
+                  </div>
                 </li>
               ))}
             </ul>

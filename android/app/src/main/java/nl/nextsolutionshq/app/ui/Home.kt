@@ -3,6 +3,8 @@ package nl.nextsolutionshq.app.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Checkbox
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,6 +103,7 @@ fun HomeScreen(vm: AppViewModel, navigate: (Route) -> Unit, switchTab: (Route) -
                 }
             }
         }
+        d.surveys.firstOrNull()?.let { s -> item { SurveyCard(vm, s.id, s.project) { askReview -> if (askReview) navigate(Route.Review) } } }
         if (d.owner) item {
             Panel(onClick = { navigate(Route.Admin) }) {
                 Column {
@@ -180,6 +183,39 @@ fun HomeScreen(vm: AppViewModel, navigate: (Route) -> Unit, switchTab: (Route) -
                     Text(t("Open een ticket en vertel wat je nodig hebt. We reageren meestal dezelfde dag.", "Open a ticket and tell us what you need. We usually reply the same day."), color = Muted)
                     Button(onClick = { navigate(Route.NewTicket) }) { Text(t("Ticket openen", "Open a ticket")) }
                 }
+            }
+        }
+    }
+}
+
+/** "How satisfied are you, 1-10?" after a project was delivered. */
+@Composable
+private fun SurveyCard(vm: AppViewModel, id: String, project: String, onDone: (Boolean) -> Unit) {
+    var score by remember { mutableStateOf<Int?>(null) }
+    var note by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    Panel {
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("😊 " + t("Hoe tevreden ben je over $project?", "How satisfied are you with $project?"), fontWeight = FontWeight.SemiBold)
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                listOf(1..5, 6..10).forEach { range ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        range.forEach { n ->
+                            val on = score == n
+                            Box(
+                                Modifier.weight(1f).height(40.dp).clip(RoundedCornerShape(10.dp)).background(if (on) Lime else Surface2).clickable { score = n },
+                                contentAlignment = Alignment.Center,
+                            ) { Text("$n", color = if (on) Ink else Color.White, fontWeight = FontWeight.SemiBold) }
+                        }
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(t("Helemaal niet", "Not at all"), color = Faint, fontSize = 12.sp); Text(t("Heel erg", "Very"), color = Faint, fontSize = 12.sp)
+            }
+            score?.let { s ->
+                if (s < 9) OutlinedTextField(note, { note = it.take(1000) }, placeholder = { Text(t("Wat kan er beter? (optioneel)", "What could be better? (optional)")) }, minLines = 2, modifier = Modifier.fillMaxWidth())
+                Button(enabled = !busy, onClick = { busy = true; vm.answerSurvey(id, s, note.trim()) { r -> busy = false; if (r != null) onDone(r) } }) { Text(t("Versturen", "Send")) }
             }
         }
     }
@@ -338,21 +374,41 @@ fun OffersScreen(vm: AppViewModel) {
                                 Column { Text(t("Betalen", "Payment"), fontWeight = FontWeight.SemiBold); Text(it, color = Muted, fontSize = 14.sp) }
                             }
                         }
+                        o.signedBy?.let { name -> Text("✍️ " + t("Digitaal ondertekend door $name", "Digitally signed by $name") + (o.signedAt?.let { " • " + date(it) } ?: ""), color = Faint, fontSize = 12.sp) }
                         if (o.code == "open" && o.id != null) Button(onClick = { confirm = o }, modifier = Modifier.fillMaxWidth()) { Text(t("Akkoord geven", "Accept")) }
                     }
                 }
             }
         }
     }
-    confirm?.let { o ->
-        AlertDialog(
-            onDismissRequest = { confirm = null },
-            title = { Text(t("Offerte accepteren?", "Accept this quote?")) },
-            text = { Text(t("Je gaat akkoord met ${o.number} (${o.title}) voor ${o.price}. Daarna krijg je de betaalgegevens in je ticket.", "You accept ${o.number} (${o.title}) for ${o.price}. You'll then get the payment details in your ticket.")) },
-            confirmButton = { Button(onClick = { o.id?.let(vm::acceptOffer); confirm = null }) { Text(t("Akkoord", "Accept")) } },
-            dismissButton = { TextButton(onClick = { confirm = null }) { Text(t("Annuleren", "Cancel")) } },
-        )
-    }
+    confirm?.let { o -> SignDialog(vm, o) { confirm = null } }
+}
+
+/** Digital signature: full name + accepting the terms and conditions (the version is stored with it). */
+@Composable
+private fun SignDialog(vm: AppViewModel, o: Offer, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    var name by remember { mutableStateOf(vm.data?.user?.name.orEmpty()) }
+    var agreed by remember { mutableStateOf(false) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(t("Offerte ondertekenen", "Sign the quote")) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(t("${o.number} • ${o.title} • ${o.price}. Daarna krijg je de betaalgegevens in je ticket.", "${o.number} • ${o.title} • ${o.price}. You'll then get the payment details in your ticket."), color = Muted, fontSize = 14.sp)
+                OutlinedTextField(name, { name = it.take(80) }, label = { Text(t("Je volledige naam", "Your full name")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { agreed = !agreed }) {
+                    Checkbox(checked = agreed, onCheckedChange = { agreed = it })
+                    Text(t("Ik ga akkoord met deze offerte en de algemene voorwaarden.", "I accept this quote and the terms and conditions."), fontSize = 14.sp)
+                }
+                Text(t("Voorwaarden lezen", "Read the terms"), color = Lime, fontSize = 13.sp, modifier = Modifier.clickable {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${nl.nextsolutionshq.app.BuildConfig.SITE_URL}${if (nl.nextsolutionshq.app.Lang.en) "/en" else ""}/voorwaarden")))
+                })
+            }
+        },
+        confirmButton = { Button(enabled = name.trim().length >= 2 && agreed, onClick = { o.id?.let { vm.acceptOffer(it, name.trim()) }; onDismiss() }) { Text(t("Ondertekenen", "Sign")) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(t("Annuleren", "Cancel")) } },
+    )
 }
 
 // ═══════════════════════════════ Meldingen ═══════════════════════════════

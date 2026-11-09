@@ -17,6 +17,14 @@ export async function GET(request: NextRequest) {
     const url = (data as { url?: string }).url;
     return status === 200 && url ? NextResponse.redirect(url) : NextResponse.json({ fout: "Bestand niet gevonden." }, { status: 404 });
   }
+  // A client's file (for the design feedback in the dashboard), shown inline
+  if (kind === "bestand") {
+    const klant = request.nextUrl.searchParams.get("klant") ?? "";
+    if (!/^[a-f0-9]{10}$/.test(id) || !/^\d{17,20}$/.test(klant)) return NextResponse.json({ fout: "Ongeldig verzoek." }, { status: 400 });
+    const res = await signedFetch("GET", `/bestand?id=${id}&gebruiker=${klant}`, undefined, 60_000).catch(() => null);
+    if (!res?.ok || !res.body) return NextResponse.json({ fout: "Bestand niet gevonden." }, { status: 404 });
+    return new Response(res.body, { headers: { "Content-Type": res.headers.get("content-type") ?? "application/octet-stream", "Content-Disposition": "inline", "Cache-Control": "private, max-age=300", "X-Content-Type-Options": "nosniff" } });
+  }
   const valid = kind === "bon" || kind === "rapport" ? /^[\w-]{1,40}$/.test(id) : /^\d{4}-\d{2}-\d{2}$/.test(day) && (kind === "log" || kind === "backup");
   if (!valid) return NextResponse.json({ fout: "Ongeldig verzoek." }, { status: 400 });
   const path = kind === "bon" ? `/beheer/bon?id=${id}` : kind === "rapport" ? `/beheer/social/rapport-pdf?id=${id}` : `/beheer/${kind}/download?dag=${day}`;

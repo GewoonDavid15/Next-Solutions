@@ -1,6 +1,22 @@
 package nl.nextsolutionshq.app.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
+import nl.nextsolutionshq.app.QuickReplies
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -116,7 +132,7 @@ fun TicketsScreen(vm: AppViewModel, navigate: (Route) -> Unit) {
 
 // ═══════════════════════════════ Chat (klant en beheer) ═══════════════════════════════
 @Composable
-fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean) {
+fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean, onClosed: () -> Unit = {}) {
     LaunchedEffect(id, admin) { vm.openThread(id, admin) }
     val thread = vm.thread?.takeIf { it.id == id }
     val me = vm.data?.user?.id
@@ -125,12 +141,22 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean) {
     val files = remember { mutableStateListOf<PickedFile>() }
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var viewer by remember { mutableStateOf<String?>(null) }
+    var offerDialog by remember { mutableStateOf(false) }
+    var confirmClose by remember { mutableStateOf(false) }
+    var quick by remember { mutableStateOf(false) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
         scope.launch { uris.take(4 - files.size).forEach { uri -> vm.readPicked(uri)?.let { files.add(it) } } }
     }
     LaunchedEffect(thread?.messages?.size) { if ((thread?.messages?.size ?: 0) > 0) list.scrollToItem(0) }
 
     Column(Modifier.fillMaxSize().imePadding()) {
+        if (admin) Row(Modifier.fillMaxWidth().background(Surface1).horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            TextButton(onClick = { vm.claimTicket(id) }) { Text("✋ " + t("Claimen", "Claim")) }
+            TextButton(onClick = { offerDialog = true }) { Text("📝 " + t("Offerte maken", "Create quote")) }
+            TextButton(onClick = { confirmClose = true }) { Text("🔒 " + t("Sluiten", "Close"), color = Danger) }
+        }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when {
                 thread == null && vm.threadError != null -> Column(Modifier.padding(16.dp)) { ErrorBox(vm.threadError!!) { vm.openThread(id, admin) } }
@@ -142,7 +168,7 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean) {
                 ) {
                     items(thread.messages.sortedByDescending { it.t }, key = { it.id }) { m ->
                         val mine = if (admin) m.via == "team" || (m.author.id == me && m.via != "klant") else m.author.id == me || m.via == "klant"
-                        Bubble(m, mine)
+                        Bubble(m, mine) { viewer = it }
                     }
                 }
             }
@@ -157,6 +183,12 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean) {
         }
         Row(Modifier.fillMaxWidth().background(Surface1).padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { pick.launch("*/*") }, enabled = files.size < 4 && !sending) { Icon(Icons.Filled.AttachFile, t("Bijlage toevoegen", "Add attachment"), tint = Muted) }
+            if (admin) Box {
+                IconButton(onClick = { quick = true }) { Icon(Icons.Filled.Bolt, t("Snelle antwoorden", "Quick replies"), tint = Lime) }
+                DropdownMenu(expanded = quick, onDismissRequest = { quick = false }) {
+                    QuickReplies.load(context).forEach { r -> DropdownMenuItem(text = { Text(r, maxLines = 2) }, onClick = { text = (if (text.isBlank()) "" else "$text ") + r; quick = false }) }
+                }
+            }
             OutlinedTextField(
                 value = text, onValueChange = { text = it.take(1900) },
                 placeholder = { Text(t("Typ een bericht...", "Type a message...")) },
@@ -175,10 +207,67 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean) {
             }
         }
     }
+    viewer?.let { url -> ImageViewer(url) { viewer = null } }
+    if (offerDialog) OfferDialog(vm, id) { offerDialog = false }
+    if (confirmClose) AlertDialog(
+        onDismissRequest = { confirmClose = false },
+        title = { Text(t("Ticket sluiten?", "Close ticket?")) },
+        text = { Text(t("Het transcript wordt bewaard en de klant krijgt een melding.", "The transcript is kept and the client gets a notification.")) },
+        confirmButton = { Button(onClick = { confirmClose = false; vm.closeTicket(id) { onClosed() } }) { Text(t("Sluiten", "Close")) } },
+        dismissButton = { TextButton(onClick = { confirmClose = false }) { Text(t("Annuleren", "Cancel")) } },
+    )
+}
+
+/** Full-screen photo with pinch-to-zoom. */
+@Composable
+fun ImageViewer(url: String, onClose: () -> Unit) {
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(androidx.compose.ui.geometry.Offset.Zero) }
+    Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Box(Modifier.fillMaxSize().background(Color.Black).pointerInput(Unit) {
+            detectTransformGestures { _, pan, zoom, _ -> scale = (scale * zoom).coerceIn(1f, 5f); offset = if (scale > 1f) offset + pan else androidx.compose.ui.geometry.Offset.Zero }
+        }) {
+            AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize().graphicsLayer(scaleX = scale, scaleY = scale, translationX = offset.x, translationY = offset.y))
+            IconButton(onClick = onClose, modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)) { Icon(Icons.Filled.Close, t("Sluiten", "Close"), tint = Color.White) }
+        }
+    }
+}
+
+/** Owner: create a quote in this ticket (same as /offerte in Discord). */
+@Composable
+private fun OfferDialog(vm: AppViewModel, ticketId: String, onDismiss: () -> Unit) {
+    var title by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var items by remember { mutableStateOf("") }
+    var delivery by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(t("Offerte maken", "Create quote")) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(title, { title = it.take(100) }, label = { Text(t("Titel", "Title")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(price, { price = it.take(60) }, label = { Text(t("Prijs (bijv. € 250)", "Price (e.g. € 250)")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(items, { items = it.take(2000) }, label = { Text(t("Onderdelen (één per regel)", "Items (one per line)")) }, minLines = 3, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(delivery, { delivery = it.take(60) }, label = { Text(t("Levertijd (optioneel)", "Delivery time (optional)")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(note, { note = it.take(500) }, label = { Text(t("Opmerking (optioneel)", "Note (optional)")) }, modifier = Modifier.fillMaxWidth())
+            }
+        },
+        confirmButton = {
+            Button(enabled = !busy && title.trim().length >= 3 && price.isNotBlank() && items.isNotBlank(), onClick = {
+                busy = true
+                vm.createOffer(ticketId, title.trim(), price.trim(), items.lines().map { it.trim() }.filter { it.isNotBlank() }, delivery.trim(), note.trim()) { ok -> busy = false; if (ok) onDismiss() }
+            }) { Text(t("Plaatsen in ticket", "Post in ticket")) }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(t("Annuleren", "Cancel")) } },
+    )
 }
 
 @Composable
-private fun Bubble(m: ChatMessage, mine: Boolean) {
+private fun Bubble(m: ChatMessage, mine: Boolean, onImage: (String) -> Unit) {
+    val context = LocalContext.current
     Row(Modifier.fillMaxWidth(), horizontalArrangement = if (mine) Arrangement.End else Arrangement.Start) {
         if (!mine) { Avatar(m.author.avatar, m.author.name, 32); Spacer(Modifier.width(8.dp)) }
         Column(
@@ -187,7 +276,15 @@ private fun Bubble(m: ChatMessage, mine: Boolean) {
         ) {
             if (!mine) Text(m.author.name + if (m.author.bot) " • bot" else "", color = Lime, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             if (m.text.isNotBlank()) Text(m.text, color = Color.White)
-            m.attachments.forEach { Text("📎 $it", color = Muted, fontSize = 13.sp) }
+            m.attachments.forEach { a ->
+                if (a.image && a.url != null) {
+                    AsyncImage(
+                        model = a.url, contentDescription = a.name, contentScale = ContentScale.Crop,
+                        modifier = Modifier.padding(top = 6.dp).fillMaxWidth().heightIn(max = 220.dp).clip(RoundedCornerShape(12.dp)).clickable { onImage(a.url) },
+                    )
+                } else Text("📎 ${a.name}", color = if (a.url != null) Lime else Muted, fontSize = 13.sp,
+                    modifier = if (a.url != null) Modifier.clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(a.url))) } else Modifier)
+            }
             Text(dateTime(m.t), color = Faint, fontSize = 11.sp, modifier = Modifier.align(Alignment.End))
         }
     }
