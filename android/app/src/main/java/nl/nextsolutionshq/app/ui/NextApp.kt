@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -51,89 +53,116 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.nextsolutionshq.app.AppViewModel
 import nl.nextsolutionshq.app.Auth
+import nl.nextsolutionshq.app.Target
+import nl.nextsolutionshq.app.t
 
 sealed interface Route {
     val title: String
-    data object Home : Route { override val title = "Overzicht" }
-    data object Projects : Route { override val title = "Projecten" }
-    data object Tickets : Route { override val title = "Tickets" }
-    data object Offers : Route { override val title = "Offertes" }
-    data object More : Route { override val title = "Meer" }
-    data class ProjectDetail(val id: String) : Route { override val title = "Project" }
-    data class Chat(val id: String, val name: String) : Route { override val title = name }
-    data object NewTicket : Route { override val title = "Nieuw ticket" }
-    data object Notifications : Route { override val title = "Meldingen" }
-    data object Appointments : Route { override val title = "Afspraken" }
-    data object Files : Route { override val title = "Bestanden" }
+    data object Home : Route { override val title get() = t("Overzicht", "Overview") }
+    data object Projects : Route { override val title get() = t("Projecten", "Projects") }
+    data object Social : Route { override val title get() = "Social media" }
+    data object Tickets : Route { override val title get() = "Tickets" }
+    data object Offers : Route { override val title get() = t("Offertes", "Quotes") }
+    data object More : Route { override val title get() = t("Meer", "More") }
+    data class ProjectDetail(val id: String) : Route { override val title get() = t("Project", "Project") }
+    data class Chat(val id: String, val name: String, val admin: Boolean = false) : Route { override val title get() = name }
+    data object NewTicket : Route { override val title get() = t("Nieuw ticket", "New ticket") }
+    data object Notifications : Route { override val title get() = t("Meldingen", "Notifications") }
+    data object Appointments : Route { override val title get() = t("Afspraken", "Appointments") }
+    data object Files : Route { override val title get() = t("Bestanden", "Files") }
+    data object Transcripts : Route { override val title get() = t("Gesloten tickets", "Closed tickets") }
+    data class Transcript(val id: String, val name: String) : Route { override val title get() = name }
+    data object Review : Route { override val title get() = t("Review schrijven", "Write a review") }
+    data object Admin : Route { override val title get() = t("Beheer", "Admin") }
+    data object AdminLeads : Route { override val title get() = t("Aanvragen", "Requests") }
+    data object AdminTickets : Route { override val title get() = t("Alle tickets", "All tickets") }
+    data object AdminOffers : Route { override val title get() = t("Alle offertes", "All quotes") }
 }
 
 private data class Tab(val route: Route, val label: String, val icon: ImageVector)
 
-private val tabs = listOf(
-    Tab(Route.Home, "Overzicht", Icons.Filled.Home),
-    Tab(Route.Projects, "Projecten", Icons.Filled.FolderOpen),
-    Tab(Route.Tickets, "Tickets", Icons.Filled.SupportAgent),
-    Tab(Route.Offers, "Offertes", Icons.Filled.ReceiptLong),
-    Tab(Route.More, "Meer", Icons.Filled.Menu),
-)
-
 /** Maps a link from a notification ("#tickets") to a screen. */
 fun routeForTab(tab: String?): Route = when (tab) {
     "projecten" -> Route.Projects
+    "social" -> Route.Social
     "tickets" -> Route.Tickets
     "offertes" -> Route.Offers
     "meldingen" -> Route.Notifications
     "afspraken" -> Route.Appointments
     "bestanden" -> Route.Files
+    "beheer" -> Route.Admin
     "instellingen", "profiel" -> Route.More
     else -> Route.Home
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NextApp(vm: AppViewModel, startTab: String?, onTabConsumed: () -> Unit, askNotificationPermission: (Boolean) -> Unit) {
-    if (!vm.loggedIn) {
-        LoginScreen(vm)
-        return
-    }
+fun NextApp(
+    vm: AppViewModel,
+    startTab: String?,
+    startTarget: Target?,
+    onStartConsumed: () -> Unit,
+    askNotificationPermission: (Boolean) -> Unit,
+    locked: Boolean,
+    unlock: () -> Unit,
+) {
+    if (!vm.loggedIn) { LoginScreen(vm); return }
+    if (locked) { LockScreen(unlock); return }
 
+    val social = vm.data?.social?.active == true
+    val tabs = listOf(
+        Tab(Route.Home, t("Overzicht", "Home"), Icons.Filled.Home),
+        if (social) Tab(Route.Social, "Social", Icons.Filled.Campaign) else Tab(Route.Projects, t("Projecten", "Projects"), Icons.Filled.FolderOpen),
+        Tab(Route.Tickets, "Tickets", Icons.Filled.SupportAgent),
+        Tab(Route.Offers, t("Offertes", "Quotes"), Icons.AutoMirrored.Filled.ReceiptLong),
+        Tab(Route.More, t("Meer", "More"), Icons.Filled.Menu),
+    )
     val stack = remember { mutableStateListOf<Route>(Route.Home) }
     val current = stack.last()
     val snackbar = remember { SnackbarHostState() }
     val navigate: (Route) -> Unit = { stack.add(it) }
     val switchTab: (Route) -> Unit = { stack.clear(); stack.add(it) }
-
-    LaunchedEffect(Unit) { askNotificationPermission(false) }
-    LaunchedEffect(startTab) {
-        if (startTab != null) {
-            val r = routeForTab(startTab)
-            if (r in tabs.map { it.route }) switchTab(r) else { switchTab(Route.More); navigate(r) }
-            onTabConsumed()
-        }
-    }
-    LaunchedEffect(vm.toast) {
-        vm.toast?.let { snackbar.showSnackbar(it); vm.toast = null }
-    }
-    BackHandler(enabled = stack.size > 1) {
+    val open: (Route) -> Unit = { r -> if (tabs.any { it.route == r }) switchTab(r) else { if (stack.size > 1) stack.removeRange(1, stack.size); navigate(r) } }
+    val back: () -> Unit = {
         if (current is Route.Chat) vm.closeThread()
         stack.removeAt(stack.lastIndex)
     }
+
+    LaunchedEffect(Unit) { askNotificationPermission(false) }
+    LaunchedEffect(startTab, startTarget) {
+        if (startTab == null && startTarget == null) return@LaunchedEffect
+        val target = startTarget
+        when {
+            target?.kind == "ticket" && target.id != null ->
+                open(Route.Chat(target.id, vm.data?.tickets?.find { it.id == target.id }?.name ?: "Ticket"))
+            target?.kind == "project" && target.id != null -> open(Route.ProjectDetail(target.id))
+            target?.kind == "beheer" -> open(Route.Admin)
+            else -> open(routeForTab(startTab))
+        }
+        onStartConsumed()
+    }
+    LaunchedEffect(vm.toast) { vm.toast?.let { snackbar.showSnackbar(it); vm.toast = null } }
+    BackHandler(enabled = stack.size > 1, onBack = back)
 
     val isTab = tabs.any { it.route == current }
     Scaffold(
         containerColor = Ink,
         snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
-            TopAppBar(
-                title = { Text(if (current == Route.Home) "Next Solutions" else current.title, fontWeight = FontWeight.SemiBold, maxLines = 1) },
-                navigationIcon = {
-                    if (!isTab) IconButton(onClick = {
-                        if (current is Route.Chat) vm.closeThread()
-                        stack.removeAt(stack.lastIndex)
-                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Terug") }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Ink),
-            )
+            Column {
+                TopAppBar(
+                    title = { Text(if (current == Route.Home) "Next Solutions" else current.title, fontWeight = FontWeight.SemiBold, maxLines = 1) },
+                    navigationIcon = { if (!isTab) IconButton(onClick = back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = t("Terug", "Back")) } },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Ink),
+                )
+                vm.offlineSince?.let {
+                    Text(
+                        t("Geen verbinding • gegevens van ${dateTime(it)}", "Offline • data from ${dateTime(it)}"),
+                        Modifier.fillMaxWidth().background(Surface2).padding(horizontal = 16.dp, vertical = 6.dp),
+                        color = Muted, fontSize = 12.sp,
+                    )
+                }
+            }
         },
         bottomBar = {
             if (isTab) NavigationBar(containerColor = Surface1) {
@@ -142,16 +171,15 @@ fun NextApp(vm: AppViewModel, startTab: String?, onTabConsumed: () -> Unit, askN
                     val count = when (tab.route) {
                         Route.Tickets -> d?.tickets?.size ?: 0
                         Route.Offers -> d?.offers?.count { it.code == "open" } ?: 0
+                        Route.Social -> d?.social?.posts?.count { it.status == "ter-goedkeuring" } ?: 0
                         Route.More -> d?.unread ?: 0
                         else -> 0
                     }
                     NavigationBarItem(
                         selected = current == tab.route,
                         onClick = { switchTab(tab.route) },
-                        icon = {
-                            BadgedBox(badge = { if (count > 0) Badge { Text("$count") } }) { Icon(tab.icon, contentDescription = null) }
-                        },
-                        label = { Text(tab.label, fontSize = 11.sp) },
+                        icon = { BadgedBox(badge = { if (count > 0) Badge { Text("$count") } }) { Icon(tab.icon, contentDescription = null) } },
+                        label = { Text(tab.label, fontSize = 11.sp, maxLines = 1) },
                         colors = NavigationBarItemDefaults.colors(indicatorColor = MaterialTheme.colorScheme.primaryContainer, selectedIconColor = Lime, selectedTextColor = Lime),
                     )
                 }
@@ -162,28 +190,54 @@ fun NextApp(vm: AppViewModel, startTab: String?, onTabConsumed: () -> Unit, askN
             when (current) {
                 Route.Home -> HomeScreen(vm, navigate, switchTab)
                 Route.Projects -> ProjectsScreen(vm, navigate)
+                Route.Social -> SocialScreen(vm)
                 Route.Tickets -> TicketsScreen(vm, navigate)
                 Route.Offers -> OffersScreen(vm)
                 Route.More -> MoreScreen(vm, navigate) { askNotificationPermission(true) }
                 is Route.ProjectDetail -> ProjectDetailScreen(vm, current.id)
-                is Route.Chat -> ChatScreen(vm, current.id)
-                Route.NewTicket -> NewTicketScreen(vm) { stack.removeAt(stack.lastIndex) }
-                Route.Notifications -> NotificationsScreen(vm) { tab -> val r = routeForTab(tab); if (r in tabs.map { it.route }) switchTab(r) else navigate(r) }
+                is Route.Chat -> ChatScreen(vm, current.id, current.admin)
+                Route.NewTicket -> NewTicketScreen(vm, back)
+                Route.Notifications -> NotificationsScreen(vm) { target, tab ->
+                    when {
+                        target?.kind == "ticket" && target.id != null -> navigate(Route.Chat(target.id, vm.data?.tickets?.find { it.id == target.id }?.name ?: "Ticket"))
+                        target?.kind == "project" && target.id != null -> navigate(Route.ProjectDetail(target.id))
+                        target?.kind == "beheer" -> navigate(Route.Admin)
+                        else -> open(routeForTab(tab))
+                    }
+                }
                 Route.Appointments -> AppointmentsScreen(vm)
                 Route.Files -> FilesScreen(vm)
+                Route.Transcripts -> TranscriptsScreen(vm, navigate)
+                is Route.Transcript -> TranscriptScreen(current.id)
+                Route.Review -> ReviewScreen(vm, back)
+                Route.Admin -> AdminScreen(vm, navigate)
+                Route.AdminLeads -> AdminLeadsScreen(vm)
+                Route.AdminTickets -> AdminTicketsScreen(vm, navigate)
+                Route.AdminOffers -> AdminOffersScreen(vm)
             }
         }
     }
 }
 
 @Composable
+fun LockScreen(unlock: () -> Unit) {
+    Column(Modifier.fillMaxSize().background(Ink).padding(28.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(Modifier.size(84.dp).clip(RoundedCornerShape(22.dp)).background(Surface2), contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.Lock, null, tint = Lime, modifier = Modifier.size(40.dp))
+        }
+        Spacer(Modifier.height(20.dp))
+        Text(t("App vergrendeld", "App locked"), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(8.dp))
+        Text(t("Ontgrendel met je vingerafdruk, gezicht of pincode.", "Unlock with your fingerprint, face or PIN."), color = Muted, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(24.dp))
+        Button(onClick = unlock) { Text(t("Ontgrendelen", "Unlock")) }
+    }
+}
+
+@Composable
 fun LoginScreen(vm: AppViewModel) {
     val context = LocalContext.current
-    Column(
-        Modifier.fillMaxSize().background(Ink).padding(28.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(Modifier.fillMaxSize().background(Ink).padding(28.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.size(84.dp).clip(RoundedCornerShape(22.dp)).background(Lime), contentAlignment = Alignment.Center) {
             Text("»", color = Ink, fontSize = 48.sp, fontWeight = FontWeight.Black)
         }
@@ -191,17 +245,17 @@ fun LoginScreen(vm: AppViewModel) {
         Text("Next Solutions", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
         Text(
-            "Je projecten, tickets, offertes en meldingen op één plek. Log in met je Discord-account.",
+            t("Je projecten, tickets, offertes en meldingen op één plek. Log in met je Discord-account.", "Your projects, tickets, quotes and notifications in one place. Log in with your Discord account."),
             color = Muted, textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(32.dp))
         if (vm.loginBusy) {
             CircularProgressIndicator(color = Lime)
             Spacer(Modifier.height(12.dp))
-            Text("Bezig met inloggen...", color = Muted)
+            Text(t("Bezig met inloggen...", "Logging in..."), color = Muted)
         } else {
             Button(onClick = { vm.clearError(); Auth.start(context) }, modifier = Modifier.fillMaxWidth().height(54.dp), shape = RoundedCornerShape(16.dp)) {
-                Text("Inloggen met Discord", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                Text(t("Inloggen met Discord", "Log in with Discord"), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             }
         }
         vm.error?.let {
@@ -209,6 +263,6 @@ fun LoginScreen(vm: AppViewModel) {
             Text(it, color = Danger, textAlign = TextAlign.Center)
         }
         Spacer(Modifier.height(24.dp))
-        Text("Nog geen klant? Kijk op nextsolutionshq.nl", color = Faint, fontSize = 13.sp, textAlign = TextAlign.Center)
+        Text(t("Nog geen klant? Kijk op nextsolutionshq.nl", "Not a client yet? Visit nextsolutionshq.nl"), color = Faint, fontSize = 13.sp, textAlign = TextAlign.Center)
     }
 }

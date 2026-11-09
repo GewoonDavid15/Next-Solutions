@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { botRequest, isBotApiConfigured, isDashboardOwner } from "@/lib/bot-api";
-import { avatarUrl, getSession } from "@/lib/session";
+import { avatarUrl, getSession, isAppRequest } from "@/lib/session";
 
 /** Endpoints of the bot that the dashboard may reach, per HTTP method. */
 const ALLOWED: Record<string, string[]> = {
@@ -26,7 +26,7 @@ const ALLOWED: Record<string, string[]> = {
   DELETE: ["modules/code"],
 };
 
-const MAX_BODY = 1024 * 1024;
+const MAX_BODY = 5 * 1024 * 1024; // room for photos with a ticket reply from the app
 
 type Context = { params: Promise<{ pad: string[] }> };
 
@@ -36,7 +36,8 @@ async function forward(request: NextRequest, { params }: Context) {
   if (!isDashboardOwner(session)) return NextResponse.json({ fout: "Niet gevonden." }, { status: 404 });
 
   // State-changing requests must come from this site (on top of the SameSite=Lax session cookie).
-  if (request.method !== "GET") {
+  // (The owner's Android app sends a token header instead of cookies, so it cannot be abused cross-site.)
+  if (request.method !== "GET" && !isAppRequest(request)) {
     const origin = request.headers.get("origin");
     if (!origin || origin !== request.nextUrl.origin) {
       return NextResponse.json({ fout: "Ongeldige herkomst." }, { status: 403 });
@@ -54,7 +55,7 @@ async function forward(request: NextRequest, { params }: Context) {
   }
 
   let body = request.method === "GET" ? undefined : await request.text();
-  if (body && body.length > MAX_BODY) return NextResponse.json({ fout: "Verzoek te groot (max. 1 MB)." }, { status: 413 });
+  if (body && body.length > MAX_BODY) return NextResponse.json({ fout: "Verzoek te groot (max. 5 MB)." }, { status: 413 });
 
   // Management actions are signed with the name of whoever is logged in, so Discord shows who did it.
   if (endpoint.startsWith("beheer/") && request.method === "POST" && session) {

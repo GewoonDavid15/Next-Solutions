@@ -28,14 +28,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import nl.nextsolutionshq.app.Lang
+import nl.nextsolutionshq.app.t
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
 
-private val nl = Locale("nl", "NL")
 private val amsterdam = TimeZone.getTimeZone("Europe/Amsterdam")
-private fun fmt(pattern: String) = SimpleDateFormat(pattern, nl).apply { timeZone = amsterdam }
+private fun fmt(pattern: String) = SimpleDateFormat(pattern, Lang.locale).apply { timeZone = amsterdam }
 
 fun date(t: Long): String = fmt("d MMM yyyy").format(Date(t))
 fun dateTime(t: Long): String = fmt("d MMM, HH:mm").format(Date(t))
@@ -46,16 +46,16 @@ fun dayKey(t: Long): String = fmt("yyyy-MM-dd").format(Date(t))
 fun timeAgo(t: Long, now: Long = System.currentTimeMillis()): String {
     val min = (now - t) / 60_000
     return when {
-        min < 1 -> "zojuist"
-        min < 60 -> "$min min geleden"
-        min < 24 * 60 -> "${min / 60} uur geleden"
-        min < 7 * 24 * 60 -> "${min / (24 * 60)} dagen geleden"
+        min < 1 -> t("zojuist", "just now")
+        min < 60 -> t("$min min geleden", "$min min ago")
+        min < 24 * 60 -> t("${min / 60} uur geleden", "${min / 60} h ago")
+        min < 7 * 24 * 60 -> t("${min / (24 * 60)} dagen geleden", "${min / (24 * 60)} days ago")
         else -> date(t)
     }
 }
 
 fun fileSize(bytes: Long): String = when {
-    bytes >= 1_048_576 -> String.format(nl, "%.1f MB", bytes / 1_048_576.0)
+    bytes >= 1_048_576 -> String.format(Lang.locale, "%.1f MB", bytes / 1_048_576.0)
     bytes >= 1024 -> "${bytes / 1024} kB"
     else -> "$bytes B"
 }
@@ -126,7 +126,7 @@ fun ErrorBox(text: String, onRetry: (() -> Unit)? = null) {
     Panel {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(text, color = Danger)
-            if (onRetry != null) Button(onClick = onRetry, colors = ButtonDefaults.buttonColors(containerColor = Surface2, contentColor = Color.White)) { Text("Opnieuw proberen") }
+            if (onRetry != null) Button(onClick = onRetry, colors = ButtonDefaults.buttonColors(containerColor = Surface2, contentColor = Color.White)) { Text(t("Opnieuw proberen", "Try again")) }
         }
     }
 }

@@ -38,11 +38,11 @@ object Auth {
     /** Called with the link the website opened: https://nextsolutionshq.nl/app/login?code=... or nlnextsolutions://login?code=... */
     suspend fun finish(context: Context, uri: Uri, tokens: TokenStore): Result<String> {
         uri.getQueryParameter("error")?.let { return Result.failure(ApiException(401, errorText(it))) }
-        val code = uri.getQueryParameter("code") ?: return Result.failure(ApiException(400, "Inloggen is niet gelukt. Probeer het opnieuw."))
+        val code = uri.getQueryParameter("code") ?: return Result.failure(ApiException(400, t("Inloggen is niet gelukt. Probeer het opnieuw.", "Logging in failed. Please try again.")))
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val verifier = prefs.getString("verifier", null)
         if (verifier == null || System.currentTimeMillis() - prefs.getLong("t", 0) > 15 * 60_000) {
-            return Result.failure(ApiException(400, "Inloggen duurde te lang. Probeer het opnieuw."))
+            return Result.failure(ApiException(400, t("Inloggen duurde te lang. Probeer het opnieuw.", "Logging in took too long. Please try again.")))
         }
         return try {
             val res = Api(tokens).post("/api/app/token", JSONObject().put("code", code).put("verifier", verifier))
@@ -57,9 +57,9 @@ object Auth {
     }
 
     private fun errorText(code: String) = when (code) {
-        "denied" -> "Je hebt het inloggen bij Discord geannuleerd."
-        "not_configured", "client_config", "redirect_mismatch" -> "Inloggen met Discord werkt even niet. Probeer het later opnieuw."
-        "rate_limited" -> "Discord is even druk. Probeer het over een minuut opnieuw."
-        else -> "Inloggen is niet gelukt. Probeer het opnieuw."
+        "denied" -> t("Je hebt het inloggen bij Discord geannuleerd.", "You cancelled the Discord login.")
+        "not_configured", "client_config", "redirect_mismatch" -> t("Inloggen met Discord werkt even niet. Probeer het later opnieuw.", "Discord login is unavailable right now. Try again later.")
+        "rate_limited" -> t("Discord is even druk. Probeer het over een minuut opnieuw.", "Discord is busy. Try again in a minute.")
+        else -> t("Inloggen is niet gelukt. Probeer het opnieuw.", "Logging in failed. Please try again.")
     }
 }

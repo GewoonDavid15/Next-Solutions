@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Next Solutions</string>
+    <string name="widget_name">Projectvoortgang</string>
+    <string name="widget_description">De voortgang van je lopende project</string>
 </resources>

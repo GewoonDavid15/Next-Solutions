@@ -10,10 +10,13 @@ export const GET = (request: NextRequest) =>
 
 export const POST = (request: NextRequest) =>
   portalRoute(request, true, async (s) => {
-    const b = await readJson<{ actie: string; abonnement: unknown; endpoint: string }>(request);
+    const b = await readJson<{ actie: string; abonnement: unknown; endpoint: string; token: string }>(request);
     if (b.actie === "aan") return bot("POST", "/klant/push", { gebruiker: s.id, abonnement: b.abonnement });
     if (b.actie === "uit") return bot("POST", "/klant/push/uit", { gebruiker: s.id, endpoint: typeof b.endpoint === "string" ? b.endpoint.slice(0, 1000) : null });
     if (b.actie === "test") return bot("POST", "/klant/push/test", { gebruiker: s.id });
+    // Android app: Firebase token for instant notifications
+    if (b.actie === "fcm") return bot("POST", "/klant/push/fcm", { gebruiker: s.id, token: b.token });
+    if (b.actie === "fcm-uit") return bot("POST", "/klant/push/fcm/uit", { gebruiker: s.id, token: b.token });
     return { status: 400, data: { fout: "Onbekende actie." } };
   });
 

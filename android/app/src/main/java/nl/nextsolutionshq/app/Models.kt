@@ -17,7 +17,14 @@ data class Offer(
     val statusEmoji: String, val t: Long, val paid: Boolean, val deliveryTime: String?, val items: List<String>,
     val validUntil: Long?, val paymentInstruction: String?,
 )
-data class Notification(val id: String, val t: Long, val kind: String, val title: String, val text: String, val link: String?, val read: Boolean)
+/** Where a notification leads in the app, e.g. ticket + channel id. */
+data class Target(val kind: String, val id: String?) {
+    fun encode() = if (id != null) "$kind:$id" else kind
+    companion object {
+        fun decode(s: String?): Target? = s?.takeIf { it.isNotBlank() }?.let { Target(it.substringBefore(':'), it.substringAfter(':', "").ifBlank { null }) }
+    }
+}
+data class Notification(val id: String, val t: Long, val kind: String, val title: String, val text: String, val link: String?, val read: Boolean, val target: Target? = null)
 data class Department(val id: String, val title: String, val emoji: String, val short: String, val subjectExample: String, val detailsLabel: String, val detailsExample: String)
 data class ClientFile(val id: String, val name: String, val size: Long, val description: String?, val t: Long)
 data class Level(val level: Int, val title: String, val xp: Int, val percent: Int)
@@ -34,7 +41,29 @@ data class PortalData(
     val unread: Int,
     val departments: List<Department>,
     val profile: Profile?,
+    val transcripts: List<Transcript> = emptyList(),
+    val social: Social? = null,
+    val owner: Boolean = false,
+    val canReview: Boolean = false,
 )
+
+data class Transcript(val id: String, val name: String, val department: String, val emoji: String, val opened: Long, val closed: Long, val messages: Int)
+
+data class SocialFeedback(val t: Long, val decision: String, val text: String)
+data class SocialPost(val id: String, val platform: String, val date: Long, val type: String, val title: String, val caption: String, val media: List<String>, val status: String, val feedback: List<SocialFeedback>)
+data class SocialReport(val id: String, val month: String, val monthName: String, val highlights: String, val advice: String)
+data class SocialUpload(val id: String, val kind: String, val name: String, val size: Long?, val link: String?, val note: String, val t: Long)
+data class SocialPayment(val nr: Int, val period: String, val t: Long, val amount: String)
+data class Subscription(val packageName: String, val price: String, val platforms: List<String>, val status: String, val nextPayment: Long?, val payments: List<SocialPayment>, val paymentInstruction: String?)
+data class Social(val posts: List<SocialPost>, val reports: List<SocialReport>, val uploads: List<SocialUpload>, val subscription: Subscription?) {
+    val active: Boolean get() = posts.isNotEmpty() || reports.isNotEmpty() || subscription != null
+}
+
+// ── Owner (admin mode) ──
+data class AdminTicket(val id: String, val name: String, val department: String, val emoji: String, val owner: String, val lastActivity: Long, val lastFrom: String?)
+data class AdminLead(val id: String, val t: Long, val name: String, val email: String, val service: String, val description: String, val phase: String, val note: String, val budget: String)
+data class AdminOffer(val id: String, val number: String, val title: String, val price: String, val status: String, val statusName: String, val statusEmoji: String, val t: Long)
+data class AdminStats(val visits: Int, val requests: Int, val offers: Int, val paid: Int)
 
 data class ChatAuthor(val id: String, val name: String, val avatar: String?, val bot: Boolean)
 data class ChatMessage(val id: String, val t: Long, val author: ChatAuthor, val via: String?, val text: String, val attachments: List<String>)
@@ -72,7 +101,45 @@ object Parse {
         validUntil = o.longOrNull("geldigTot"), paymentInstruction = o.strOrNull("betaalinstructie"),
     )
 
-    fun notification(o: JSONObject) = Notification(o.str("id"), o.optLong("t"), o.str("soort"), o.str("titel"), o.str("tekst"), o.strOrNull("link"), o.optBoolean("gelezen"))
+    fun notification(o: JSONObject) = Notification(
+        o.str("id"), o.optLong("t"), o.str("soort"), o.str("titel"), o.str("tekst"), o.strOrNull("link"), o.optBoolean("gelezen"),
+        o.optJSONObject("doel")?.let { d -> d.strOrNull("soort")?.let { Target(it, d.strOrNull("id")) } },
+    )
+
+    fun social(o: JSONObject?): Social? {
+        if (o == null) return null
+        val a = o.optJSONObject("abonnement")
+        return Social(
+            posts = o.optJSONArray("posts").map { p ->
+                SocialPost(p.str("id"), p.str("platform"), p.optLong("datum"), p.str("type"), p.str("titel"), p.str("caption"), p.optJSONArray("media").strings(), p.str("status"),
+                    p.optJSONArray("feedback").map { f -> SocialFeedback(f.optLong("t"), f.str("besluit"), f.str("tekst")) })
+            },
+            reports = o.optJSONArray("rapporten").map { r -> SocialReport(r.str("id"), r.str("maand"), r.str("maandNaam").ifBlank { r.str("maand") }, r.str("hoogtepunten"), r.str("advies")) },
+            uploads = o.optJSONArray("uploads").map { u -> SocialUpload(u.str("id"), u.str("soort"), u.str("naam"), u.longOrNull("grootte"), u.strOrNull("link"), u.str("notitie"), u.optLong("t")) },
+            subscription = a?.let {
+                Subscription(it.str("pakket"), it.str("prijs"), it.optJSONArray("platformen").strings(), it.str("status"), it.longOrNull("volgendeBetaling"),
+                    it.optJSONArray("betalingen").map { b -> SocialPayment(b.optInt("nr"), b.str("periode"), b.optLong("t"), b.str("bedrag")) }, it.strOrNull("betaalinstructie"))
+            },
+        )
+    }
+
+    fun adminTickets(o: JSONObject) = o.optJSONArray("open").map {
+        val e = it.optJSONObject("eigenaar") ?: JSONObject()
+        AdminTicket(it.str("id"), it.str("naam"), it.str("afdelingTitel").ifBlank { it.str("afdeling") }, it.str("emoji"), e.str("naam"), it.optLong("laatsteActiviteit"), it.strOrNull("laatsteVan"))
+    }
+
+    fun adminLeads(o: JSONObject) = o.optJSONArray("leads").map {
+        AdminLead(it.str("id"), it.optLong("t"), it.str("naam"), it.str("email"), it.str("dienst"), it.str("omschrijving"), it.str("fase").ifBlank { "nieuw" }, it.str("notitie"), it.str("budget"))
+    }
+
+    fun adminOffers(o: JSONObject) = o.optJSONArray("offertes").map {
+        AdminOffer(it.str("id"), it.str("nummer"), it.str("titel"), it.str("prijs"), it.str("status"), it.str("statusNaam").ifBlank { it.str("status") }, it.str("statusEmoji"), it.optLong("t"))
+    }
+
+    fun adminStats(o: JSONObject): AdminStats {
+        val t = o.optJSONObject("totaal") ?: JSONObject()
+        return AdminStats(t.optInt("bezoeken"), t.optInt("aanvragen"), t.optInt("offertes"), t.optInt("betaald"))
+    }
 
     fun department(o: JSONObject) = Department(o.str("id"), o.str("titel"), o.str("emoji"), o.str("kort"), o.str("onderwerpVoorbeeld"), o.str("detailsLabel"), o.str("detailsVoorbeeld"))
 
@@ -98,6 +165,10 @@ object Parse {
             unread = m?.optInt("ongelezen") ?: 0,
             departments = o.optJSONArray("afdelingen").map(::department),
             profile = profile(o.optJSONObject("profiel")),
+            transcripts = o.optJSONArray("transcripts").map { Transcript(it.str("id"), it.str("naam"), it.str("afdeling"), it.str("emoji"), it.optLong("geopend"), it.optLong("gesloten"), it.optInt("berichten")) },
+            social = social(o.optJSONObject("social")),
+            owner = o.optBoolean("eigenaar"),
+            canReview = o.optBoolean("kanReviewen"),
         )
     }
 
