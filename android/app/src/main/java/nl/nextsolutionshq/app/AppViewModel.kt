@@ -1,18 +1,30 @@
 package nl.nextsolutionshq.app
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.provider.OpenableColumns
+import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import nl.nextsolutionshq.app.widget.ProjectWidget
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.net.URL
+
+/** A file the user picked to send (photo, PDF, ...), already read and, for photos, made smaller. */
+data class PickedFile(val name: String, val type: String, val bytes: ByteArray)
 
 class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as NextApp
@@ -22,9 +34,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     var data by mutableStateOf<PortalData?>(null); private set
     var loading by mutableStateOf(false); private set
     var error by mutableStateOf<String?>(null); private set
+    /** Showing saved data because there is no connection (time of that data) */
+    var offlineSince by mutableStateOf<Long?>(null); private set
     var loginBusy by mutableStateOf(false); private set
-    /** Short message for the snackbar (sent, accepted, ...) */
     var toast by mutableStateOf<String?>(null)
+    var update by mutableStateOf<Pair<String, String>?>(null); private set // versionName, url
 
     var thread by mutableStateOf<TicketThread?>(null); private set
     var threadError by mutableStateOf<String?>(null); private set
@@ -32,8 +46,19 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     var appointments by mutableStateOf<AppointmentInfo?>(null); private set
 
+    // Owner (admin mode)
+    var adminTickets by mutableStateOf<List<AdminTicket>?>(null); private set
+    var adminLeads by mutableStateOf<List<AdminLead>?>(null); private set
+    var adminOffers by mutableStateOf<List<AdminOffer>?>(null); private set
+    var adminStats by mutableStateOf<AdminStats?>(null); private set
+
     init {
-        if (loggedIn) refresh()
+        if (loggedIn) {
+            Cache.load(application)?.let { (d, t) -> data = d; offlineSince = t }
+            refresh()
+            viewModelScope.launch { Crash.sendPending(application, api); app.registerFcm() }
+        }
+        checkForUpdate()
     }
 
     private fun handle(e: Throwable, show: (String) -> Unit = { toast = it }) {
@@ -42,20 +67,25 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             error = e.message
             return
         }
-        show(e.message ?: "Er ging iets mis.")
+        show(e.message ?: t("Er ging iets mis.", "Something went wrong."))
     }
 
     fun refresh() {
-        if (loading) return
+        if (loading || !loggedIn) return
         loading = true
         viewModelScope.launch {
             try {
-                val res = Parse.portal(api.get("/api/app/data"))
-                data = res
+                val json = api.get("/api/app/data")
+                data = Parse.portal(json)
                 error = null
-                MeldingenWorker.notifyNew(getApplication(), res.notifications) // remember what is already there
+                offlineSince = null
+                Cache.save(getApplication(), json)
+                MeldingenWorker.notifyNew(getApplication(), data!!.notifications, show = false)
+                ProjectWidget.refresh(getApplication())
             } catch (e: Exception) {
-                handle(e) { error = it }
+                if (e is ApiException && e.status == 0 && data != null) {
+                    if (offlineSince == null) offlineSince = Cache.load(getApplication())?.second ?: System.currentTimeMillis()
+                } else handle(e) { error = it }
             } finally {
                 loading = false
             }
@@ -71,6 +101,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     error = null
                     app.scheduleChecks()
                     refresh()
+                    app.registerFcm()
                 }
                 .onFailure { error = it.message }
             loginBusy = false
@@ -78,23 +109,56 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
+        viewModelScope.launch { app.unregisterFcm() }
         app.tokens.clear()
+        Cache.clear(getApplication())
         loggedIn = false
         data = null
         thread = null
         appointments = null
+        adminTickets = null; adminLeads = null; adminOffers = null; adminStats = null
         app.scheduleChecks()
+        viewModelScope.launch { ProjectWidget.refresh(getApplication()) }
+    }
+
+    private fun checkForUpdate() {
+        viewModelScope.launch {
+            try {
+                val json = withContext(Dispatchers.IO) { JSONObject(URL("${BuildConfig.SITE_URL}/downloads/app-versie.json").readText()) }
+                if (json.optInt("versionCode") > BuildConfig.VERSION_CODE) update = json.optString("versionName") to json.optString("url")
+            } catch (_: Exception) { }
+        }
+    }
+
+    // ── Files picked by the user ──
+    suspend fun readPicked(uri: Uri): PickedFile? = withContext(Dispatchers.IO) {
+        val ctx = getApplication<Application>()
+        val resolver = ctx.contentResolver
+        var name = "bestand"
+        resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) name = c.getString(0) ?: name }
+        val type = resolver.getType(uri) ?: "application/octet-stream"
+        val raw = resolver.openInputStream(uri)?.use { it.readBytes() } ?: return@withContext null
+        if (type.startsWith("image/") && type != "image/gif") {
+            // Photos from a phone are large: scale to max 1600 px and save as JPEG
+            val bmp = BitmapFactory.decodeByteArray(raw, 0, raw.size) ?: return@withContext PickedFile(name, type, raw)
+            val scale = minOf(1f, 1600f / maxOf(bmp.width, bmp.height))
+            val scaled = if (scale < 1f) Bitmap.createScaledBitmap(bmp, (bmp.width * scale).toInt(), (bmp.height * scale).toInt(), true) else bmp
+            val out = ByteArrayOutputStream()
+            scaled.compress(Bitmap.CompressFormat.JPEG, 82, out)
+            PickedFile(name.substringBeforeLast('.') + ".jpg", "image/jpeg", out.toByteArray())
+        } else PickedFile(name, type, raw)
     }
 
     // ── Tickets ──
-    fun openThread(id: String) {
+    fun openThread(id: String, admin: Boolean = false) {
         threadJob?.cancel()
         thread = null
         threadError = null
+        val path = if (admin) "/api/bot/beheer/ticket?id=$id" else "/api/portaal/ticket/berichten?id=$id"
         threadJob = viewModelScope.launch {
             while (isActive) {
                 try {
-                    thread = Parse.thread(api.get("/api/portaal/ticket/berichten?id=$id"))
+                    thread = Parse.thread(api.get(path))
                     threadError = null
                 } catch (e: Exception) {
                     if (e is ApiException && e.status == 401) { handle(e); return@launch }
@@ -110,11 +174,21 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         threadJob = null
     }
 
-    fun sendMessage(id: String, text: String, done: (Boolean) -> Unit) {
+    fun sendMessage(id: String, text: String, files: List<PickedFile>, admin: Boolean = false, done: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                api.post("/api/portaal/ticket/berichten", JSONObject().put("id", id).put("tekst", text))
-                thread = Parse.thread(api.get("/api/portaal/ticket/berichten?id=$id"))
+                if (files.sumOf { it.bytes.size } > 3 * 1024 * 1024) throw ApiException(413, t("Bijlagen mogen samen maximaal 3 MB zijn.", "Attachments can be 3 MB at most in total."))
+                val attachments = JSONArray().apply {
+                    files.forEach { put(JSONObject().put("naam", it.name).put("data", Base64.encodeToString(it.bytes, Base64.NO_WRAP))) }
+                }
+                val body = JSONObject().put("id", id).put("tekst", text).put("bijlagen", attachments).put("bron", "app")
+                if (admin) {
+                    api.post("/api/bot/beheer/ticket/reageer", body)
+                    thread = Parse.thread(api.get("/api/bot/beheer/ticket?id=$id"))
+                } else {
+                    api.post("/api/portaal/ticket/berichten", body)
+                    thread = Parse.thread(api.get("/api/portaal/ticket/berichten?id=$id"))
+                }
                 done(true)
             } catch (e: Exception) {
                 handle(e); done(false)
@@ -126,7 +200,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 api.post("/api/portaal/ticket", JSONObject().put("afdeling", department).put("onderwerp", subject).put("details", details))
-                toast = "Je ticket is geopend. We reageren zo snel mogelijk."
+                toast = t("Je ticket is geopend. We reageren zo snel mogelijk.", "Your ticket has been opened. We'll reply as soon as possible.")
                 done(true)
                 refresh()
             } catch (e: Exception) {
@@ -135,12 +209,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // ── Offers and projects ──
+    // ── Offers, projects, reviews ──
     fun acceptOffer(id: String) {
         viewModelScope.launch {
             try {
                 api.post("/api/portaal/offerte", JSONObject().put("id", id))
-                toast = "Bedankt! Je krijgt de betaalgegevens in je ticket."
+                toast = t("Bedankt! Je krijgt de betaalgegevens in je ticket.", "Thank you! You'll get the payment details in your ticket.")
                 refresh()
             } catch (e: Exception) { handle(e) }
         }
@@ -150,8 +224,43 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 api.post("/api/portaal/project-feedback", JSONObject().put("id", id).put("soort", if (approve) "akkoord" else "revisie").put("tekst", text))
-                toast = if (approve) "Akkoord doorgegeven aan het team." else "Je revisieverzoek is doorgegeven."
+                toast = if (approve) t("Akkoord doorgegeven aan het team.", "Approval sent to the team.") else t("Je revisieverzoek is doorgegeven.", "Your revision request has been sent.")
                 done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    fun sendReview(stars: Int, text: String, context: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/portaal/review", JSONObject().put("sterren", stars).put("tekst", text).put("context", context))
+                toast = t("Bedankt voor je review! 🙏", "Thank you for your review! 🙏")
+                done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    // ── Social media ──
+    fun judgePost(id: String, approve: Boolean, feedback: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/portaal/social", JSONObject().put("id", id).put("besluit", if (approve) "goedgekeurd" else "aanpassing").put("feedback", feedback))
+                toast = if (approve) t("Post goedgekeurd ✅", "Post approved ✅") else t("Je feedback is doorgegeven.", "Your feedback has been sent.")
+                done(true)
+                refresh()
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    fun uploadContent(file: PickedFile?, link: String, note: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                if (file != null && file.bytes.size > 4 * 1024 * 1024) throw ApiException(413, t("Maximaal 4 MB. Deel grotere bestanden via een link.", "4 MB at most. Share bigger files through a link."))
+                val fields = buildMap { put("notitie", note); if (link.isNotBlank()) { put("link", link); put("naam", link.take(120)) } }
+                api.postMultipart("/api/portaal/social/upload", fields, if (link.isBlank()) file?.let { Triple(it.name, it.type, it.bytes) } else null)
+                toast = t("Ontvangen! Het team kan ermee aan de slag.", "Received! The team can get started with it.")
+                done(true)
+                refresh()
             } catch (e: Exception) { handle(e); done(false) }
         }
     }
@@ -165,12 +274,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun markRead(n: Notification) {
+    fun markRead(id: String) {
         val d = data ?: return
+        val n = d.notifications.find { it.id == id } ?: return
         if (n.read) return
-        data = d.copy(notifications = d.notifications.map { if (it.id == n.id) it.copy(read = true) else it }, unread = (d.unread - 1).coerceAtLeast(0))
+        data = d.copy(notifications = d.notifications.map { if (it.id == id) it.copy(read = true) else it }, unread = (d.unread - 1).coerceAtLeast(0))
         viewModelScope.launch {
-            try { api.post("/api/portaal/meldingen", JSONObject().put("ids", JSONArray().put(n.id))) } catch (_: Exception) { }
+            try { api.post("/api/portaal/meldingen", JSONObject().put("ids", JSONArray().put(id))) } catch (_: Exception) { }
         }
     }
 
@@ -185,7 +295,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 api.post("/api/portaal/afspraken", JSONObject().put("start", start).put("onderwerp", subject).put("notitie", note))
-                toast = "Je afspraak staat gepland. Je krijgt een herinnering in Discord."
+                toast = t("Je afspraak staat gepland. Je krijgt een herinnering in Discord.", "Your appointment is booked. You'll get a reminder in Discord.")
                 loadAppointments()
                 done(true)
             } catch (e: Exception) { handle(e); done(false) }
@@ -196,8 +306,35 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 api.delete("/api/portaal/afspraken?id=${Uri.encode(id)}")
-                toast = "Je afspraak is geannuleerd."
+                toast = t("Je afspraak is geannuleerd.", "Your appointment has been cancelled.")
                 loadAppointments()
+            } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    // ── Owner (admin mode) ──
+    fun loadAdmin() {
+        viewModelScope.launch {
+            try { adminStats = Parse.adminStats(api.get("/api/bot/beheer/funnel?dagen=7")) } catch (_: Exception) { }
+            try { adminTickets = Parse.adminTickets(api.get("/api/bot/beheer/tickets")) } catch (e: Exception) { handle(e) }
+            try { adminLeads = Parse.adminLeads(api.get("/api/bot/beheer/leads")) } catch (_: Exception) { adminLeads = adminLeads ?: emptyList() }
+            try { adminOffers = Parse.adminOffers(api.get("/api/bot/beheer/offertes")) } catch (_: Exception) { adminOffers = adminOffers ?: emptyList() }
+        }
+    }
+
+    fun setLeadPhase(id: String, phase: String) {
+        adminLeads = adminLeads?.map { if (it.id == id) it.copy(phase = phase) else it }
+        viewModelScope.launch {
+            try { api.post("/api/bot/beheer/lead/fase", JSONObject().put("id", id).put("fase", phase)) } catch (e: Exception) { handle(e); loadAdmin() }
+        }
+    }
+
+    fun markOfferPaid(id: String) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/bot/beheer/offerte/betaald", JSONObject().put("id", id))
+                toast = t("Offerte op betaald gezet. De klant krijgt het betaalbewijs.", "Quote marked as paid. The client gets the receipt.")
+                loadAdmin()
             } catch (e: Exception) { handle(e) }
         }
     }

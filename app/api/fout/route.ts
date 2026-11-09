@@ -14,6 +14,6 @@ export async function POST(request: Request) {
   const str = (v: unknown, n: number) => (typeof v === "string" ? v.slice(0, n) : undefined);
   const pad = str(b.pad, 200);
   if (!pad?.startsWith("/")) return new NextResponse(null, { status: 400 });
-  await botRequest("POST", "/fout", JSON.stringify({ bron: "browser", bericht: str(b.bericht, 500), pad, stack: str(b.stack, 3000), digest: str(b.digest, 40), browser: str(b.browser, 60) })).catch(() => null);
+  await botRequest("POST", "/fout", JSON.stringify({ bron: b.bron === "app" ? "app" : "browser", bericht: str(b.bericht, 500), pad, stack: str(b.stack, 3000), digest: str(b.digest, 40), browser: str(b.browser, 60) })).catch(() => null);
   return new NextResponse(null, { status: 204 });
 }

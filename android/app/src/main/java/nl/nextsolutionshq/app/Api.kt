@@ -38,6 +38,45 @@ class Api(private val tokens: TokenStore, private val base: String = BuildConfig
     suspend fun post(path: String, body: JSONObject = JSONObject()): JSONObject = request("POST", path, body)
     suspend fun delete(path: String): JSONObject = request("DELETE", path, null)
 
+    /** File upload as multipart/form-data (for delivering social media content). */
+    suspend fun postMultipart(path: String, fields: Map<String, String>, file: Triple<String, String, ByteArray>?): JSONObject = withContext(Dispatchers.IO) {
+        val boundary = "----NextSolutions${System.currentTimeMillis()}"
+        val conn = (URL(base + path).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            connectTimeout = 15_000
+            readTimeout = 60_000
+            doOutput = true
+            setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            setRequestProperty("User-Agent", "NextSolutionsApp/${BuildConfig.VERSION_NAME} (Android)")
+            tokens.token?.let { setRequestProperty("Authorization", "Bearer $it") }
+        }
+        try {
+            conn.outputStream.use { out ->
+                fun line(s: String) = out.write("$s\r\n".toByteArray())
+                for ((k, v) in fields) { line("--$boundary"); line("Content-Disposition: form-data; name=\"$k\""); line(""); line(v) }
+                if (file != null) {
+                    val (name, type, bytes) = file
+                    line("--$boundary")
+                    line("Content-Disposition: form-data; name=\"bestand\"; filename=\"${name.replace("\"", "")}\"")
+                    line("Content-Type: $type")
+                    line("")
+                    out.write(bytes)
+                    line("")
+                }
+                line("--$boundary--")
+            }
+            val status = conn.responseCode
+            val text = (if (status in 200..299) conn.inputStream else conn.errorStream)?.bufferedReader()?.use { it.readText() }.orEmpty()
+            val json = parse(text)
+            if (status !in 200..299) throw ApiException(status, json.optString("fout").ifBlank { "Er ging iets mis ($status)." })
+            json
+        } catch (e: IOException) {
+            throw ApiException(0, t("Geen verbinding. Controleer je internet en probeer het opnieuw.", "No connection. Check your internet and try again."))
+        } finally {
+            conn.disconnect()
+        }
+    }
+
     private suspend fun request(method: String, path: String, body: JSONObject?): JSONObject = withContext(Dispatchers.IO) {
         val conn = (URL(base + path).openConnection() as HttpURLConnection).apply {
             requestMethod = method
@@ -59,17 +98,17 @@ class Api(private val tokens: TokenStore, private val base: String = BuildConfig
             if (status !in 200..299) {
                 val msg = json.optString("fout").ifBlank {
                     when (status) {
-                        401 -> "Je bent uitgelogd. Log opnieuw in."
-                        429 -> "Even rustig aan, probeer het zo opnieuw."
-                        in 500..599 -> "De server is even niet bereikbaar. Probeer het zo opnieuw."
-                        else -> "Er ging iets mis ($status)."
+                        401 -> t("Je bent uitgelogd. Log opnieuw in.", "You have been logged out. Please log in again.")
+                        429 -> t("Even rustig aan, probeer het zo opnieuw.", "Slow down a little, try again in a moment.")
+                        in 500..599 -> t("De server is even niet bereikbaar. Probeer het zo opnieuw.", "The server is unavailable right now. Try again soon.")
+                        else -> t("Er ging iets mis ($status).", "Something went wrong ($status).")
                     }
                 }
                 throw ApiException(status, msg)
             }
             json
         } catch (e: IOException) {
-            throw ApiException(0, "Geen verbinding. Controleer je internet en probeer het opnieuw.")
+            throw ApiException(0, t("Geen verbinding. Controleer je internet en probeer het opnieuw.", "No connection. Check your internet and try again."))
         } finally {
             conn.disconnect()
         }

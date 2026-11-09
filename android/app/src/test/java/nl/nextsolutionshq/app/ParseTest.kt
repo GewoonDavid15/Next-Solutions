@@ -15,7 +15,9 @@ class ParseTest {
      "bugs":[],
      "profiel":{"niveau":{"level":3,"titel":"Vaste klant","xp":120,"procent":40},"badges":[{"id":"a","naam":"Eerste project","emoji":"🚀","behaald":true,"uitleg":"x"}]},
      "afdelingen":[{"id":"software","titel":"Software","emoji":"💻","kort":"Bots","onderwerpVoorbeeld":"","detailsLabel":"","detailsVoorbeeld":""}],
-     "meldingen":{"meldingen":[{"id":"m1","t":2,"soort":"ticket","titel":"Antwoord","tekst":"Hoi","link":"/klantportaal#tickets","gelezen":false}],"ongelezen":1}}
+     "meldingen":{"meldingen":[{"id":"m1","t":2,"soort":"ticket","titel":"Antwoord","tekst":"Hoi","link":"/klantportaal#tickets","doel":{"soort":"ticket","id":"555"},"gelezen":false}],"ongelezen":1},
+     "social":{"posts":[{"id":"p1","platform":"Instagram","datum":5,"type":"post","titel":"Lancering","caption":"","media":[],"status":"ter-goedkeuring","feedback":[]}],"rapporten":[],"uploads":[],"abonnement":null},
+     "eigenaar":true,"kanReviewen":true}
     """.trimIndent()
 
     @Test fun parsesPortalData() {
@@ -29,6 +31,15 @@ class ParseTest {
         assertEquals(1, d.unread)
         assertEquals(3, d.profile?.level?.level)
         assertTrue(d.files.isEmpty())
+        assertEquals(Target("ticket", "555"), d.notifications[0].target)
+        assertEquals("ter-goedkeuring", d.social?.posts?.get(0)?.status)
+        assertTrue(d.social!!.active && d.owner && d.canReview)
+    }
+
+    @Test fun encodesTargets() {
+        assertEquals(Target("project", "12"), Target.decode(Target("project", "12").encode()))
+        assertEquals(Target("beheer", null), Target.decode("beheer"))
+        assertNull(Target.decode(""))
     }
 
     @Test fun toleratesMissingFields() {
@@ -41,5 +52,6 @@ class ParseTest {
         assertEquals("tickets", MeldingenWorker.tabFor("/klantportaal#tickets"))
         assertEquals("projecten", MeldingenWorker.tabFor("/klantportaal/project/123"))
         assertEquals("overzicht", MeldingenWorker.tabFor(null))
+        assertEquals("beheer", MeldingenWorker.tabFor("/dashboard"))
     }
 }
