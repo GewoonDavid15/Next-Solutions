@@ -51,6 +51,9 @@ const sections: LegalSection[] = [
       "Feedback op ontwerpen: je opmerkingen en de plek op de afbeelding waar je ze plaatste.",
       "Tevredenheid: het cijfer en de opmerking die je geeft na de oplevering van een project.",
       "Storingsmeldingen: je e-mailadres als je je daarvoor aanmeldt op de statuspagina.",
+      "Inloggen met e-mail (zonder Discord): je e-mailadres, de naam die je kiest en een klantnummer. Je ontvangt antwoorden op je tickets dan per mail.",
+      "Opvolging: deed je een aanvraag en hoorden we na twee weken niets meer, dan sturen we je één keer een mail om te vragen of je nog interesse hebt.",
+      "Notities van ons team: korte aantekeningen over je wensen (bijvoorbeeld je voorkeurstaal), alleen zichtbaar voor ons team. Je kunt ze opvragen via Mijn gegevens of per mail.",
     ],
   },
   {
@@ -161,6 +164,9 @@ const sectionsEn: LegalSection[] = [
       "Feedback on designs: your comments and the spot on the image where you placed them.",
       "Satisfaction: the score and comment you give after a project is delivered.",
       "Outage notifications: your email address if you subscribe on the status page.",
+      "Logging in with email (without Discord): your email address, the name you choose and a client number. You then receive replies to your tickets by email.",
+      "Follow-up: if you sent us a request and we haven't heard from you for two weeks, we email you once to ask whether you're still interested.",
+      "Notes from our team: short notes about your wishes (for example your preferred language), only visible to our team. You can request them through My data or by email.",
     ],
   },
   {

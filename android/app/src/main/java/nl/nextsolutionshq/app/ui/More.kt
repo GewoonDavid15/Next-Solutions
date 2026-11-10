@@ -27,6 +27,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Download
@@ -82,6 +86,7 @@ fun MoreScreen(vm: AppViewModel, navigate: (Route) -> Unit, askNotificationPermi
     var notify by remember { mutableStateOf(settings.notifications) }
     var lock by remember { mutableStateOf(settings.lock) }
     var confirmLogout by remember { mutableStateOf(false) }
+    var nameDialog by remember { mutableStateOf(false) }
     val d = vm.data
     val app = context.applicationContext as NextApplication
 
@@ -110,6 +115,10 @@ fun MoreScreen(vm: AppViewModel, navigate: (Route) -> Unit, askNotificationPermi
             }
         }
         if (d?.owner == true) item { MenuRow(Icons.Filled.AdminPanelSettings, t("Beheer-modus", "Admin mode"), t("Aanvragen, tickets en offertes", "Requests, tickets and quotes")) { navigate(Route.Admin) } }
+        if (d?.user?.email != null) item { MenuRow(Icons.Filled.Person, t("Je naam", "Your name"), d.user.name) { nameDialog = true } }
+        if (d?.profile != null) item { MenuRow(Icons.Filled.Edit, t("Profiel bewerken", "Edit profile"), t("Bio, bedrijf en website", "Bio, company and website")) { navigate(Route.ProfileEdit) } }
+        item { MenuRow(Icons.Filled.CardGiftcard, t("Breng iemand mee", "Refer someone"), t("Deel je link en krijg een bedankje", "Share your link and get a thank-you")) { navigate(Route.Referral) } }
+        item { MenuRow(Icons.Filled.Checklist, t("Startchecklist", "Start checklist"), t("Wat we nodig hebben om te starten", "What we need to get started")) { navigate(Route.Checklist) } }
         item { MenuRow(Icons.Filled.Notifications, t("Meldingen", "Notifications"), d?.unread?.takeIf { it > 0 }?.let { t("$it nieuw", "$it new") }) { navigate(Route.Notifications) } }
         if (d?.social?.active == true) item { MenuRow(Icons.Filled.FolderOpen, t("Projecten", "Projects"), null) { navigate(Route.Projects) } }
         item { MenuRow(Icons.Filled.CalendarMonth, t("Afspraken", "Appointments"), t("Plan een call met het team", "Book a call with the team")) { navigate(Route.Appointments) } }
@@ -147,6 +156,7 @@ fun MoreScreen(vm: AppViewModel, navigate: (Route) -> Unit, askNotificationPermi
             )
         }
     }
+    if (nameDialog) NameDialog(vm) { nameDialog = false }
     if (confirmLogout) AlertDialog(
         onDismissRequest = { confirmLogout = false },
         title = { Text(t("Uitloggen?", "Log out?")) },
@@ -276,7 +286,7 @@ fun <T> ChipRow(options: List<T>, selected: T?, label: (T) -> String, onSelect: 
 
 // ═══════════════════════════════ Bestanden ═══════════════════════════════
 @Composable
-fun FilesScreen(vm: AppViewModel) {
+fun FilesScreen(vm: AppViewModel, navigate: (Route) -> Unit) {
     val context = LocalContext.current
     val files = vm.data?.files.orEmpty()
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -289,6 +299,7 @@ fun FilesScreen(vm: AppViewModel) {
                         Text("${fileSize(f.size)} • ${date(f.t)}", color = Muted, fontSize = 13.sp)
                         f.description?.let { Text(it, color = Faint, fontSize = 13.sp) }
                     }
+                    if (f.isImage) TextButton(onClick = { navigate(Route.DesignFeedback(f.id, f.name)) }) { Text("📍 " + t("Feedback", "Feedback")) }
                     Icon(Icons.Filled.Download, t("Downloaden", "Download"), tint = Lime)
                 }
             }

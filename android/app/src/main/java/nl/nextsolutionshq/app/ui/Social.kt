@@ -81,6 +81,11 @@ fun SocialScreen(vm: AppViewModel) {
                         Text(a.price, color = Lime, fontWeight = FontWeight.Bold)
                         if (a.platforms.isNotEmpty()) Text(a.platforms.joinToString(" • "), color = Muted, fontSize = 14.sp)
                         a.nextPayment?.let { KeyValue(t("Volgende betaling", "Next payment"), date(it)) }
+                        a.payments.take(6).forEach { pay ->
+                            Text("🧾 ${pay.period} • ${pay.amount}", color = Lime, fontSize = 13.sp, modifier = Modifier.clickable {
+                                download(context, "${BuildConfig.SITE_URL}/api/portaal/social/bestand?soort=bon&nr=${pay.nr}", "betaalbewijs-social-${pay.nr}.pdf")
+                            })
+                        }
                         a.paymentInstruction?.let {
                             Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Surface2).padding(12.dp)) {
                                 Column { Text(t("Betalen", "Payment"), fontWeight = FontWeight.SemiBold); Text(it, color = Muted, fontSize = 14.sp) }

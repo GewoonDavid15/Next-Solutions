@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((l) => l.href !== "/klantportaal")
       .map((l) => ({ path: l.href, changeFrequency: l.href === "/" ? ("weekly" as const) : ("monthly" as const), priority: l.href === "/" ? 1 : 0.8 })),
     ...["/social-media", "/nexify", "/kennisbank", "/team", "/reviews", "/vacatures", "/status"].map((path) => ({ path, changeFrequency: "daily" as const, priority: 0.5 })),
-    ...["/gratis", "/vergelijk", ...checklists.map((c) => `/gratis/${c.slug}`)].map((path) => ({ path, changeFrequency: "monthly" as const, priority: 0.6 })),
+    ...["/gratis", "/vergelijk", "/samenstellen", ...checklists.map((c) => `/gratis/${c.slug}`)].map((path) => ({ path, changeFrequency: "monthly" as const, priority: 0.6 })),
     ...(SHOW_PORTFOLIO ? projects : []).map((p) => ({ path: `/portfolio/${p.slug}`, changeFrequency: "yearly" as const, priority: 0.6 })),
     ...servicePages.map((s) => ({ path: `/diensten/${s.slug}`, changeFrequency: "monthly" as const, priority: 0.7 })),
     ...articles.map((a) => ({ path: `/kennisbank/${a.slug}`, changeFrequency: "monthly" as const, priority: 0.5 })),

@@ -5,6 +5,7 @@ import { Hero } from "@/components/sections/Hero";
 import { LiveStats } from "@/components/sections/LiveStats";
 import { ProcessSection } from "@/components/sections/ProcessSection";
 import { ReviewsSection } from "@/components/sections/ReviewsSection";
+import { TrustedBy } from "@/components/sections/TrustedBy";
 import { getPublicData } from "@/lib/bot-api";
 import { getI18n, pageMetadata } from "@/lib/i18n/server";
 import { Suspense } from "react";
@@ -15,7 +16,7 @@ export async function generateMetadata() {
 }
 
 export default async function HomePage() {
-  const [{ content }, live] = await Promise.all([getI18n(), getPublicData()]);
+  const [{ content, locale }, live] = await Promise.all([getI18n(), getPublicData()]);
   const reviews = live?.reviews;
   return (
     <>
@@ -24,6 +25,7 @@ export default async function HomePage() {
       <Suspense fallback={<LiveStats services={content.services.length} uptime={null} />}>
         <LiveStatsWithUptime services={content.services.length} />
       </Suspense>
+      <TrustedBy locale={locale} />
       <CoreServices />
       <ProcessSection />
       {/* Live reviews from the Discord bot; streamed in so the rest of the page is not delayed */}

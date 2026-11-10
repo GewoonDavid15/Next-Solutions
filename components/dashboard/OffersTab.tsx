@@ -1,5 +1,6 @@
 "use client";
 
+import { OfferTemplatesPanel } from "@/components/dashboard/OfferTemplatesPanel";
 import { Ban, CheckCircle2, ExternalLink, FileSignature, Inbox, Mail, Receipt, Ticket, Trash2, Undo2 } from "lucide-react";
 import { useState } from "react";
 import { Loading, Notice, Panel } from "@/components/dashboard/ui";
@@ -55,6 +56,7 @@ export function OffersTab() {
     <div className="space-y-6">
       {error && <Notice>{error}</Notice>}
       {message && <Notice kind={message.kind}>{message.text}</Notice>}
+      <OfferTemplatesPanel />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[

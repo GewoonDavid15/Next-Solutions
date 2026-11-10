@@ -58,7 +58,7 @@ const texts = {
 };
 
 export default async function PrijzenPage() {
-  const [{ locale, content }, calculator] = await Promise.all([getI18n(), getCalculator()]);
+  const [{ locale, content, lp }, calculator] = await Promise.all([getI18n(), getCalculator()]);
   const tx = texts[locale];
   const { packages, gamePackages, mediaPackages, pricingFaq } = getPricing(locale);
   const departments = content.departments;
@@ -76,6 +76,7 @@ export default async function PrijzenPage() {
         description={tx.intro}
       >
         <p className="text-sm text-zinc-500">{tx.note}</p>
+        <Link href={lp("/samenstellen")} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-300 hover:underline">{locale === "en" ? "Or build your own package in 4 steps" : "Of stel zelf je pakket samen in 4 stappen"} →</Link>
       </PageHeader>
 
       {calculator && <PriceCalculator calculator={calculator} />}

@@ -28,6 +28,8 @@ export interface SessionUser {
   demo?: boolean;
   /** Logged in through the Android app (token in the Authorization header instead of a cookie) */
   app?: boolean;
+  /** Client without Discord, logged in with a link by email */
+  email?: string;
 }
 
 function secret() {
@@ -68,6 +70,26 @@ export const isAppRequest = (request: Request) => Boolean(appSessionFrom(request
 export function encodeLoginCode(user: SessionUser, challenge: string) {
   const payload = Buffer.from(JSON.stringify({ user, ch: challenge, exp: Date.now() + 120_000, soort: "app-login" })).toString("base64url");
   return `${payload}.${sign(`login:${payload}`)}`;
+}
+
+/** Login link by email: signed, valid for 15 minutes. With `app` it ends in the Android app (PKCE challenge). */
+export function encodeEmailLink(email: string, extra: { app?: string; terug?: string; taal?: string } = {}) {
+  const payload = Buffer.from(JSON.stringify({ email, ...extra, exp: Date.now() + 15 * 60_000, soort: "email-login" })).toString("base64url");
+  return `${payload}.${sign(`email:${payload}`)}`;
+}
+
+export function decodeEmailLink(token: string): { email: string; app?: string; terug?: string; taal?: string } | null {
+  const [payload, signature] = String(token).split(".");
+  if (!payload || !signature) return null;
+  const expected = Buffer.from(sign(`email:${payload}`));
+  const actual = Buffer.from(signature);
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) return null;
+  try {
+    const d = JSON.parse(Buffer.from(payload, "base64url").toString()) as { email: string; app?: string; terug?: string; taal?: string; exp: number; soort: string };
+    return d.soort === "email-login" && d.exp > Date.now() ? d : null;
+  } catch {
+    return null;
+  }
 }
 
 export function redeemLoginCode(code: string, verifier: string): SessionUser | null {

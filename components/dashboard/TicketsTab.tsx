@@ -1,5 +1,6 @@
 "use client";
 
+import { ClientNote } from "@/components/dashboard/ClientNote";
 import { Archive, ExternalLink, FileText, Lock, MessageSquare, Paperclip, RefreshCw, Search, Send, Ticket, X, Zap } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -75,6 +76,7 @@ function Chat({ ticket, onClosed }: { ticket: OpenTicket; onClosed: () => void }
 
   return (
     <div className="flex h-[70vh] min-h-[480px] flex-col">
+      <div className="mb-2"><ClientNote userId={ticket.eigenaar.id} compact /></div>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
         <div className="min-w-0">
           <p className="truncate font-semibold">

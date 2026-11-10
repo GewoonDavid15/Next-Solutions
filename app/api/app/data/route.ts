@@ -19,7 +19,7 @@ export async function GET() {
   if (!data) return NextResponse.json({ fout: "De bot is even niet bereikbaar. Probeer het zo opnieuw." }, { status: 502 });
   return NextResponse.json(
     {
-      gebruiker: { id: session.id, naam: session.globalName ?? session.username, gebruikersnaam: session.username, avatar: avatarUrl(session) },
+      gebruiker: { id: session.id, naam: session.globalName ?? session.username, gebruikersnaam: session.username, avatar: session.email ? null : avatarUrl(session), email: session.email ?? null },
       ...data,
       profiel,
       afdelingen,

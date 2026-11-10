@@ -23,7 +23,7 @@ export default async function KlantportaalPage({ searchParams }: { searchParams:
   // Real clients see their live data from the Discord bot
   if (!session.demo && isBotApiConfigured()) {
     const [data, departments, profile] = await Promise.all([getClientData(session.id), getTicketDepartments(), getClientProfile(session.id)]);
-    return <ClientPortal user={{ ...user, id: session.id }} data={data} profile={profile} departments={departments} isOwner={isDashboardOwner(session)} locale={locale} />;
+    return <ClientPortal user={{ ...user, id: session.id, email: session.email }} data={data} profile={profile} departments={departments} isOwner={isDashboardOwner(session)} locale={locale} />;
   }
 
   // Demo login (or bot not connected yet): example data

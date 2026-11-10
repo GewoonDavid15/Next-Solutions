@@ -1,5 +1,6 @@
 "use client";
 
+import { EmailClientsPanel } from "@/components/dashboard/EmailClientsPanel";
 import { Copy, Crown, Minus, Plus, Search, ShieldAlert, Star, UserRound, Users, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -250,6 +251,7 @@ export function MembersTab() {
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_minmax(0,420px)]">
       <DeletionRequests />
+      <EmailClientsPanel />
       <Panel title={`Leden${members.data ? ` • ${members.data.totaal}` : ""}`} icon={Users} className={cn(selected && "hidden lg:block")}>
         <div className="mb-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <div className="relative">

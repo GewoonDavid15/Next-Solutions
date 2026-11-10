@@ -87,6 +87,10 @@ sealed interface Route {
     data object AdminOffers : Route { override val title get() = t("Alle offertes", "All quotes") }
     data object AdminProjects : Route { override val title get() = t("Projecten bijwerken", "Update projects") }
     data object QuickRepliesEdit : Route { override val title get() = t("Snelle antwoorden", "Quick replies") }
+    data object Referral : Route { override val title get() = t("Breng iemand mee", "Refer someone") }
+    data object ProfileEdit : Route { override val title get() = t("Profiel bewerken", "Edit profile") }
+    data object Checklist : Route { override val title get() = t("Startchecklist", "Start checklist") }
+    data class DesignFeedback(val id: String, val name: String) : Route { override val title get() = name }
 }
 
 private data class Tab(val route: Route, val label: String, val icon: ImageVector)
@@ -229,7 +233,7 @@ fun NextApp(
                     }
                 }
                 Route.Appointments -> AppointmentsScreen(vm)
-                Route.Files -> FilesScreen(vm)
+                Route.Files -> FilesScreen(vm, navigate)
                 Route.Transcripts -> TranscriptsScreen(vm, navigate)
                 is Route.Transcript -> TranscriptScreen(current.id)
                 Route.Review -> ReviewScreen(vm, back)
@@ -239,6 +243,10 @@ fun NextApp(
                 Route.AdminOffers -> AdminOffersScreen(vm)
                 Route.AdminProjects -> AdminProjectsScreen(vm)
                 Route.QuickRepliesEdit -> QuickRepliesScreen()
+                Route.Referral -> ReferralScreen(vm)
+                Route.ProfileEdit -> ProfileEditScreen(vm, back)
+                Route.Checklist -> ChecklistScreen(vm)
+                is Route.DesignFeedback -> DesignFeedbackScreen(vm, current.id)
             }
         }
     }
@@ -283,11 +291,39 @@ fun LoginScreen(vm: AppViewModel) {
                 Text(t("Inloggen met Discord", "Log in with Discord"), fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             }
         }
+        Spacer(Modifier.height(20.dp))
+        EmailLogin(vm)
         vm.error?.let {
             Spacer(Modifier.height(16.dp))
             Text(it, color = Danger, textAlign = TextAlign.Center)
         }
         Spacer(Modifier.height(24.dp))
         Text(t("Nog geen klant? Kijk op nextsolutionshq.nl", "Not a client yet? Visit nextsolutionshq.nl"), color = Faint, fontSize = 13.sp, textAlign = TextAlign.Center)
+    }
+}
+
+/** Without Discord: log in with a link by email. */
+@Composable
+private fun EmailLogin(vm: AppViewModel) {
+    var open by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    val sent = vm.emailSent
+    when {
+        sent != null -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(t("Check je mail! We stuurden een inloglink naar $sent. Open hem op deze telefoon.", "Check your email! We sent a login link to $sent. Open it on this phone."), color = Success, textAlign = TextAlign.Center)
+            androidx.compose.material3.TextButton(onClick = { vm.resetEmailLogin() }) { Text(t("Ander adres gebruiken", "Use another address")) }
+        }
+        !open -> androidx.compose.material3.TextButton(onClick = { open = true }) { Text(t("Geen Discord? Log in met je e-mail", "No Discord? Log in with your email")) }
+        else -> Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            androidx.compose.material3.OutlinedTextField(
+                email, { email = it.trim().take(254) }, label = { Text(t("E-mailadres", "Email address")) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Email),
+            )
+            androidx.compose.material3.OutlinedButton(
+                onClick = { vm.clearError(); vm.loginWithEmail(email) },
+                enabled = !vm.loginBusy && Regex("^[^@\\s]+@[^@\\s]+\\.[a-zA-Z]{2,}$").matches(email),
+                modifier = Modifier.fillMaxWidth().height(50.dp), shape = RoundedCornerShape(16.dp),
+            ) { Text(t("Stuur me een inloglink", "Email me a login link")) }
+        }
     }
 }

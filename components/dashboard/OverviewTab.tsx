@@ -1,5 +1,6 @@
 "use client";
 
+import { AwayPanel } from "@/components/dashboard/AwayPanel";
 import { Bot, Bug, Clock, Cpu, FolderKanban, Gauge, Globe, RefreshCw, Server, Ticket, UserPlus, Users } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -53,6 +54,7 @@ export function OverviewTab() {
   return (
     <div className="space-y-6">
       {error && <Notice>{error} (laatst bekende gegevens worden getoond)</Notice>}
+      <AwayPanel />
 
       <Panel
         actions={

@@ -75,6 +75,7 @@ fun AdminScreen(vm: AppViewModel, navigate: (Route) -> Unit) {
                 }
             }
         }
+        item { AwayCard(vm) }
         val newLeads = vm.adminLeads?.count { it.phase == "nieuw" } ?: 0
         val waiting = vm.adminTickets?.count { it.lastFrom == "klant" } ?: 0
         item { MenuRow(Icons.Filled.Inbox, t("Aanvragen", "Requests"), if (newLeads > 0) t("$newLeads nieuw", "$newLeads new") else t("Pijplijn bekijken", "View pipeline")) { navigate(Route.AdminLeads) } }
@@ -230,4 +231,25 @@ private fun ProjectEditDialog(vm: AppViewModel, p: nl.nextsolutionshq.app.AdminP
         confirmButton = { Button(enabled = !busy, onClick = { busy = true; vm.updateProject(p.id, phase, percent.toInt(), note.trim()) { ok -> busy = false; if (ok) onDismiss() } }) { Text(t("Opslaan", "Save")) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text(t("Annuleren", "Cancel")) } },
     )
+}
+
+/** Away mode: holiday or sick. The website shows a bar and new tickets get an automatic message. */
+@Composable
+private fun AwayCard(vm: AppViewModel) {
+    LaunchedEffect(Unit) { vm.loadAway() }
+    val a = vm.away ?: return
+    var days by remember { mutableStateOf<Int?>(null) }
+    Panel {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("🌴 " + t("Afwezig-modus", "Away mode"), fontWeight = FontWeight.SemiBold)
+                    Text(if (a.on) a.text else t("Website-balk en automatisch bericht in nieuwe tickets.", "Website bar and an automatic message in new tickets."), color = Muted, fontSize = 13.sp)
+                }
+                androidx.compose.material3.Switch(checked = a.on, onCheckedChange = { on -> vm.setAway(on, days?.let { System.currentTimeMillis() + it * 86_400_000L }, a.message) },
+                    colors = androidx.compose.material3.SwitchDefaults.colors(checkedTrackColor = Lime, checkedThumbColor = Ink))
+            }
+            if (!a.on) ChipRow(listOf(1, 3, 7, 14), days, { t("$it dag${if (it == 1) "" else "en"}", "$it day${if (it == 1) "" else "s"}") }) { days = if (days == it) null else it }
+        }
+    }
 }

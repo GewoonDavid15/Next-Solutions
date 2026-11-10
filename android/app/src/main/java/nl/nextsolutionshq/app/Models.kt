@@ -3,7 +3,7 @@ package nl.nextsolutionshq.app
 import org.json.JSONArray
 import org.json.JSONObject
 
-data class User(val id: String, val name: String, val username: String, val avatar: String?)
+data class User(val id: String, val name: String, val username: String, val avatar: String?, val email: String? = null)
 data class Phase(val nr: Int, val name: String, val emoji: String)
 data class ProjectUpdate(val t: Long, val percentage: Int, val note: String, val phaseName: String)
 data class Project(
@@ -27,10 +27,12 @@ data class Target(val kind: String, val id: String?) {
 }
 data class Notification(val id: String, val t: Long, val kind: String, val title: String, val text: String, val link: String?, val read: Boolean, val target: Target? = null)
 data class Department(val id: String, val title: String, val emoji: String, val short: String, val subjectExample: String, val detailsLabel: String, val detailsExample: String)
-data class ClientFile(val id: String, val name: String, val size: Long, val description: String?, val t: Long)
+data class ClientFile(val id: String, val name: String, val size: Long, val description: String?, val t: Long, val type: String = "") {
+    val isImage: Boolean get() = type.startsWith("image/")
+}
 data class Level(val level: Int, val title: String, val xp: Int, val percent: Int)
 data class Badge(val id: String, val name: String, val emoji: String, val earned: Boolean, val explanation: String)
-data class Profile(val level: Level?, val badges: List<Badge>, val tagline: String?)
+data class Profile(val level: Level?, val badges: List<Badge>, val tagline: String?, val bio: String? = null, val company: String? = null, val website: String? = null)
 
 data class PortalData(
     val user: User,
@@ -51,6 +53,11 @@ data class PortalData(
 )
 
 data class Survey(val id: String, val project: String)
+data class Referral(val link: String, val reward: String?, val requests: Int, val clients: Int, val people: List<Pair<String, String>>)
+data class ChecklistList(val channelId: String, val title: String, val items: List<Pair<String, Boolean>>)
+data class Pin(val id: String, val x: Float, val y: Float, val text: String, val name: String, val done: Boolean, val replies: List<Pair<String, String>>)
+data class OfferTemplate(val id: String, val name: String, val title: String, val price: String, val items: List<String>, val delivery: String?, val note: String?)
+data class AwayState(val on: Boolean, val until: Long?, val message: String, val text: String)
 data class AdminProject(val id: String, val name: String, val client: String?, val phase: Int?, val phaseName: String?, val percentage: Int?, val note: String, val hasStatus: Boolean)
 
 data class Transcript(val id: String, val name: String, val department: String, val emoji: String, val opened: Long, val closed: Long, val messages: Int)
@@ -74,7 +81,7 @@ data class AdminStats(val visits: Int, val requests: Int, val offers: Int, val p
 data class ChatAuthor(val id: String, val name: String, val avatar: String?, val bot: Boolean)
 data class Attachment(val name: String, val url: String?, val image: Boolean)
 data class ChatMessage(val id: String, val t: Long, val author: ChatAuthor, val via: String?, val text: String, val attachments: List<Attachment>)
-data class TicketThread(val id: String, val name: String, val messages: List<ChatMessage>)
+data class TicketThread(val id: String, val name: String, val messages: List<ChatMessage>, val ownerId: String? = null)
 
 data class Appointment(val id: String, val start: Long, val end: Long, val subject: String, val note: String, val status: String)
 data class AppointmentInfo(val enabled: Boolean, val slots: List<Long>, val duration: Int, val subjects: List<String>, val appointments: List<Appointment>)
@@ -89,7 +96,7 @@ private inline fun <T> JSONArray?.map(fn: (JSONObject) -> T): List<T> =
 private fun JSONArray?.strings(): List<String> = if (this == null) emptyList() else (0 until length()).map { optString(it) }.filter { it.isNotBlank() }
 
 object Parse {
-    fun user(o: JSONObject) = User(o.str("id"), o.str("naam").ifBlank { o.str("gebruikersnaam") }, o.str("gebruikersnaam"), o.strOrNull("avatar"))
+    fun user(o: JSONObject) = User(o.str("id"), o.str("naam").ifBlank { o.str("gebruikersnaam") }, o.str("gebruikersnaam"), o.strOrNull("avatar"), o.strOrNull("email"))
 
     fun project(o: JSONObject) = Project(
         id = o.str("id"), name = o.str("naam"), phase = o.optInt("fase"), phaseName = o.str("faseNaam"), phaseEmoji = o.str("faseEmoji"),
@@ -149,6 +156,26 @@ object Parse {
             if (it.isNull("percentage")) null else it.optInt("percentage"), it.str("notitie"), it.optBoolean("heeftStatus", !it.isNull("percentage")))
     }
 
+    fun referral(o: JSONObject): Referral? = if (!o.optBoolean("aan")) null else Referral(
+        o.str("link"), o.strOrNull("beloning"), o.optInt("aanvragen"), o.optInt("klanten"),
+        o.optJSONArray("aangebracht").map { it.str("naam") to it.str("status") },
+    )
+
+    fun checklists(o: JSONObject) = o.optJSONArray("lijsten").map { l ->
+        ChecklistList(l.str("kanaalId"), l.str("titel"), l.optJSONArray("items").map { it.str("tekst") to it.optBoolean("klaar") })
+    }
+
+    fun pins(o: JSONObject) = o.optJSONArray("pins").map { p ->
+        Pin(p.str("id"), p.optDouble("x").toFloat(), p.optDouble("y").toFloat(), p.str("tekst"), p.str("naam"), p.optBoolean("opgelost"),
+            p.optJSONArray("antwoorden").map { it.str("naam") to it.str("tekst") })
+    }
+
+    fun templates(o: JSONObject) = o.optJSONArray("sjablonen").map {
+        OfferTemplate(it.str("id"), it.str("naam"), it.str("titel"), it.str("prijs"), it.optJSONArray("onderdelen").strings(), it.strOrNull("levertijd"), it.strOrNull("opmerking"))
+    }
+
+    fun away(o: JSONObject) = AwayState(o.optBoolean("aan"), o.longOrNull("tot"), o.str("bericht"), o.str("tekst"))
+
     fun adminStats(o: JSONObject): AdminStats {
         val t = o.optJSONObject("totaal") ?: JSONObject()
         return AdminStats(t.optInt("bezoeken"), t.optInt("aanvragen"), t.optInt("offertes"), t.optInt("betaald"))
@@ -162,7 +189,7 @@ object Parse {
         return Profile(
             level = n?.let { Level(it.optInt("level"), it.str("titel"), it.optInt("xp"), it.optInt("procent").coerceIn(0, 100)) },
             badges = o.optJSONArray("badges").map { Badge(it.str("id"), it.str("naam"), it.str("emoji"), it.optBoolean("behaald"), it.str("uitleg")) },
-            tagline = o.strOrNull("tagline"),
+            tagline = o.strOrNull("tagline"), bio = o.strOrNull("bio"), company = o.strOrNull("bedrijf"), website = o.strOrNull("website"),
         )
     }
 
@@ -173,7 +200,7 @@ object Parse {
             projects = o.optJSONArray("projecten").map(::project),
             tickets = o.optJSONArray("tickets").map(::ticket),
             offers = o.optJSONArray("offertes").map(::offer),
-            files = o.optJSONArray("bestanden").map { ClientFile(it.str("id"), it.str("naam"), it.optLong("grootte"), it.strOrNull("beschrijving"), it.optLong("t")) },
+            files = o.optJSONArray("bestanden").map { ClientFile(it.str("id"), it.str("naam"), it.optLong("grootte"), it.strOrNull("beschrijving"), it.optLong("t"), it.str("type")) },
             notifications = m?.optJSONArray("meldingen").map(::notification),
             unread = m?.optInt("ongelezen") ?: 0,
             departments = o.optJSONArray("afdelingen").map(::department),
@@ -188,7 +215,7 @@ object Parse {
     }
 
     fun thread(o: JSONObject) = TicketThread(
-        id = o.str("id"), name = o.str("naam"),
+        id = o.str("id"), name = o.str("naam"), ownerId = o.strOrNull("eigenaarId"),
         messages = o.optJSONArray("berichten").map { b ->
             val a = b.optJSONObject("auteur") ?: JSONObject()
             ChatMessage(

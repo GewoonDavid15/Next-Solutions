@@ -51,6 +51,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     var adminOffers by mutableStateOf<List<AdminOffer>?>(null); private set
     var adminStats by mutableStateOf<AdminStats?>(null); private set
     var adminProjects by mutableStateOf<List<AdminProject>?>(null); private set
+    var referral by mutableStateOf<Referral?>(null); private set
+    var checklists by mutableStateOf<List<ChecklistList>?>(null); private set
+    var pins by mutableStateOf<List<Pin>?>(null); private set
+    var templates by mutableStateOf<List<OfferTemplate>>(emptyList()); private set
+    var away by mutableStateOf<AwayState?>(null); private set
+    var clientNote by mutableStateOf<Pair<String, String>?>(null); private set // client id, note
+    /** Messages waiting for a connection, shown greyed out in the chat */
+    var queued by mutableStateOf<List<QueuedMessage>>(emptyList()); private set
+    var emailSent by mutableStateOf<String?>(null); private set
 
     init {
         if (loggedIn) {
@@ -80,6 +89,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 error = null
                 offlineSince = null
                 Cache.save(getApplication(), json)
+                flushOutbox()
                 MeldingenWorker.notifyNew(getApplication(), data!!.notifications, show = false)
                 ProjectWidget.refresh(getApplication())
             } catch (e: Exception) {
@@ -187,8 +197,24 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 done(true)
             } catch (e: Exception) {
-                handle(e); done(false)
+                if (e is ApiException && e.status == 0 && files.isEmpty() && text.isNotBlank()) {
+                    Outbox.add(getApplication(), QueuedMessage(java.util.UUID.randomUUID().toString(), id, text, admin, System.currentTimeMillis()))
+                    queued = Outbox.all(getApplication())
+                    toast = t("Geen verbinding: je bericht wordt verstuurd zodra je weer online bent.", "No connection: your message will be sent as soon as you're back online.")
+                    done(true)
+                } else { handle(e); done(false) }
             }
+        }
+    }
+
+    /** Sends the messages that were typed without internet. */
+    fun flushOutbox() {
+        val ctx = getApplication<Application>()
+        queued = Outbox.all(ctx)
+        if (queued.isEmpty()) return
+        viewModelScope.launch {
+            Outbox.flush(ctx, api)
+            queued = Outbox.all(ctx)
         }
     }
 
@@ -404,6 +430,87 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 loadAdmin()
                 done()
             } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    // ── Login without Discord ──
+    fun loginWithEmail(email: String) {
+        loginBusy = true
+        viewModelScope.launch {
+            try {
+                Auth.startEmail(getApplication(), email, api)
+                emailSent = email
+                error = null
+            } catch (e: Exception) { error = e.message }
+            loginBusy = false
+        }
+    }
+    fun resetEmailLogin() { emailSent = null }
+
+    fun setName(name: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try { api.post("/api/portaal/naam", JSONObject().put("naam", name)); toast = t("Opgeslagen.", "Saved."); refresh(); done(true) } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    // ── Referral, profile, checklist ──
+    fun loadReferral() { viewModelScope.launch { try { referral = Parse.referral(api.get("/api/portaal/doorverwijzing")) } catch (e: Exception) { handle(e) } } }
+
+    fun saveProfile(tagline: String, bio: String, company: String, website: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                api.put("/api/portaal/profiel", JSONObject().put("velden", JSONObject().put("tagline", tagline).put("bio", bio).put("bedrijf", company).put("website", website)))
+                toast = t("Profiel opgeslagen.", "Profile saved.")
+                refresh()
+                done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    fun loadChecklists() { viewModelScope.launch { try { checklists = Parse.checklists(api.get("/api/portaal/onboarding")) } catch (e: Exception) { handle(e) } } }
+
+    fun toggleChecklist(channelId: String, index: Int, done: Boolean) {
+        checklists = checklists?.map { l -> if (l.channelId != channelId) l else l.copy(items = l.items.mapIndexed { i, it -> if (i == index) it.first to done else it }) }
+        viewModelScope.launch {
+            try { api.post("/api/portaal/onboarding", JSONObject().put("kanaalId", channelId).put("index", index).put("klaar", done)) } catch (e: Exception) { handle(e); loadChecklists() }
+        }
+    }
+
+    // ── Design feedback (pins on an image) ──
+    fun loadPins(fileId: String) { pins = null; viewModelScope.launch { try { pins = Parse.pins(api.get("/api/portaal/feedback?bestand=$fileId")) } catch (e: Exception) { pins = emptyList(); handle(e) } } }
+
+    fun addPin(fileId: String, x: Float, y: Float, text: String, done: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                api.post("/api/portaal/feedback", JSONObject().put("bestand", fileId).put("x", x.toDouble()).put("y", y.toDouble()).put("tekst", text))
+                pins = Parse.pins(api.get("/api/portaal/feedback?bestand=$fileId"))
+                toast = t("Opmerking geplaatst. Het team krijgt een seintje.", "Comment placed. The team gets a heads-up.")
+                done(true)
+            } catch (e: Exception) { handle(e); done(false) }
+        }
+    }
+
+    // ── Owner extras ──
+    fun loadTemplates() { viewModelScope.launch { try { templates = Parse.templates(api.get("/api/bot/beheer/offerte/sjablonen")) } catch (_: Exception) { } } }
+    fun loadAway() { viewModelScope.launch { try { away = Parse.away(api.get("/api/bot/beheer/afwezig")) } catch (_: Exception) { } } }
+
+    fun setAway(on: Boolean, until: Long?, message: String) {
+        viewModelScope.launch {
+            try {
+                away = Parse.away(api.post("/api/bot/beheer/afwezig", JSONObject().put("aan", on).put("tot", until ?: JSONObject.NULL).put("bericht", message)))
+                toast = if (on) t("Afwezig staat aan 🌴", "Away mode is on 🌴") else t("Je bent weer aanwezig.", "You're back.")
+            } catch (e: Exception) { handle(e) }
+        }
+    }
+
+    fun loadClientNote(clientId: String) {
+        clientNote = null
+        viewModelScope.launch { try { clientNote = clientId to api.get("/api/bot/beheer/klant/notitie?id=$clientId").optString("tekst") } catch (_: Exception) { } }
+    }
+
+    fun saveClientNote(clientId: String, text: String) {
+        viewModelScope.launch {
+            try { api.post("/api/bot/beheer/klant/notitie", JSONObject().put("id", clientId).put("tekst", text)); clientNote = clientId to text; toast = t("Notitie opgeslagen.", "Note saved.") } catch (e: Exception) { handle(e) }
         }
     }
 

@@ -37,6 +37,7 @@ class Api(private val tokens: TokenStore, private val base: String = BuildConfig
     suspend fun get(path: String): JSONObject = request("GET", path, null)
     suspend fun post(path: String, body: JSONObject = JSONObject()): JSONObject = request("POST", path, body)
     suspend fun delete(path: String): JSONObject = request("DELETE", path, null)
+    suspend fun put(path: String, body: JSONObject): JSONObject = request("PUT", path, body)
 
     /** File upload as multipart/form-data (for delivering social media content). */
     suspend fun postMultipart(path: String, fields: Map<String, String>, file: Triple<String, String, ByteArray>?): JSONObject = withContext(Dispatchers.IO) {
