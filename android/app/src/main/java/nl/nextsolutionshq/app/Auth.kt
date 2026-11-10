@@ -21,10 +21,21 @@ object Auth {
 
     fun challengeFor(verifier: String): String = b64(MessageDigest.getInstance("SHA-256").digest(verifier.toByteArray()))
 
-    fun start(context: Context) {
+    private fun newVerifier(context: Context): String {
         val verifier = b64(ByteArray(48).also { SecureRandom().nextBytes(it) })
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putString("verifier", verifier).putLong("t", System.currentTimeMillis()).apply()
+        return verifier
+    }
+
+    /** Without Discord: the website emails a login link that opens this app. */
+    suspend fun startEmail(context: Context, email: String, api: Api) {
+        val verifier = newVerifier(context)
+        api.post("/api/auth/email", JSONObject().put("email", email).put("app", challengeFor(verifier)).put("taal", if (Lang.en) "en" else "nl"))
+    }
+
+    fun start(context: Context) {
+        val verifier = newVerifier(context)
         val url = Uri.parse("${BuildConfig.SITE_URL}/api/auth/discord").buildUpon()
             .appendQueryParameter("app", challengeFor(verifier)).build()
         val colors = CustomTabColorSchemeParams.Builder().setToolbarColor(0xFF0A0C10.toInt()).build()
@@ -41,7 +52,7 @@ object Auth {
         val code = uri.getQueryParameter("code") ?: return Result.failure(ApiException(400, t("Inloggen is niet gelukt. Probeer het opnieuw.", "Logging in failed. Please try again.")))
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val verifier = prefs.getString("verifier", null)
-        if (verifier == null || System.currentTimeMillis() - prefs.getLong("t", 0) > 15 * 60_000) {
+        if (verifier == null || System.currentTimeMillis() - prefs.getLong("t", 0) > 30 * 60_000) {
             return Result.failure(ApiException(400, t("Inloggen duurde te lang. Probeer het opnieuw.", "Logging in took too long. Please try again.")))
         }
         return try {

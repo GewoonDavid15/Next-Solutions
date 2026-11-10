@@ -17,8 +17,8 @@ export async function GET(request: Request) {
   const items: { s: string; t: string; d: string; h: string }[] = [];
 
   const extraPages: Record<string, string> = en
-    ? { "/privacy": "Privacy policy", "/voorwaarden": "Terms and conditions" }
-    : { "/privacy": "Privacyverklaring", "/voorwaarden": "Algemene voorwaarden" };
+    ? { "/samenstellen": "Package builder", "/privacy": "Privacy policy", "/voorwaarden": "Terms and conditions" }
+    : { "/samenstellen": "Pakket samenstellen", "/privacy": "Privacyverklaring", "/voorwaarden": "Algemene voorwaarden" };
   for (const [href, label] of Object.entries({ ...t.nav.links, ...extraPages })) {
     if (href === "/portfolio" && !SHOW_PORTFOLIO) continue;
     items.push({ s: en ? "Page" : "Pagina", t: label, d: "", h: lp(href) });

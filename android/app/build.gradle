@@ -21,8 +21,8 @@ android {
         applicationId 'nl.nextsolutionshq.app'
         minSdk 24
         targetSdk 35
-        versionCode 6
-        versionName '3.2.1'
+        versionCode 7
+        versionName '3.3.0'
         buildConfigField 'String', 'SITE_URL', '"https://nextsolutionshq.nl"'
         buildConfigField 'String', 'FIREBASE_APP_ID', "\"${fb['appId'] ?: ''}\""
         buildConfigField 'String', 'FIREBASE_API_KEY', "\"${fb['apiKey'] ?: ''}\""

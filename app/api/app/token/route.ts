@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     {
       token: encodeAppToken(user),
       geldigTot: Date.now() + APP_TOKEN_DAYS * 86_400_000,
-      gebruiker: { id: user.id, naam: user.globalName ?? user.username, gebruikersnaam: user.username, avatar: avatarUrl(user) },
+      gebruiker: { id: user.id, naam: user.globalName ?? user.username, gebruikersnaam: user.username, avatar: user.email ? null : avatarUrl(user), email: user.email ?? null },
     },
     { headers: { "Cache-Control": "no-store" } },
   );

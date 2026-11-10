@@ -13,6 +13,7 @@ class MeldingenWorker(context: Context, params: WorkerParameters) : CoroutineWor
         return try {
             val json = app.api.get("/api/app/data")
             Cache.save(applicationContext, json)
+            Outbox.flush(applicationContext, app.api)
             notifyNew(applicationContext, Parse.portal(json).notifications)
             ProjectWidget.refresh(applicationContext)
             Updates.check()?.let { Updates.notifyOnce(applicationContext, it) }

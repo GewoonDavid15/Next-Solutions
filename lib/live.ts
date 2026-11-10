@@ -70,6 +70,8 @@ export interface PublicData {
   giveaways?: PublicGiveaway[];
   /** Most active members (levels), missing on older bot versions */
   levels?: { id: string; naam: string; avatar: string | null; xp: number; level: number }[];
+  /** Away mode (holiday, sick): shown as a bar on the website */
+  afwezig?: { aan: boolean; tekst: string; tekstEn: string; tot: number | null } | null;
 }
 
 export interface PublicGiveaway {

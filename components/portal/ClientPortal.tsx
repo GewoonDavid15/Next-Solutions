@@ -14,6 +14,7 @@ import { AppointmentsPanel } from "@/components/portal/AppointmentsPanel";
 import { MyData } from "@/components/portal/MyData";
 import { CalendarSync } from "@/components/portal/CalendarSync";
 import { PushSettings } from "@/components/portal/PushSettings";
+import { NameSettings } from "@/components/portal/NameSettings";
 import { ReferralPanel } from "@/components/portal/ReferralPanel";
 import { SatisfactionPrompt } from "@/components/portal/SatisfactionPrompt";
 import { NotificationsPanel } from "@/components/portal/NotificationsPanel";
@@ -91,7 +92,7 @@ type Texts = (typeof texts)["nl"];
 
 interface ClientPortalProps {
   locale?: Locale;
-  user: { id: string; name: string; avatar: string | null };
+  user: { id: string; name: string; avatar: string | null; email?: string };
   /** null when the bot could not be reached */
   data: ClientData | null;
   profile?: Profile | null;
@@ -430,6 +431,7 @@ export function ClientPortal({ user, data, profile = null, isOwner, departments,
             <EmailSettings initial={data.email} />
           </div>
         )}
+              {user.email && <NameSettings name={user.name} email={user.email} />}
               <PushSettings />
               <MyData />
               <form action={locale === "en" ? "/api/auth/logout?taal=en" : "/api/auth/logout"} method="post">

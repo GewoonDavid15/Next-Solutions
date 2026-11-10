@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Clock, Mail, MessageCircle } from "lucide-react";
 import { FadeUp } from "@/components/motion/FadeUp";
 import { CrowdCard } from "@/components/live/CrowdCard";
@@ -27,7 +28,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
 
   // Live crowd level and response time from the Discord bot (falls back to the static text)
   const live = await getPublicData();
-  const { locale } = await getI18n();
+  const { locale, lp } = await getI18n();
   const en = locale === "en";
   const tickets = live?.tickets ?? null;
   const responseText =
@@ -45,7 +46,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
         eyebrow="Contact"
         title={en ? <>Let&apos;s build something <span className="text-gradient">great</span></> : <>Laten we iets <span className="text-gradient">moois</span> bouwen</>}
         description={en ? "Fill in the form. You usually hear back within 24 hours, followed by a tailored, no-obligation quote." : "Vul het formulier in. Je krijgt meestal binnen 24 uur een reactie, en daarna een vrijblijvende offerte op maat."}
-      />
+      >
+        <Link href={lp("/samenstellen")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-300 hover:underline">{en ? "Prefer to click it together? Use the package builder" : "Liever aanklikken wat je nodig hebt? Gebruik de pakket-samensteller"} →</Link>
+      </PageHeader>
       <section className="pb-12">
         <div className="container grid gap-8 lg:grid-cols-3">
           <FadeUp className="lg:col-span-2">

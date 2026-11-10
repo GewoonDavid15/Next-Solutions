@@ -3,6 +3,7 @@ import { FadeUp } from "@/components/motion/FadeUp";
 import { Button } from "@/components/ui/Button";
 import { DiscordIcon } from "@/components/ui/DiscordIcon";
 import { Logo } from "@/components/ui/Logo";
+import { EmailLoginForm } from "@/components/portal/EmailLoginForm";
 import type { Locale } from "@/lib/i18n/config";
 
 const texts = {
@@ -20,13 +21,14 @@ const texts = {
       token_exchange: "Discord kon de login niet bevestigen. Probeer het opnieuw.",
       user_fetch: "Je Discord-profiel kon niet worden opgehaald.",
       network: "Discord is tijdelijk niet bereikbaar.",
+      email_link: "Deze inloglink is verlopen of al gebruikt. Vraag hieronder een nieuwe aan.",
     } as Record<string, string>,
     title: "Klantportaal",
     intro: "Log in met je Discord account om je projecten, tickets en bugmeldingen te bekijken.",
     login: "Inloggen met Discord",
     notConfigured: "Stel DISCORD_CLIENT_ID en DISCORD_CLIENT_SECRET in",
     demo: "Bekijk demo dashboard",
-    scope: "We vragen alleen je publieke profiel (naam en avatar). Geen e-mail, geen servers, geen berichten.",
+    scope: "Met Discord vragen we alleen je publieke profiel (naam en avatar). Met e-mail bewaren we alleen je adres.",
   },
   en: {
     errors: {
@@ -42,13 +44,14 @@ const texts = {
       token_exchange: "Discord could not confirm the login. Please try again.",
       user_fetch: "Your Discord profile could not be retrieved.",
       network: "Discord is temporarily unreachable.",
+      email_link: "This login link has expired or was already used. Request a new one below.",
     } as Record<string, string>,
     title: "Client portal",
     intro: "Log in with your Discord account to view your projects, tickets and bug reports.",
     login: "Log in with Discord",
     notConfigured: "Set DISCORD_CLIENT_ID and DISCORD_CLIENT_SECRET",
     demo: "View demo dashboard",
-    scope: "We only ask for your public profile (name and avatar). No email, no servers, no messages.",
+    scope: "With Discord we only ask for your public profile (name and avatar). With email we only store your address.",
   },
 };
 
@@ -90,6 +93,7 @@ export function LoginCard({ error, oauthEnabled, locale = "nl" }: { error?: stri
                 <DiscordIcon className="size-5" /> {tx.login}
               </Button>
             )}
+            <EmailLoginForm locale={en ? "en" : "nl"} />
             {!oauthEnabled && (
               <form action={en ? "/api/auth/demo?taal=en" : "/api/auth/demo"} method="post">
                 <Button type="submit" variant="secondary" size="lg" className="w-full">

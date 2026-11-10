@@ -157,6 +157,7 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean, onClosed: () -> Uni
             TextButton(onClick = { offerDialog = true }) { Text("📝 " + t("Offerte maken", "Create quote")) }
             TextButton(onClick = { confirmClose = true }) { Text("🔒 " + t("Sluiten", "Close"), color = Danger) }
         }
+        if (admin) thread?.ownerId?.let { owner -> ClientNoteCard(vm, owner) }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when {
                 thread == null && vm.threadError != null -> Column(Modifier.padding(16.dp)) { ErrorBox(vm.threadError!!) { vm.openThread(id, admin) } }
@@ -166,6 +167,14 @@ fun ChatScreen(vm: AppViewModel, id: String, admin: Boolean, onClosed: () -> Uni
                     state = list, reverseLayout = true, modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
+                    items(vm.queued.filter { it.ticket == id }.sortedByDescending { it.t }, key = { "q-" + it.id }) { q ->
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            Column(Modifier.widthIn(max = 300.dp).clip(RoundedCornerShape(18.dp)).background(Surface2).padding(12.dp)) {
+                                Text(q.text, color = Muted)
+                                Text("⏳ " + t("Wordt verstuurd zodra je online bent", "Will be sent when you're online"), color = Faint, fontSize = 11.sp)
+                            }
+                        }
+                    }
                     items(thread.messages.sortedByDescending { it.t }, key = { it.id }) { m ->
                         val mine = if (admin) m.via == "team" || (m.author.id == me && m.via != "klant") else m.author.id == me || m.via == "klant"
                         Bubble(m, mine) { viewer = it }
@@ -243,11 +252,22 @@ private fun OfferDialog(vm: AppViewModel, ticketId: String, onDismiss: () -> Uni
     var delivery by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { vm.loadTemplates() }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(t("Offerte maken", "Create quote")) },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (vm.templates.isNotEmpty()) {
+                    Text(t("Vanuit een sjabloon:", "From a template:"), color = Muted, fontSize = 13.sp)
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        vm.templates.forEach { s ->
+                            Text(s.name, color = Lime, fontSize = 13.sp, modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Surface2).clickable {
+                                title = s.title; price = s.price; items = s.items.joinToString("\n"); delivery = s.delivery.orEmpty(); note = s.note.orEmpty()
+                            }.padding(horizontal = 10.dp, vertical = 6.dp))
+                        }
+                    }
+                }
                 OutlinedTextField(title, { title = it.take(100) }, label = { Text(t("Titel", "Title")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(price, { price = it.take(60) }, label = { Text(t("Prijs (bijv. € 250)", "Price (e.g. € 250)")) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                 OutlinedTextField(items, { items = it.take(2000) }, label = { Text(t("Onderdelen (één per regel)", "Items (one per line)")) }, minLines = 3, modifier = Modifier.fillMaxWidth())
@@ -376,5 +396,21 @@ fun TranscriptScreen(id: String) {
             },
         )
         if (loading) Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = Lime) }
+    }
+}
+
+/** Owner: private note about this client (never visible to the client). */
+@Composable
+private fun ClientNoteCard(vm: AppViewModel, clientId: String) {
+    LaunchedEffect(clientId) { vm.loadClientNote(clientId) }
+    val note = vm.clientNote?.takeIf { it.first == clientId }?.second
+    var edit by remember { mutableStateOf(false) }
+    var text by remember(note) { mutableStateOf(note.orEmpty()) }
+    Column(Modifier.fillMaxWidth().background(Color(0xFF1B1708)).clickable { edit = !edit }.padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Text("📝 " + (note?.takeIf { it.isNotBlank() } ?: t("Notitie over deze klant toevoegen (alleen voor jou)", "Add a note about this client (only for you)")), color = Color(0xFFFDE68A), fontSize = 13.sp, maxLines = if (edit) 20 else 2)
+        if (edit) {
+            OutlinedTextField(text, { text = it.take(3000) }, minLines = 2, modifier = Modifier.fillMaxWidth().padding(top = 6.dp))
+            Row { TextButton(onClick = { vm.saveClientNote(clientId, text); edit = false }) { Text(t("Opslaan", "Save")) } }
+        }
     }
 }

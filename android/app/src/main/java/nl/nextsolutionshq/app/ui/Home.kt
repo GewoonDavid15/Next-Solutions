@@ -354,6 +354,7 @@ fun TextDialog(title: String, intro: String, placeholder: String, minLength: Int
 @Composable
 fun OffersScreen(vm: AppViewModel) {
     var confirm by remember { mutableStateOf<Offer?>(null) }
+    val context = LocalContext.current
     DataScreen(vm) { d ->
         if (d.offers.isEmpty()) item { EmptyState("📄", t("Nog geen offertes", "No quotes yet"), t("Offertes die we voor je maken, verschijnen hier. Je kunt ze dan meteen accepteren.", "Quotes we make for you appear here, and you can accept them right away.")) }
         else d.offers.sortedByDescending { it.t }.forEach { o ->
@@ -376,6 +377,7 @@ fun OffersScreen(vm: AppViewModel) {
                         }
                         o.signedBy?.let { name -> Text("✍️ " + t("Digitaal ondertekend door $name", "Digitally signed by $name") + (o.signedAt?.let { " • " + date(it) } ?: ""), color = Faint, fontSize = 12.sp) }
                         if (o.code == "open" && o.id != null) Button(onClick = { confirm = o }, modifier = Modifier.fillMaxWidth()) { Text(t("Akkoord geven", "Accept")) }
+                        if (o.paid && o.id != null) OutlinedButton(onClick = { download(context, "${nl.nextsolutionshq.app.BuildConfig.SITE_URL}/klantportaal/bon/${o.id}", "betaalbewijs-${o.number}.pdf") }, modifier = Modifier.fillMaxWidth()) { Text("🧾 " + t("Betaalbewijs (PDF)", "Payment receipt (PDF)")) }
                     }
                 }
             }
