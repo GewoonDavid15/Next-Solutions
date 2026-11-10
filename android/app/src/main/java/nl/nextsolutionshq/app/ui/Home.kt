@@ -83,11 +83,11 @@ fun HomeScreen(vm: AppViewModel, navigate: (Route) -> Unit, switchTab: (Route) -
     val context = LocalContext.current
     DataScreen(vm) { d ->
         val active = d.projects.filter { it.percentage < 100 }
-        vm.update?.let { (version, url) ->
+        vm.update?.let { u ->
             item {
-                Panel(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }) {
+                Panel(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(u.url))) }) {
                     Column {
-                        Text(t("Nieuwe versie beschikbaar: $version", "New version available: $version"), fontWeight = FontWeight.SemiBold, color = Lime)
+                        Text(t("Nieuwe versie beschikbaar: ${u.name}", "New version available: ${u.name}"), fontWeight = FontWeight.SemiBold, color = Lime)
                         Text(t("Tik om te downloaden en te installeren.", "Tap to download and install."), color = Muted, fontSize = 14.sp)
                     }
                 }

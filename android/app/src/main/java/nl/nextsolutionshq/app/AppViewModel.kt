@@ -21,7 +21,6 @@ import nl.nextsolutionshq.app.widget.ProjectWidget
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.net.URL
 
 /** A file the user picked to send (photo, PDF, ...), already read and, for photos, made smaller. */
 data class PickedFile(val name: String, val type: String, val bytes: ByteArray)
@@ -38,7 +37,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     var offlineSince by mutableStateOf<Long?>(null); private set
     var loginBusy by mutableStateOf(false); private set
     var toast by mutableStateOf<String?>(null)
-    var update by mutableStateOf<Pair<String, String>?>(null); private set // versionName, url
+    var update by mutableStateOf<AppUpdate?>(null); private set
 
     var thread by mutableStateOf<TicketThread?>(null); private set
     var threadError by mutableStateOf<String?>(null); private set
@@ -122,13 +121,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { ProjectWidget.refresh(getApplication()) }
     }
 
-    private fun checkForUpdate() {
-        viewModelScope.launch {
-            try {
-                val json = withContext(Dispatchers.IO) { JSONObject(URL("${BuildConfig.SITE_URL}/downloads/app-versie.json").readText()) }
-                if (json.optInt("versionCode") > BuildConfig.VERSION_CODE) update = json.optString("versionName") to json.optString("url")
-            } catch (_: Exception) { }
-        }
+    /** Called at start and every time the app comes back to the front. */
+    fun checkForUpdate() {
+        viewModelScope.launch { update = Updates.check() }
     }
 
     // ── Files picked by the user ──

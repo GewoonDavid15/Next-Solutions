@@ -74,6 +74,7 @@ class MainActivity : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         if (vm.loggedIn) vm.refresh()
+        vm.checkForUpdate()
     }
 
     private fun lockEnabled() = vm.loggedIn && Settings(this).lock && canLock(this)

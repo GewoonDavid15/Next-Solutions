@@ -15,6 +15,7 @@ class MeldingenWorker(context: Context, params: WorkerParameters) : CoroutineWor
             Cache.save(applicationContext, json)
             notifyNew(applicationContext, Parse.portal(json).notifications)
             ProjectWidget.refresh(applicationContext)
+            Updates.check()?.let { Updates.notifyOnce(applicationContext, it) }
             Result.success()
         } catch (e: ApiException) {
             if (e.status == 401) { app.tokens.clear(); Result.success() } else Result.retry()
