@@ -63,7 +63,7 @@ jobs:
             exit 0
           fi
           cp android/app/build/outputs/apk/release/app-release.apk public/downloads/next-solutions.apk
-          NOTES=$(git log -1 --no-merges --pretty=%s | sed 's/"/\\"/g')
+          NOTES=$(git log -1 --no-merges --pretty=%s -- android/ | sed 's/"/\\"/g')
           printf '{\n  "versionCode": %s,\n  "versionName": "%s",\n  "url": "https://nextsolutionshq.nl/downloads/next-solutions.apk",\n  "notities": "%s"\n}\n' "$CODE" "$NAME" "$NOTES" > public/downloads/app-versie.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
