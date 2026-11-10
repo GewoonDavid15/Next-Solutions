@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50 # needed to read the app's latest commit message for "what's new"
 
       - uses: actions/setup-java@v4
         with:
