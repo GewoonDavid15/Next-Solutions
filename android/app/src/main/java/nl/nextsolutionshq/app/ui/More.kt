@@ -141,9 +141,9 @@ fun MoreScreen(vm: AppViewModel, navigate: (Route) -> Unit, askNotificationPermi
         item { MenuRow(Icons.AutoMirrored.Filled.Logout, t("Uitloggen", "Log out"), null, danger = true) { confirmLogout = true } }
         item {
             Text(
-                t("Versie", "Version") + " ${BuildConfig.VERSION_NAME}" + (vm.update?.let { t(" • nieuwe versie ${it.first} beschikbaar", " • new version ${it.first} available") } ?: ""),
+                t("Versie", "Version") + " ${BuildConfig.VERSION_NAME}" + (vm.update?.let { t(" • nieuwe versie ${it.name} beschikbaar", " • new version ${it.name} available") } ?: ""),
                 color = if (vm.update != null) Lime else Faint, fontSize = 12.sp,
-                modifier = Modifier.padding(top = 8.dp).then(if (vm.update != null) Modifier.clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(vm.update!!.second))) } else Modifier),
+                modifier = Modifier.padding(top = 8.dp).then(if (vm.update != null) Modifier.clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(vm.update!!.url))) } else Modifier),
             )
         }
     }
